@@ -1,0 +1,8 @@
+gestire i turni?
+messaggi per modificare produzione -> tipo prima di mandare una certa qta di energia, il power plant 
+	chiede a grid se va bene quella qta, la grid risponde si/no/di più/di meno... e si aggiusta il tutto
+cercare dati meteo affidabili
+tolgo import non usati
+gestire routine sulla mezzanotte
+capire cosa togliere dai try catch
+capire come gestire i messaggi persi? per ora si assume che non si perdono
