@@ -40,16 +40,18 @@ public class SmartHome extends Agent{
         
         try {
 			HashMap<String, Object> jsonObject = mapper.readValue(from, typeRef);
-			
-			System.out.println(jsonObject.get("appliances").toString());
-			appliances = mapper.readValue(jsonObject.get("appliances").toString(), new TypeReference<List<Appliance>>(){});
-			energyProducers = Arrays.asList((EnergyProducer[]) jsonObject.get("energyProducers"));
+
+			//appliances = (ArrayList<Appliance>) jsonObject.get("appliances");
+			appliances = mapper.convertValue(jsonObject.get("appliances"), new TypeReference<List<Appliance>>() { });
+			//energyProducers = (ArrayList<EnergyProducer>) jsonObject.get("energyProducers");
+			energyProducers = mapper.convertValue(jsonObject.get("energyProducers"), new TypeReference<List<EnergyProducer>>() { });
 			maxPower = (double) jsonObject.get("maxPower");
 			minEnergyConsumption = (double) jsonObject.get("minEnergyConsumption");
 			maxCapacity = (double) jsonObject.get("maxCapacity");
 			storedEnergy = (double) jsonObject.get("storedEnergy");
-			routine = (Routine) jsonObject.get("routine");
+			routine = mapper.convertValue(jsonObject.get("routine"), Routine.class);
 			
+			//System.out.println(this.toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

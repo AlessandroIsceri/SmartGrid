@@ -24,7 +24,6 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 	
 	public CheckOwnerMessages(Owner owner) {
 		super(owner);
-		block();
 	}
 	
 	@Override
@@ -59,6 +58,7 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 							ACLMessage updateRoutineMsg = new ACLMessage(ACLMessage.REQUEST);
 							jsonObject.remove("smartHome");
 							updateRoutineMsg.setContent(objectMapper.writeValueAsString(jsonObject));
+							updateRoutineMsg.setConversationId(receivedMsg.getConversationId());
 							AID smartHomeAID = new AID(curName, AID.ISLOCALNAME);
 							updateRoutineMsg.addReceiver(smartHomeAID);
 							myAgent.send(updateRoutineMsg);
@@ -74,6 +74,8 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 				//msg fatto da noi avrà un conversationId -> che viene mantenuto tra i msg
 				System.out.println("INFORM RECEIVED FOR " + receivedMsg.getConversationId());
 			}
+		}else {
+			block();
 		}
 	}
 }

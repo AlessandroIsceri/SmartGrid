@@ -36,7 +36,7 @@ public class Owner extends Agent{
 	
 	@Override
     public void setup() {
-		
+		smartHomesNames = new ArrayList<String>();
 		Object[] args = this.getArguments();
 		for(int i = 0; i < args.length; i++) {
 			smartHomesNames.add((String) args[i]);

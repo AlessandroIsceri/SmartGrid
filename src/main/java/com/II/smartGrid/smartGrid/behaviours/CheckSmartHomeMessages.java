@@ -20,52 +20,54 @@ public class CheckSmartHomeMessages extends CyclicBehaviour{
 	
 	public CheckSmartHomeMessages(SmartHome smartHome) {
 		super(smartHome);
-		block();
 	}
 
 	@Override
 	public void action() {
 		ACLMessage receivedMsg = myAgent.receive();
 		//owner -> manda msg request -> smartHome riceve, manda agree ed esegue -> inform è andata bene
-		if(receivedMsg.getPerformative() == ACLMessage.REQUEST) {
-			String receivedContent = receivedMsg.getContent();
-			/**
-			 * {
-			 * 		"operation": "add"/"remove"
-			 * 		"tasks": task[] sempre JSON 
-			 * }
-			 */
-			TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-			HashMap<String, Object> jsonObject;
-			
-			try {
-				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				String operation = (String) jsonObject.get("operation");
-				ArrayList<Task> tasks = (ArrayList<Task>) objectMapper.convertValue(jsonObject.get("tasks"), new TypeReference<List<Task>>() {});
-				Routine routine = ((SmartHome) myAgent).getRoutine();
+		if (receivedMsg != null) {
+			if(receivedMsg.getPerformative() == ACLMessage.REQUEST) {
+				String receivedContent = receivedMsg.getContent();
+				/**
+				 * {
+				 * 		"operation": "add"/"remove"
+				 * 		"tasks": task[] sempre JSON 
+				 * }
+				 */
+				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
+				HashMap<String, Object> jsonObject;
 				
-				//rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
-				ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.AGREE);
-				myAgent.send(replyMsg);
-				
-				boolean result = true;
-				if(operation.equals("add")) {
-					result = routine.addTasks(tasks);
-				} else if (operation.equals("remove")){
-					 result = routine.removeTasks(tasks);
-				} else {
-					System.out.println("Error: invalid parameter \"operation\": " + operation);
-					result = false;
+				try {
+					jsonObject = objectMapper.readValue(receivedContent, typeRef);
+					String operation = (String) jsonObject.get("operation");
+					ArrayList<Task> tasks = (ArrayList<Task>) objectMapper.convertValue(jsonObject.get("tasks"), new TypeReference<List<Task>>() {});
+					Routine routine = ((SmartHome) myAgent).getRoutine();
+					
+					//rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
+					ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.AGREE);
+					myAgent.send(replyMsg);
+					
+					boolean result = true;
+					if(operation.equals("add")) {
+						result = routine.addTasks(tasks);
+					} else if (operation.equals("remove")){
+						 result = routine.removeTasks(tasks);
+					} else {
+						System.out.println("Error: invalid parameter \"operation\": " + operation);
+						result = false;
+					}
+					System.out.println("NEW ROUTINE FOR " + myAgent.getName() + " " + ((SmartHome) myAgent).getRoutine().toString());
+					ACLMessage replyMsgInform = receivedMsg.createReply(ACLMessage.INFORM);
+					replyMsgInform.setContent("{\"result\": " + result + "}");
+					myAgent.send(replyMsgInform);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
 				}
-				ACLMessage replyMsgInform = receivedMsg.createReply(ACLMessage.INFORM);
-				replyMsgInform.setContent("{\"result\": " + result + "}");
-				myAgent.send(replyMsgInform);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
 			}
+		} else {
+			block();
 		}
-		
-		
 	}
 	
 	
