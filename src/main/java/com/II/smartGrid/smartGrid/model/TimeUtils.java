@@ -1,5 +1,7 @@
 package com.II.smartGrid.smartGrid.model;
 
+import com.II.smartGrid.smartGrid.tools.SimulationSettings;
+
 public class TimeUtils {
     
     private static SimulationSettings simulationSettings = SimulationSettings.getInstance();

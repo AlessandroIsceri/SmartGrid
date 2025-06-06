@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.II.smartGrid.smartGrid.agents.PowerPlant.Status;
 import com.II.smartGrid.smartGrid.behaviours.CheckSmartHomeMessages;
+import com.II.smartGrid.smartGrid.behaviours.ManageRoutine;
 import com.II.smartGrid.smartGrid.behaviours.PowerPlantDistributeEnergy;
 import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
 import com.II.smartGrid.smartGrid.model.Appliance;
@@ -71,9 +72,9 @@ public class SmartHome extends Agent{
         
         addBehaviour(new CheckSmartHomeMessages(this));
         
-        /*ParallelBehaviour  = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
-        .addSubBehaviour(new );
-        .addSubBehaviour(new );*/
+        ParallelBehaviour p = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
+        p.addSubBehaviour(new ManageRoutine(this));
+        //.addSubBehaviour(new );
         
         
         
