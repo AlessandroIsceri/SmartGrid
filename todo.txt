@@ -6,3 +6,4 @@ tolgo import non usati
 gestire routine sulla mezzanotte
 capire cosa togliere dai try catch
 capire come gestire i messaggi persi? per ora si assume che non si perdono
+valutare se mettere un parametro a StartNewTurn.sendMessages x evitare di mandare sempre turnDuration

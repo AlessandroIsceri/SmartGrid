@@ -31,6 +31,7 @@ public class SmartHome extends Agent{
 	private double storedEnergy;
 	private Routine routine;
 	private ObjectMapper mapper;
+	private int curTurn;
 	
 	@Override
     public void setup() {    
@@ -71,12 +72,12 @@ public class SmartHome extends Agent{
         //può rilasciare energia se ne ha troppa e non gli serve
         
         addBehaviour(new CheckSmartHomeMessages(this));
-        
-        ParallelBehaviour p = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
-        p.addSubBehaviour(new ManageRoutine(this));
+        addBehaviour(new ManageRoutine(this));
+        //ParallelBehaviour p = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
+        //p.addSubBehaviour(new ManageRoutine(this));
         //.addSubBehaviour(new );
-        
-        
+        //todo aggiorna curturn
+       	//p.
         
     }
 
@@ -135,13 +136,20 @@ public class SmartHome extends Agent{
 	public void setAppliances(List<Appliance> appliances) {
 		this.appliances = appliances;
 	}
-
 	
+	public int getCurTurn() {
+		return curTurn;
+	}
+
+	public void setCurTurn(int curTurn) {
+		this.curTurn = curTurn;
+	}
+
 	@Override
 	public String toString() {
 		return "SmartHome [appliances=" + appliances + ", energyProducers=" + energyProducers + ", maxPower=" + maxPower
 				+ ", minEnergyConsumption=" + minEnergyConsumption + ", maxCapacity=" + maxCapacity + ", storedEnergy="
-				+ storedEnergy + ", routine=" + routine + "]";
+				+ storedEnergy + ", routine=" + routine + ", mapper=" + mapper + ", curTurn=" + curTurn + "]";
 	}
 	
 }

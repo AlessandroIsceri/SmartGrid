@@ -25,23 +25,33 @@ public class StartNewTurn extends CyclicBehaviour {
 					receivedAnswers = 0;
 					//send new turn message
 					((SimulationSettings) myAgent).updateTurn();
-					List<String> allAgentNames = ((SimulationSettings) myAgent).getAgentNames();
-					for(int i = 0; i < allAgentNames.size(); i++) {
-						ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-						msg.addReceiver(new AID(allAgentNames.get(i), AID.ISLOCALNAME));
-						msg.setContent("{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn() 
-								      + ", \"turnDuration\": " + ((SimulationSettings) myAgent).getTurnDuration() + "}");
-						myAgent.send(msg);
-					}
+					sendMessages();
 				}
 				block();
+			}else if(receivedMsg.getPerformative() == ACLMessage.REQUEST) {
+				sendMessages();
 			}
 		}else {
 			block();
 		}
-		
-		
-		
+	}
+	
+	private void sendMessages() {
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<String> allAgentNames = ((SimulationSettings) myAgent).getAgentNames();
+		for(int i = 0; i < allAgentNames.size(); i++) {
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg.setConversationId("turn-" + allAgentNames.get(i));
+			msg.addReceiver(new AID(allAgentNames.get(i), AID.ISLOCALNAME));
+			msg.setContent("{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn() 
+					      + ", \"turnDuration\": " + ((SimulationSettings) myAgent).getTurnDuration() + "}");
+			myAgent.send(msg);
+		}
 	}
 
 }
