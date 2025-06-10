@@ -16,7 +16,6 @@ public class StartNewTurn extends CyclicBehaviour {
 	
 	@Override
 	public void action() {
-		
 		ACLMessage receivedMsg = myAgent.receive();
 		if (receivedMsg != null) {
 			if(receivedMsg.getPerformative() == ACLMessage.INFORM) {
@@ -26,10 +25,13 @@ public class StartNewTurn extends CyclicBehaviour {
 					//send new turn message
 					((SimulationSettings) myAgent).updateTurn();
 					sendMessages();
+					System.out.println("\n");
+					((SimulationSettings) myAgent).log("Started new turn");
 				}
 				block();
 			}else if(receivedMsg.getPerformative() == ACLMessage.REQUEST) {
 				sendMessages();
+				((SimulationSettings) myAgent).log("Started first turn");
 			}
 		}else {
 			block();
@@ -48,8 +50,8 @@ public class StartNewTurn extends CyclicBehaviour {
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.setConversationId("turn-" + allAgentNames.get(i));
 			msg.addReceiver(new AID(allAgentNames.get(i), AID.ISLOCALNAME));
-			msg.setContent("{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn() 
-					      + ", \"turnDuration\": " + ((SimulationSettings) myAgent).getTurnDuration() + "}");
+			msg.setContent("{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn()
+					      + ", \"weather\": "+ ((SimulationSettings) myAgent).getCurWeatherStatus().ordinal() + "}");
 			myAgent.send(msg);
 		}
 	}

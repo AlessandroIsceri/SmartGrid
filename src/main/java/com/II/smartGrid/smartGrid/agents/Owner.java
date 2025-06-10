@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.PowerPlant.Status;
+import com.II.smartGrid.smartGrid.agents.PowerPlant.PPStatus;
 import com.II.smartGrid.smartGrid.behaviours.CheckOwnerMessages;
 import com.II.smartGrid.smartGrid.behaviours.PowerPlantDistributeEnergy;
 import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
@@ -29,7 +29,7 @@ import jade.domain.AMSService;
 import jade.domain.AMSService;
 import jade.domain.FIPAAgentManagement.*;
 
-public class Owner extends Agent{
+public class Owner extends CustomAgent{
 	
 	private List<String> smartHomesNames;
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -47,6 +47,7 @@ public class Owner extends Agent{
          * 13:00-14:00 lavastoviglie
          * */
         
+        this.log("Setup completed");
 		addBehaviour(new CheckOwnerMessages(this));
 		
     }

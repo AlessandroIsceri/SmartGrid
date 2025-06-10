@@ -2,10 +2,10 @@ package com.II.smartGrid.smartGrid.agents;
 
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.PowerPlant.Status;
+import com.II.smartGrid.smartGrid.agents.PowerPlant.PPStatus;
 import jade.core.Agent;
 
-public class Grid extends Agent{
+public class Grid extends CustomAgent{
 
 	private double currentEnergy;
 	private double maxCapacity;
@@ -17,6 +17,7 @@ public class Grid extends Agent{
 		this.maxCapacity = (double) this.getArguments()[0];
         this.currentEnergy = 0.0;
         
+        this.log("Setup completed");        
 	}
 	
 	public void addEnergy(double newEnergy) {

@@ -55,13 +55,13 @@ public class EditRoutine extends CyclicBehaviour{
 				} else if (operation.equals("remove")){
 					 result = routine.removeTasks(tasks);
 				} else {
-					System.out.println("Error: invalid parameter \"operation\": " + operation);
+					((SmartHome) myAgent).log("Error: invalid parameter \"operation\": " + operation);
 					result = false;
 				}
-				System.out.println("NEW ROUTINE FOR " + myAgent.getName() + " " + ((SmartHome) myAgent).getRoutine().toString());
 				ACLMessage replyMsgInform = receivedMsg.createReply(ACLMessage.INFORM);
 				replyMsgInform.setContent("{\"result\": " + result + "}");
 				myAgent.send(replyMsgInform);
+				((SmartHome) myAgent).log("Routine updated");
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}

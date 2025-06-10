@@ -7,30 +7,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.II.smartGrid.smartGrid.agents.CustomAgent;
 import com.II.smartGrid.smartGrid.model.TimeUtils;
 
 import jade.core.Agent;
+import jade.tools.DummyAgent.DummyAgent;
 
-public class SimulationSettings extends Agent{
+public class SimulationSettings extends CustomAgent{
 	
 	private int nTurns;
-	private int turnDuration;
-	private int curTurn = 0;
 	private List<String> agentNames;
+	public enum WeatherStatus {SUNNY, RAINY, CLOUDY};
+	private WeatherStatus curWeatherStatus;
+	private int weatherTurnDuration;
 
 	@Override
     public void setup() {   
-		this.turnDuration = TimeUtils.getTurnDuration();
-        this.nTurns = 1440 / (this.turnDuration);
+        this.nTurns = 1440 / (TimeUtils.getTurnDuration());
+        this.curTurn = 0;
         
         agentNames = new ArrayList<String>();
 		Object[] args = this.getArguments();
-		for(int i = 0; i < args.length; i++) {
+		for(int i = 0; i < args.length - 1; i++) {
 			agentNames.add((String) args[i]);
 		}
+        String weatherDuration = (String) args[args.length - 1];
+        weatherTurnDuration = TimeUtils.convertTimeToTurn(weatherDuration);
+        curWeatherStatus = WeatherStatus.SUNNY;
         
+        this.log("Setup completed");
         addBehaviour(new StartNewTurn(this));  
-        
 	}
 
 	public List<String> getAgentNames() {
@@ -41,16 +47,25 @@ public class SimulationSettings extends Agent{
 		return nTurns;
 	}
 
-	public int getTurnDuration() {
-		return turnDuration;
-	}
-
 	public int getCurTurn() {
 		return curTurn;
+	}
+	
+	public WeatherStatus getCurWeatherStatus() {
+		return curWeatherStatus;
+	}
+
+	public void setCurWeatherStatus(WeatherStatus curWeatherStatus) {
+		this.curWeatherStatus = curWeatherStatus;
 	}
 
 	public void updateTurn() {
 		this.curTurn++;
-		
+		if(((this.curTurn) % weatherTurnDuration) == 0) {
+			UpdateWeather updateWeather = new UpdateWeather(this);
+			addBehaviour(updateWeather);
+			while(updateWeather.done() == false);
+			this.log("Weather updated: " + this.curWeatherStatus);
+		}
 	}
 }

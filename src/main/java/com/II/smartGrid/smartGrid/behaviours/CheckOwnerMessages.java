@@ -64,6 +64,7 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 							myAgent.send(updateRoutineMsg);
 						}
 					}
+					((Owner) myAgent).log("Sent Update Routine Request");
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}

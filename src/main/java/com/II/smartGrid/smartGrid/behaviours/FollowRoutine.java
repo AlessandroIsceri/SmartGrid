@@ -9,6 +9,7 @@ import com.II.smartGrid.smartGrid.model.Routine;
 import com.II.smartGrid.smartGrid.model.Task;
 import com.II.smartGrid.smartGrid.model.TimeUtils;
 import com.II.smartGrid.smartGrid.tools.SimulationSettings;
+import com.II.smartGrid.smartGrid.tools.SimulationSettings.WeatherStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,21 +43,28 @@ public class FollowRoutine extends CyclicBehaviour {
 				HashMap<String, Integer> jsonObject;
 				try {
 					jsonObject = objectMapper.readValue(receivedContent, typeRef);
-					int turnDuration = jsonObject.get("turnDuration");
 					int curTurn = jsonObject.get("curTurn");
-					
+					((SmartHome) myAgent).setCurTurn(curTurn);
+					int weather = jsonObject.get("weather");
+					((SmartHome) myAgent).setCurWeatherStatus(WeatherStatus.values()[weather]);
+					double expectedConsumption = ((SmartHome) myAgent).getExpectedConsumption();
+					int turnDuration = TimeUtils.getTurnDuration();
 					for(int i = 0; i < tasks.size(); i++) {
 						Task curTask = tasks.get(i);
 						int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
 						int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
 						if(startTurn == curTurn) {
 							curTask.getAppliance().setOn(true);
+							expectedConsumption += curTask.getAppliance().gethConsumption() / turnDuration;
 						} else if(endTurn == curTurn) {
 							curTask.getAppliance().setOn(false);
+							expectedConsumption -= curTask.getAppliance().gethConsumption() / turnDuration;
 						}
 					}
+					((SmartHome) myAgent).setExpectedConsumption(expectedConsumption);
 					ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.INFORM);
 					myAgent.send(replyMsg);
+					((SmartHome) myAgent).log("Tasks and expectedConsumption updated");
 					block();
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();

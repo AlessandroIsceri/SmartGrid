@@ -48,4 +48,27 @@ public class TimeUtils {
         int turn = timeMinutes / turnDuration;
         return turn;
 	}
+	
+	public static String convertTurnToTime(int turn){
+		initTurnDuration();
+		int turnInMinutes = turn * turnDuration;
+		int hours = turnInMinutes / 60;
+		int minutes = turnInMinutes % 60;
+		String formattedHours = "";
+		String formattedMinutes = "";
+
+		if(hours < 10) {
+			formattedHours = "0";
+		}
+		formattedHours += hours;
+		
+		if(minutes < 10) {
+			formattedMinutes = "0";
+		}
+		formattedMinutes += minutes;
+		
+		return formattedHours + ":" + formattedMinutes;
+	}
+	
+	
 }

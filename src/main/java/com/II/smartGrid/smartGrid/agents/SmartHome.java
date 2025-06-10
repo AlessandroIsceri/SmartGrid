@@ -8,21 +8,23 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.PowerPlant.Status;
-import com.II.smartGrid.smartGrid.behaviours.CheckSmartHomeMessages;
-import com.II.smartGrid.smartGrid.behaviours.ManageRoutine;
+import com.II.smartGrid.smartGrid.agents.PowerPlant.PPStatus;
+import com.II.smartGrid.smartGrid.behaviours.EditRoutine;
+import com.II.smartGrid.smartGrid.behaviours.FollowRoutine;
+import com.II.smartGrid.smartGrid.behaviours.ManageEnergy;
 import com.II.smartGrid.smartGrid.behaviours.PowerPlantDistributeEnergy;
 import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
 import com.II.smartGrid.smartGrid.model.Appliance;
 import com.II.smartGrid.smartGrid.model.EnergyProducer;
 import com.II.smartGrid.smartGrid.model.Routine;
+import com.II.smartGrid.smartGrid.model.TimeUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jade.core.Agent;
 import jade.core.behaviours.ParallelBehaviour;
 
-public class SmartHome extends Agent{
+public class SmartHome extends CustomAgent{
 	private List<Appliance> appliances;
 	private List<EnergyProducer> energyProducers;
 	private double maxPower;
@@ -31,7 +33,7 @@ public class SmartHome extends Agent{
 	private double storedEnergy;
 	private Routine routine;
 	private ObjectMapper mapper;
-	private int curTurn;
+	private double ExpectedConsumption;
 	
 	@Override
     public void setup() {    
@@ -67,12 +69,16 @@ public class SmartHome extends Agent{
         	
         }
         
-        //richiede energia se serve (non ne ha abbastanza, attaccandosi alla rete)
-        //spegnere/accendere gli elettrodomestici in base alla routine decisa dall'owner
-        //può rilasciare energia se ne ha troppa e non gli serve
+        this.log("Setup completed");
+
         
-        addBehaviour(new CheckSmartHomeMessages(this));
-        addBehaviour(new ManageRoutine(this));
+        //richiede energia se serve (non ne ha abbastanza, attaccandosi alla rete)
+        //può rilasciare energia se ne ha troppa e non gli serve
+        //spegnere/accendere gli elettrodomestici in base alla routine decisa dall'owner
+        
+        addBehaviour(new EditRoutine(this));
+        addBehaviour(new FollowRoutine(this));
+        addBehaviour(new ManageEnergy(this));
         //ParallelBehaviour p = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
         //p.addSubBehaviour(new ManageRoutine(this));
         //.addSubBehaviour(new );
@@ -137,12 +143,12 @@ public class SmartHome extends Agent{
 		this.appliances = appliances;
 	}
 	
-	public int getCurTurn() {
-		return curTurn;
+	public double getExpectedConsumption() {
+		return ExpectedConsumption;
 	}
 
-	public void setCurTurn(int curTurn) {
-		this.curTurn = curTurn;
+	public void setExpectedConsumption(double expectedConsumption) {
+		ExpectedConsumption = expectedConsumption;
 	}
 
 	@Override

@@ -9,10 +9,10 @@ import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
 import jade.core.Agent;
 import jade.core.behaviours.ParallelBehaviour;
 
-public class PowerPlant extends Agent {
+public class PowerPlant extends CustomAgent {
 	
-	public enum Status {ON, OFF, MAINTENANCE};
-	private Status status;
+	public enum PPStatus {ON, OFF, MAINTENANCE};
+	private PPStatus status;
 	private double maxCapacity;
 	private double hProduction;
 	private double storedEnergy;
@@ -20,19 +20,20 @@ public class PowerPlant extends Agent {
 	
 	@Override
     public void setup() {
-        status = Status.ON;
+        status = PPStatus.ON;
         maxCapacity = (double) this.getArguments()[0];
         hProduction = (double) this.getArguments()[1];
         //addBehaviour(new ProduceEnergy(this));
         //addBehaviour(new DistributeEnergy(this));
         
+        this.log("Setup completed");
         ParallelBehaviour produceAndDistribute = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
         produceAndDistribute.addSubBehaviour(new ProduceEnergy(this));
         produceAndDistribute.addSubBehaviour(new PowerPlantDistributeEnergy(this));
         
     }
 
-	public Status getStatus() {
+	public PPStatus getStatus() {
 		return status;
 	}
 
@@ -52,7 +53,7 @@ public class PowerPlant extends Agent {
 		this.hProduction = h_production;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(PPStatus status) {
 		this.status = status;
 	}
 
