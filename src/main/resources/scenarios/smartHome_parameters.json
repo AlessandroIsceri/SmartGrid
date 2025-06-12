@@ -22,10 +22,12 @@
 	 "energyProducers":[
 	    
 	 ],
+	 "gridName": "grid1",
 	 "maxPower":500.0,
-	 "minEnergyConsumption":100.0,
-	 "maxCapacity":400.0,
-	 "storedEnergy":10.0,
+	 "battery": {
+     	"maxCapacity": 1000,
+     	"storedEnergy": 0
+   	  },
 	 "routine":{
 	    "tasks":[
 	       {
@@ -35,7 +37,7 @@
 	             "on":false,
 	             "hConsumption":200.0
 	          },
-	          "startTime":"12:00",
+	          "startTime":"00:30",
 	          "endTime":"14:00"
 	       },
 	       {
@@ -45,7 +47,7 @@
 	             "on":false,
 	             "hConsumption":120.0
 	          },
-	          "startTime":"16:00",
+	          "startTime":"3:00",
 	          "endTime":"18:00"
 	       },
 	       {
@@ -55,7 +57,7 @@
 	             "on":false,
 	             "hConsumption":120.0
 	          },
-	          "startTime":"22:00",
+	          "startTime":"6:00",
 	          "endTime":"23:00"
 	       }
 	    ]

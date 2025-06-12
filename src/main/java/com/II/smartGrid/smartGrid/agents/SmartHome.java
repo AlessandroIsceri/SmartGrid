@@ -11,10 +11,13 @@ import java.util.List;
 import com.II.smartGrid.smartGrid.agents.PowerPlant.PPStatus;
 import com.II.smartGrid.smartGrid.behaviours.EditRoutine;
 import com.II.smartGrid.smartGrid.behaviours.FollowRoutine;
+import com.II.smartGrid.smartGrid.behaviours.GenericTurnBehaviour;
 import com.II.smartGrid.smartGrid.behaviours.ManageEnergy;
 import com.II.smartGrid.smartGrid.behaviours.PowerPlantDistributeEnergy;
 import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
+import com.II.smartGrid.smartGrid.behaviours.WaitForRestoreBehaviour;
 import com.II.smartGrid.smartGrid.model.Appliance;
+import com.II.smartGrid.smartGrid.model.Battery;
 import com.II.smartGrid.smartGrid.model.EnergyProducer;
 import com.II.smartGrid.smartGrid.model.Routine;
 import com.II.smartGrid.smartGrid.model.TimeUtils;
@@ -23,17 +26,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jade.core.Agent;
 import jade.core.behaviours.ParallelBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
+import jade.lang.acl.ACLMessage;
 
 public class SmartHome extends CustomAgent{
 	private List<Appliance> appliances;
 	private List<EnergyProducer> energyProducers;
+	private Battery battery;
 	private double maxPower;
-	private double minEnergyConsumption;
-	private double maxCapacity;
-	private double storedEnergy;
 	private Routine routine;
 	private ObjectMapper mapper;
-	private double ExpectedConsumption;
+	private double expectedConsumption;
+	private String gridName;
+
+	private enum SmartHomeStatus {BLACKOUT, WORKING};
+	private SmartHomeStatus status = SmartHomeStatus.WORKING;
+	
 	
 	@Override
     public void setup() {    
@@ -50,12 +58,10 @@ public class SmartHome extends CustomAgent{
 			//energyProducers = (ArrayList<EnergyProducer>) jsonObject.get("energyProducers");
 			energyProducers = mapper.convertValue(jsonObject.get("energyProducers"), new TypeReference<List<EnergyProducer>>() { });
 			maxPower = (double) jsonObject.get("maxPower");
-			minEnergyConsumption = (double) jsonObject.get("minEnergyConsumption");
-			maxCapacity = (double) jsonObject.get("maxCapacity");
-			storedEnergy = (double) jsonObject.get("storedEnergy");
+			battery = mapper.convertValue(jsonObject.get("battery"), Battery.class);
 			routine = mapper.convertValue(jsonObject.get("routine"), Routine.class);
+			gridName = (String) jsonObject.get("gridName");
 			
-			//System.out.println(this.toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,7 +70,7 @@ public class SmartHome extends CustomAgent{
         
         for(int i = 0; i < appliances.size(); i++) {
         	if(appliances.get(i).isAlwaysOn() == true) {
-        		minEnergyConsumption = minEnergyConsumption + appliances.get(i).gethConsumption();
+        		expectedConsumption = expectedConsumption + appliances.get(i).gethConsumption() / 60 * TimeUtils.getTurnDuration();
         	}
         	
         }
@@ -73,18 +79,11 @@ public class SmartHome extends CustomAgent{
 
         
         //richiede energia se serve (non ne ha abbastanza, attaccandosi alla rete)
-        //può rilasciare energia se ne ha troppa e non gli serve
+        //puo' rilasciare energia se ne ha troppa e non gli serve
         //spegnere/accendere gli elettrodomestici in base alla routine decisa dall'owner
-        
+            
+        this.addBehaviour(new SmartHomeTurnBehaviour(this));
         addBehaviour(new EditRoutine(this));
-        addBehaviour(new FollowRoutine(this));
-        addBehaviour(new ManageEnergy(this));
-        //ParallelBehaviour p = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL);
-        //p.addSubBehaviour(new ManageRoutine(this));
-        //.addSubBehaviour(new );
-        //todo aggiorna curturn
-       	//p.
-        
     }
 
 	public List<Appliance> getAppliances() {
@@ -107,30 +106,6 @@ public class SmartHome extends CustomAgent{
 		this.maxPower = maxPower;
 	}
 
-	public double getMinEnergyConsumption() {
-		return minEnergyConsumption;
-	}
-
-	public void setMinEnergyConsumption(double minEnergyConsumption) {
-		this.minEnergyConsumption = minEnergyConsumption;
-	}
-
-	public double getMaxCapacity() {
-		return maxCapacity;
-	}
-
-	public void setMaxCapacity(double maxCapacity) {
-		this.maxCapacity = maxCapacity;
-	}
-
-	public double getStoredEnergy() {
-		return storedEnergy;
-	}
-
-	public void setStoredEnergy(double storedEnergy) {
-		this.storedEnergy = storedEnergy;
-	}
-
 	public Routine getRoutine() {
 		return routine;
 	}
@@ -144,18 +119,80 @@ public class SmartHome extends CustomAgent{
 	}
 	
 	public double getExpectedConsumption() {
-		return ExpectedConsumption;
+		return expectedConsumption;
 	}
 
 	public void setExpectedConsumption(double expectedConsumption) {
-		ExpectedConsumption = expectedConsumption;
+		this.expectedConsumption = expectedConsumption;
+	}
+
+	public Battery getBattery() {
+		return battery;
+	}
+
+	public void setBattery(Battery battery) {
+		this.battery = battery;
+	}
+	
+	public String getGridName() {
+		return gridName;
+	}
+
+	public void setGridName(String gridName) {
+		this.gridName = gridName;
 	}
 
 	@Override
 	public String toString() {
-		return "SmartHome [appliances=" + appliances + ", energyProducers=" + energyProducers + ", maxPower=" + maxPower
-				+ ", minEnergyConsumption=" + minEnergyConsumption + ", maxCapacity=" + maxCapacity + ", storedEnergy="
-				+ storedEnergy + ", routine=" + routine + ", mapper=" + mapper + ", curTurn=" + curTurn + "]";
+		return "SmartHome [appliances=" + appliances + ", energyProducers=" + energyProducers + ", battery=" + battery
+				+ ", maxPower=" + maxPower + ", routine=" + routine + ", mapper=" + mapper + ", expectedConsumption="
+				+ expectedConsumption + "]";
 	}
-	
+
+
+	public void shutDown(){
+		for(Appliance appliance: appliances){
+			appliance.setOn(false);
+		}
+        expectedConsumption = 0;
+        status = SmartHomeStatus.BLACKOUT;
+    }
+
+	public void restorePower(double energy){
+		if(battery != null){
+			double extra = battery.fillBattery(energy);
+		}
+		for(Appliance appliance: appliances){
+			if(appliance.isAlwaysOn()){
+				appliance.setOn(true);
+                expectedConsumption += appliance.gethConsumption() / 60 * TimeUtils.getTurnDuration();
+			}
+		}
+        status = SmartHomeStatus.WORKING;
+	}
+
+    public SmartHomeStatus getStatus() {
+        return status;
+    }
+
+    private class SmartHomeTurnBehaviour extends GenericTurnBehaviour{
+
+        private SmartHomeTurnBehaviour(SmartHome smartHome){
+            super(smartHome);
+        }
+
+        @Override
+        protected void executeTurn(ACLMessage replyMsg, SequentialBehaviour sequentialTurnBehaviour) {
+            log("" + ((SmartHome) myAgent).getStatus());
+            if(((SmartHome) myAgent).getStatus() == SmartHomeStatus.WORKING){
+                sequentialTurnBehaviour.addSubBehaviour(new FollowRoutine((SmartHome) myAgent));
+                sequentialTurnBehaviour.addSubBehaviour(new ManageEnergy((SmartHome) myAgent));
+            }
+            else if(((SmartHome) myAgent).getStatus() == SmartHomeStatus.BLACKOUT){
+				log("else (status blackout)");
+                sequentialTurnBehaviour.addSubBehaviour(new WaitForRestoreBehaviour((SmartHome) myAgent));
+            }
+            myAgent.addBehaviour(sequentialTurnBehaviour);
+        }
+    }
 }

@@ -45,13 +45,14 @@ public class StartNewTurn extends CyclicBehaviour {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        String content = "{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn()
+					      + ", \"weather\": "+ ((SimulationSettings) myAgent).getCurWeatherStatus().ordinal() + "}";
 		List<String> allAgentNames = ((SimulationSettings) myAgent).getAgentNames();
 		for(int i = 0; i < allAgentNames.size(); i++) {
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.setConversationId("turn-" + allAgentNames.get(i));
 			msg.addReceiver(new AID(allAgentNames.get(i), AID.ISLOCALNAME));
-			msg.setContent("{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn()
-					      + ", \"weather\": "+ ((SimulationSettings) myAgent).getCurWeatherStatus().ordinal() + "}");
+			msg.setContent(content);
 			myAgent.send(msg);
 		}
 	}

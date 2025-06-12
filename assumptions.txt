@@ -3,3 +3,4 @@
 - si worka a turni x gestire i consumi, in ogni turno possono essere scambiati infiniti messaggi
 - se si accende un elettrodomestico per un certo numero di ore, non si può spegnere
 - per ora si assume che non si perdono messaggi
+- se la grid riceve più energia di quella che può contenere, l'energia in più viene persa (dovremmo contarla come consumo)
