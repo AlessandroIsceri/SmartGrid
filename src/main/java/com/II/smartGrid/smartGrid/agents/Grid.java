@@ -1,12 +1,17 @@
-package com.II.smartGrid.smartGrid.agents;
+package com.ii.smartgrid.smartgrid.agents;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.PowerPlant.PPStatus;
-import com.II.smartGrid.smartGrid.behaviours.DistributeEnergy;
+import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
+import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.DistributeEnergy;
+import com.ii.smartgrid.smartgrid.behaviours.grid.ManageBlackoutBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.smarthome.FollowRoutine;
 
 import jade.core.Agent;
+import jade.core.behaviours.SequentialBehaviour;
+import jade.lang.acl.ACLMessage;
 
 public class Grid extends CustomAgent{
 
@@ -43,6 +48,7 @@ public class Grid extends CustomAgent{
         //behaviour per comunicare con le case
         //behaviour per comunicare con le powerplant
         addBehaviour(new DistributeEnergy(this));
+        addBehaviour(new ManageBlackoutBehaviour(this));
         
         this.log("Setup completed");        
 	}
@@ -106,6 +112,10 @@ public class Grid extends CustomAgent{
         return false;
 	}
 
+	public boolean containsSmartHomeWithoutPower(String smartHomeName){
+		return smartHomesWithoutPower.contains(smartHomeName);
+	}
+
 	public void addSmartHomeWithoutPower(String smartHomeName){
 		smartHomesWithoutPower.add(smartHomeName);
 	}
@@ -113,5 +123,18 @@ public class Grid extends CustomAgent{
 	public void removeSmartHomeWithoutPower(String smartHomeName){
 		smartHomesWithoutPower.remove(smartHomeName);
 	}
+
+    // private class GridBehaviour extends GenericTurnBehaviour{
+
+    //     public GridBehaviour(Grid grid) {
+    //         super(grid);
+    //     }
+
+    //     @Override
+    //     protected void executeTurn(ACLMessage replyMessage, SequentialBehaviour sequentialTurnBehaviour) {
+    //         sequentialTurnBehaviour.addSubBehaviour(new));
+    //     }
+
+    // }
 
 }

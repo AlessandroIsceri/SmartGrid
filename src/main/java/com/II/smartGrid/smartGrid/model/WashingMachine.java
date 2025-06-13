@@ -1,4 +1,4 @@
-package com.II.smartGrid.smartGrid.model;
+package com.ii.smartgrid.smartgrid.model;
 
 public class WashingMachine extends Appliance {
 	

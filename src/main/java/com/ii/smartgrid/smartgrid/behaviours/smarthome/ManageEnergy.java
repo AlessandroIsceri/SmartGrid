@@ -1,13 +1,13 @@
-package com.II.smartGrid.smartGrid.behaviours;
+package com.ii.smartgrid.smartgrid.behaviours.smarthome;
 
 import java.util.HashMap;
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.SmartHome;
-import com.II.smartGrid.smartGrid.model.Battery;
-import com.II.smartGrid.smartGrid.model.EnergyProducer;
-import com.II.smartGrid.smartGrid.model.TimeUtils;
-import com.II.smartGrid.smartGrid.tools.SimulationSettings.WeatherStatus;
+import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.model.EnergyProducer;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
+import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,12 +58,13 @@ public class ManageEnergy extends Behaviour{
             //hproduction / 60 * turnDuration)
 			expectedProduction += energyProducers.get(i).getHProduction(curWeatherStatus, hour) / 60 * TimeUtils.getTurnDuration();
 		}
+        ((SmartHome) myAgent).log("PV: expectedProduction: " + expectedProduction);
 		
 		Battery battery = ((SmartHome) myAgent).getBattery();
 		double availableEnergy = expectedProduction;
 
 		if(battery != null){
-			availableEnergy += battery.getStoredEnergy();;
+			availableEnergy += battery.getStoredEnergy();
 		}
 
         if(availableEnergy > expectedConsumption) {
@@ -73,21 +74,23 @@ public class ManageEnergy extends Behaviour{
 				if(extraEnergy > 0) {
 					// Release extra energy into the grid
 					sendReleaseEnergyMsg(extraEnergy);
-				}
-			}else {
+				} else {
+                    state = Status.FINISHED;
+                }
+			} else {
 				// Battery not available -> release extra energy into the grid
 				sendReleaseEnergyMsg(expectedConsumption - availableEnergy);
 			}
-			
-		}else {
+		} else {
 			// Request energy from the grid
 			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
             msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
             msg.setContent("{ \"operation\" : \"consume\", \"energy\": " + (expectedConsumption - availableEnergy) + "}");
             myAgent.send(msg);
+            ((SmartHome) myAgent).log("MESSAGE info:  " + msg.toString());
+            state = Status.RECEIVE_ANSWER;
 		}
-        state = Status.RECEIVE_ANSWER;
-        ((SmartHome) myAgent).log("MESSAGE SENT");
+        ((SmartHome) myAgent).log("ManageEnergy FINISHED");
         block();
     }
 	
@@ -96,6 +99,8 @@ public class ManageEnergy extends Behaviour{
 		msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
 		msg.setContent("{ \"operation\" : \"release\", \"energy\": " + energy + "}");
 		myAgent.send(msg);
+        ((SmartHome) myAgent).log("MESSAGE info:  " + msg.toString());
+        state = Status.RECEIVE_ANSWER;
 	}
 
 

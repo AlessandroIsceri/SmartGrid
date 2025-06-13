@@ -1,4 +1,4 @@
-package com.II.smartGrid.smartGrid.agents;
+package com.ii.smartgrid.smartgrid.agents;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,16 +7,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.PowerPlant.PPStatus;
-import com.II.smartGrid.smartGrid.behaviours.CheckOwnerMessages;
-import com.II.smartGrid.smartGrid.behaviours.PowerPlantDistributeEnergy;
-import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
-import com.II.smartGrid.smartGrid.model.Appliance;
-import com.II.smartGrid.smartGrid.model.EnergyProducer;
-import com.II.smartGrid.smartGrid.model.Routine;
-import com.II.smartGrid.smartGrid.model.Task;
-import com.II.smartGrid.smartGrid.model.Television;
-import com.II.smartGrid.smartGrid.model.WashingMachine;
+import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
+import com.ii.smartgrid.smartgrid.behaviours.owner.CheckOwnerMessages;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.PowerPlantDistributeEnergy;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.ProduceEnergy;
+import com.ii.smartgrid.smartgrid.model.Appliance;
+import com.ii.smartgrid.smartgrid.model.EnergyProducer;
+import com.ii.smartgrid.smartgrid.model.Routine;
+import com.ii.smartgrid.smartgrid.model.Task;
+import com.ii.smartgrid.smartgrid.model.Television;
+import com.ii.smartgrid.smartgrid.model.WashingMachine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;

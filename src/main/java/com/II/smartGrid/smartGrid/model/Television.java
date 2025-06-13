@@ -1,4 +1,4 @@
-package com.II.smartGrid.smartGrid.model;
+package com.ii.smartgrid.smartgrid.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

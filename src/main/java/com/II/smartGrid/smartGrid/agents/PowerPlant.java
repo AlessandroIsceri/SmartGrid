@@ -1,10 +1,9 @@
-package com.II.smartGrid.smartGrid.agents;
-
-import com.II.smartGrid.smartGrid.behaviours.PowerPlantDistributeEnergy;
+package com.ii.smartgrid.smartgrid.agents;
 
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.behaviours.ProduceEnergy;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.PowerPlantDistributeEnergy;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.ProduceEnergy;
 
 import jade.core.Agent;
 import jade.core.behaviours.ParallelBehaviour;

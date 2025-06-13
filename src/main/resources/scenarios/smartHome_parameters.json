@@ -19,8 +19,12 @@
 	       "hConsumption":250.0
 	    }
 	 ],
-	 "energyProducers":[
-	    
+	 "energyProducers":[{
+            "type":"PhotovoltaicSystem",
+            "hProductionSunny": 200,
+            "hProductionRainy": 10,
+            "hProductionCloudy": 60
+        }
 	 ],
 	 "gridName": "grid1",
 	 "maxPower":500.0,
@@ -38,7 +42,7 @@
 	             "hConsumption":200.0
 	          },
 	          "startTime":"00:30",
-	          "endTime":"14:00"
+	          "endTime":"02:00"
 	       },
 	       {
 	          "appliance":{
@@ -47,8 +51,8 @@
 	             "on":false,
 	             "hConsumption":120.0
 	          },
-	          "startTime":"3:00",
-	          "endTime":"18:00"
+	          "startTime":"00:30",
+	          "endTime":"02:00"
 	       },
 	       {
 	          "appliance":{
@@ -57,8 +61,8 @@
 	             "on":false,
 	             "hConsumption":120.0
 	          },
-	          "startTime":"6:00",
-	          "endTime":"23:00"
+	          "startTime":"06:00",
+	          "endTime":"06:00"
 	       }
 	    ]
 	 }

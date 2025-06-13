@@ -1,4 +1,4 @@
-package com.II.smartGrid.smartGrid.tools;
+package com.ii.smartgrid.smartgrid.utils;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class StartNewTurn extends CyclicBehaviour {
 	
 	private void sendMessages() {
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

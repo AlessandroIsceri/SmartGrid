@@ -1,15 +1,15 @@
-package com.II.smartGrid.smartGrid.behaviours;
+package com.ii.smartgrid.smartgrid.behaviours.smarthome;
 
 import java.util.HashMap;
 import java.util.List;
 
-import com.II.smartGrid.smartGrid.agents.SmartHome;
-import com.II.smartGrid.smartGrid.model.Appliance;
-import com.II.smartGrid.smartGrid.model.Routine;
-import com.II.smartGrid.smartGrid.model.Task;
-import com.II.smartGrid.smartGrid.model.TimeUtils;
-import com.II.smartGrid.smartGrid.tools.SimulationSettings;
-import com.II.smartGrid.smartGrid.tools.SimulationSettings.WeatherStatus;
+import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.model.Appliance;
+import com.ii.smartgrid.smartgrid.model.Routine;
+import com.ii.smartgrid.smartgrid.model.Task;
+import com.ii.smartgrid.smartgrid.utils.SimulationSettings;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
+import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
