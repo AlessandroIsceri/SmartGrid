@@ -1,7 +1,0 @@
-- non ci possono essere due device IDENTICI nella stessa casa, altrimenti l'equals di appliance da true, e 
-	rischia di confondere gli oggetti nella routine
-- si worka a turni x gestire i consumi, in ogni turno possono essere scambiati infiniti messaggi
-- se si accende un elettrodomestico per un certo numero di ore, non si può spegnere
-- per ora si assume che non si perdono messaggi
-- se la grid riceve più energia di quella che può contenere, l'energia in più viene persa (dovremmo contarla come consumo)
-- se una casa è in blackout e ha i pannelli e la batteria, la ricarica per provare a ripartire, se non ce l'ha, butta in rete ciò che produce x aiutare la grid
