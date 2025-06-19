@@ -4,7 +4,6 @@ import java.beans.Customizer;
 import java.util.HashMap;
 import java.util.List;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
@@ -15,13 +14,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jade.core.AID;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class WaitForRestoreBehaviour extends OneShotBehaviour{
+public class WaitForRestoreBehaviour extends Behaviour{
 
+    private enum Status {UPDATING_INTERNAL_ENERGY, RECEIVING_MSGS, FINISHED}
+    private Status state = Status.UPDATING_INTERNAL_ENERGY;
+
+    
     public WaitForRestoreBehaviour(SmartHome smartHome){
         super(smartHome);
     }
@@ -29,12 +33,25 @@ public class WaitForRestoreBehaviour extends OneShotBehaviour{
     @Override
     public void action() {
 
+        switch (state) {
+            case UPDATING_INTERNAL_ENERGY:
+                updateInternalEnergy();
+                break;
+            case RECEIVING_MSGS:
+                receiveMsgs();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void updateInternalEnergy(){
         List<EnergyProducer> energyProducers = ((SmartHome) myAgent).getEnergyProducers();
 		
 		//0:15 * 10 = 150 / 60 = 2
 		int hour = (TimeUtils.getTurnDuration() * ((SmartHome) myAgent).getCurTurn()) / 60;
 		double expectedProduction = 0;
-		WeatherStatus curWeatherStatus = ((SmartHome) myAgent).getCurWeatherStatus();
+		WeatherStatus curWeatherStatus = ((SmartHome) myAgent).getCurWeather();
 		for(int i = 0; i < energyProducers.size(); i++) {
             //hproduction / 60 * turnDuration)
 			expectedProduction += energyProducers.get(i).getHProduction(curWeatherStatus, hour) / 60 * TimeUtils.getTurnDuration();
@@ -51,26 +68,40 @@ public class WaitForRestoreBehaviour extends OneShotBehaviour{
             if(capacity * 0.5 < storedEnergy + expectedProduction){
                 ((SmartHome) myAgent).log("Ho almeno metà batteria piena, provo a ripartire");
                 ((SmartHome) myAgent).restorePower(expectedProduction);
+                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
+                msg.setConversationId("blackout-" + myAgent.getLocalName());
+                msg.setContent("{\"blackout\":false}");
+                myAgent.send(msg);
             }else{
                 battery.fillBattery(expectedProduction);
+                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
+                msg.setConversationId("blackout-" + myAgent.getLocalName());
+                msg.setContent("{\"blackout\":true}");
+                myAgent.send(msg);
             }
 		}else{
             ((SmartHome) myAgent).log("Non ho una batteria, ma ho dei pannelli, rilascio l'energia in rete");
-            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
-            msg.setContent("{ \"operation\" : \"release\", \"energy\": " + expectedProduction + "}");
+            msg.setConversationId("release-"+myAgent.getLocalName());
+            msg.setContent("{ \"operation\" : \"release\", \"energy\": " + expectedProduction + ", \"blackout\":true}");
             myAgent.send(msg);
         }
+        state = Status.RECEIVING_MSGS;
+    }
 
+    private void receiveMsgs() {
         MessageTemplate mtOR = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.AGREE), 
                                                   MessageTemplate.MatchPerformative(ACLMessage.REFUSE));
         MessageTemplate mtAND = MessageTemplate.and(MessageTemplate.MatchConversationId("restore-" + myAgent.getLocalName()),
 												    MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         MessageTemplate mt = MessageTemplate.or(mtOR, mtAND);
-        ((SmartHome) myAgent).log("WAIT FOR RESTORE INIZIATA");
 		ACLMessage receivedMsg = myAgent.receive(mt);
-        ((SmartHome) myAgent).log("WAIT FOR RESTORE: HO RICEVUTO QUALCOSA: " + receivedMsg);
 		if (receivedMsg != null) {
+            ((SmartHome) myAgent).log("WAIT FOR RESTORE: HO RICEVUTO QUALCOSA: " + receivedMsg);
+           
             if(receivedMsg.getPerformative() == ACLMessage.INFORM && receivedMsg.getConversationId().equals("restore-" + myAgent.getLocalName())){
                 String receivedContent = receivedMsg.getContent();
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -80,17 +111,28 @@ public class WaitForRestoreBehaviour extends OneShotBehaviour{
                 try {
                     jsonObject = objectMapper.readValue(receivedContent, typeRef);
                     double energy = jsonObject.get("energy");
-                    ((SmartHome) myAgent).restorePower(energy);
+                    if(energy >= 0){
+                        ((SmartHome) myAgent).restorePower(energy);
+                    }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
             }else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
-                ((SmartHome) myAgent).log("Energy released");
+                ((SmartHome) myAgent).log("Energy consumed");
             }else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
-                ((SmartHome) myAgent).log("Energy lost");
+                ((SmartHome) myAgent).log("Energy not consumed");
             }
-		}
-        ((SmartHome) myAgent).log("WAIT FOR RESTORE FINITA");
+            ((SmartHome) myAgent).log("WAIT FOR RESTORE FINITA");
+            state = Status.FINISHED;
+		} else {
+            block();
+        }
+        
+    }
+
+    @Override
+    public boolean done() {
+        return state == Status.FINISHED;
     }
 
 	

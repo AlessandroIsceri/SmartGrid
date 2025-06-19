@@ -51,7 +51,7 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 					ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.AGREE);
 					myAgent.send(replyMsg);
 					
-					List<String> smartHomesNames = ((Owner) myAgent).getSmartHomesNames();
+					List<String> smartHomesNames = ((Owner) myAgent).getSmartHomeNames();
 					for(int i = 0; i < smartHomesNames.size(); i++) {
 						String curName = smartHomesNames.get(i);
 						if(curName.equals(homeID)) {

@@ -18,6 +18,7 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.tools.sniffer.Message;
 
 public class ManageEnergy extends Behaviour{
 	
@@ -50,10 +51,9 @@ public class ManageEnergy extends Behaviour{
 		
 		List<EnergyProducer> energyProducers = ((SmartHome) myAgent).getEnergyProducers();
 		
-		//0:15 * 10 = 150 / 60 = 2
-		int hour = (TimeUtils.getTurnDuration() * ((SmartHome) myAgent).getCurTurn()) / 60;
+		int hour = TimeUtils.getHourFromTurn(((SmartHome) myAgent).getCurTurn());
 		double expectedProduction = 0;
-		WeatherStatus curWeatherStatus = ((SmartHome) myAgent).getCurWeatherStatus();
+		WeatherStatus curWeatherStatus = ((SmartHome) myAgent).getCurWeather();
 		for(int i = 0; i < energyProducers.size(); i++) {
             //hproduction / 60 * turnDuration)
 			expectedProduction += energyProducers.get(i).getHProduction(curWeatherStatus, hour) / 60 * TimeUtils.getTurnDuration();
@@ -70,16 +70,12 @@ public class ManageEnergy extends Behaviour{
         if(availableEnergy > expectedConsumption) {
 			// Store extra energy into home's battery (if available)
 			if(battery != null){
-				double extraEnergy = battery.fillBattery(expectedConsumption - availableEnergy);
-				if(extraEnergy > 0) {
-					// Release extra energy into the grid
-					sendReleaseEnergyMsg(extraEnergy);
-				} else {
-                    state = Status.FINISHED;
-                }
+				double extraEnergy = battery.fillBattery(availableEnergy - expectedConsumption);
+                // Release extra energy into the grid
+                sendReleaseEnergyMsg(extraEnergy);
 			} else {
 				// Battery not available -> release extra energy into the grid
-				sendReleaseEnergyMsg(expectedConsumption - availableEnergy);
+				sendReleaseEnergyMsg(availableEnergy - expectedConsumption);
 			}
 		} else {
 			// Request energy from the grid
@@ -87,7 +83,7 @@ public class ManageEnergy extends Behaviour{
             msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
             msg.setContent("{ \"operation\" : \"consume\", \"energy\": " + (expectedConsumption - availableEnergy) + "}");
             myAgent.send(msg);
-            ((SmartHome) myAgent).log("MESSAGE info:  " + msg.toString());
+            // ((SmartHome) myAgent).log("MESSAGE info:  " + msg.toString());
             state = Status.RECEIVE_ANSWER;
 		}
         ((SmartHome) myAgent).log("ManageEnergy FINISHED");
@@ -95,16 +91,18 @@ public class ManageEnergy extends Behaviour{
     }
 	
 	private void sendReleaseEnergyMsg(double energy) {
-		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
+        msg.setConversationId("release-"+myAgent.getLocalName());
 		msg.setContent("{ \"operation\" : \"release\", \"energy\": " + energy + "}");
 		myAgent.send(msg);
-        ((SmartHome) myAgent).log("MESSAGE info:  " + msg.toString());
-        state = Status.RECEIVE_ANSWER;
+        state = Status.FINISHED;
 	}
 
 
     private void receive_answer(){
+        MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.AGREE), 
+                                                MessageTemplate.MatchPerformative(ACLMessage.REFUSE));
         ACLMessage receivedMsg = myAgent.receive();
 		if (receivedMsg != null) {
             ((SmartHome) myAgent).log("ANSWER RECEIVED");
@@ -119,8 +117,6 @@ public class ManageEnergy extends Behaviour{
                     double energy = (double) jsonObject.get("energy");
                     if(operation.equals("consume")){
                         ((SmartHome) myAgent).log("Energy consumed");
-                    }else if(operation.equals("release")){
-                        ((SmartHome) myAgent).log("Energy released");
                     }else{
                         ((SmartHome) myAgent).log("Error: invalid operation");
                     }
@@ -128,19 +124,18 @@ public class ManageEnergy extends Behaviour{
                     e.printStackTrace();
                 }   
             } else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
-                //TODO: VAI IN BLACKOUT;
+                //possible blackout 
                 try {
                     jsonObject = objectMapper.readValue(receivedContent, typeRef);
                     String operation = (String) jsonObject.get("operation");
                     double energy = (double) jsonObject.get("energy");
                     if(operation.equals("consume")){
                         ((SmartHome) myAgent).log("ATTENTION: Blackout soon");
-                        ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.INFORM);
-                        replyMsg.setContent("{\"blackout\": true}");
-                        myAgent.send(replyMsg);
+                        // ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.INFORM);
+                        // replyMsg.setConversationId("blackout-" + myAgent.getLocalName());
+                        // replyMsg.setContent("{\"energy\": " + energy + "}");
+                        // myAgent.send(replyMsg);
                         ((SmartHome) myAgent).shutDown();
-                    }else if(operation.equals("release")){
-                        ((SmartHome) myAgent).log("Energy lost (grid and batteries (if present) are full)");
                     }else{
                         ((SmartHome) myAgent).log("Error: invalid operation");
                     }

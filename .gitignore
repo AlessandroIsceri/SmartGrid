@@ -51,3 +51,7 @@ local.properties
 
 # Locally stored "Eclipse launch configurations"
 *.launch
+
+todo.txt
+assumptions.txt
+legacy/

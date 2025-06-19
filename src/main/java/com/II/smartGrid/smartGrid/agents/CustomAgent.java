@@ -2,13 +2,15 @@ package com.ii.smartgrid.smartgrid.agents;
 
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
+import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WindSpeedStatus;
 
 import jade.core.Agent;
 
 public abstract class CustomAgent extends Agent{
 	protected int curTurn;
-	protected WeatherStatus curWeatherStatus;
-	
+	protected WeatherStatus curWeather;
+	protected WindSpeedStatus curWindSpeed;
+
 	public void log(String message){
 		//1 - day 1 - 00:15 - HOME1 --> messaggio
 		//24:00 = 1440 minutes
@@ -26,12 +28,20 @@ public abstract class CustomAgent extends Agent{
 		this.curTurn = curTurn;
 	}
 
-	public WeatherStatus getCurWeatherStatus() {
-		return curWeatherStatus;
+	public WeatherStatus getCurWeather() {
+		return curWeather;
 	}
 
-	public void setCurWeatherStatus(WeatherStatus curWeatherStatus) {
-		this.curWeatherStatus = curWeatherStatus;
+	public void setCurWeather(WeatherStatus curWeatherStatus) {
+		this.curWeather = curWeatherStatus;
 	}
+
+    public WindSpeedStatus getCurWindSpeed() {
+        return curWindSpeed;
+    }
+
+    public void setCurWindSpeed(WindSpeedStatus curWindSpeed) {
+        this.curWindSpeed = curWindSpeed;
+    }
 	
 }

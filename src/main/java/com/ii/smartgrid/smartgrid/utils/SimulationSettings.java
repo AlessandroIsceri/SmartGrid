@@ -17,7 +17,7 @@ public class SimulationSettings extends CustomAgent{
 	private int nTurns;
 	private List<String> agentNames;
 	public enum WeatherStatus {SUNNY, RAINY, CLOUDY};
-	private WeatherStatus curWeatherStatus;
+    public enum WindSpeedStatus {CALM, MODERATE_BREEZE, GALE, HURRICANE};
 	private int weatherTurnDuration;
 
 	@Override
@@ -32,7 +32,8 @@ public class SimulationSettings extends CustomAgent{
 		}
         String weatherDuration = (String) args[args.length - 1];
         weatherTurnDuration = TimeUtils.convertTimeToTurn(weatherDuration);
-        curWeatherStatus = WeatherStatus.SUNNY;
+        curWeather = WeatherStatus.SUNNY;
+        curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
         
         this.log("Setup completed");
         addBehaviour(new StartNewTurn(this));  
@@ -49,22 +50,56 @@ public class SimulationSettings extends CustomAgent{
 	public int getCurTurn() {
 		return curTurn;
 	}
-	
-	public WeatherStatus getCurWeatherStatus() {
-		return curWeatherStatus;
-	}
 
-	public void setCurWeatherStatus(WeatherStatus curWeatherStatus) {
-		this.curWeatherStatus = curWeatherStatus;
-	}
-
-	public void updateTurn() {
+    public void updateTurn() {
 		if(((this.curTurn + 1) % weatherTurnDuration) == 0) {
 			updateWeather();
-			this.log("Weather updated: " + this.curWeatherStatus);
+            updateWindSpeed();
+			this.log("Weather updated: " + this.curWeather);
 		}
         this.curTurn++;
 	}
+
+    private void updateWindSpeed() {
+        double randomNum = Math.random(); 
+		// Current state	    CALM (C)		MODERATE_BREEZE (M)		GALE (G)    HURRICANE(H)
+		// CALM (S)		            0.6	        0.4	                    0.0	        0.0
+		// MODERATE_BREEZE (C)		0.2	        0.5	                    0.3	        0.0
+		// GALE (R)		            0.0			0.3				        0.4         0.3
+        // HURRICANE (H)            0.0         0.1                     0.4 	    0.5
+		// TODO: CERCA DATI AFFIDABILI
+		if(curWindSpeed == WindSpeedStatus.CALM) {
+			if(randomNum < 0.6) {
+				this.curWindSpeed = WindSpeedStatus.CALM;
+			}else{
+				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
+			}
+		}else if(curWindSpeed == WindSpeedStatus.MODERATE_BREEZE) {
+			if(randomNum < 0.5) {
+				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
+			}else if(randomNum < 0.8){
+				this.curWindSpeed = WindSpeedStatus.GALE;
+			}else{
+				this.curWindSpeed = WindSpeedStatus.CALM;
+			}
+		}else if(curWindSpeed == WindSpeedStatus.GALE){
+			if(randomNum < 0.4) {
+				this.curWindSpeed = WindSpeedStatus.GALE;
+			}else if(randomNum < 0.7){
+				this.curWindSpeed = WindSpeedStatus.HURRICANE;
+			}else {
+				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
+			}
+		}else{
+            if(randomNum < 0.5) {
+				this.curWindSpeed = WindSpeedStatus.HURRICANE;
+			}else if(randomNum < 0.9){
+				this.curWindSpeed = WindSpeedStatus.GALE;
+			}else {
+				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
+			}
+        }
+    }
 
     private void updateWeather(){
 		double randomNum = Math.random(); 
@@ -73,31 +108,32 @@ public class SimulationSettings extends CustomAgent{
 		// Sunny (S)		0.7				0.2				0.1
 		// Cloudy (C)		0.3				0.5				0.2
 		// Rainy (R)		0.1				0.4				0.5
+		// TODO: CERCA DATI AFFIDABILI
+
 		
-		
-		if(curWeatherStatus == WeatherStatus.SUNNY) {
+		if(curWeather == WeatherStatus.SUNNY) {
 			if(randomNum < 0.7) {
-				this.curWeatherStatus = WeatherStatus.SUNNY;
+				this.curWeather = WeatherStatus.SUNNY;
 			}else if(randomNum < 0.9){
-				this.curWeatherStatus = WeatherStatus.CLOUDY;
+				this.curWeather = WeatherStatus.CLOUDY;
 			}else {
-				this.curWeatherStatus = WeatherStatus.RAINY;
+				this.curWeather = WeatherStatus.RAINY;
 			}
-		}else if(curWeatherStatus == WeatherStatus.CLOUDY) {
+		}else if(curWeather == WeatherStatus.CLOUDY) {
 			if(randomNum < 0.5) {
-				this.curWeatherStatus = WeatherStatus.CLOUDY;
+				this.curWeather = WeatherStatus.CLOUDY;
 			}else if(randomNum < 0.8){
-				this.curWeatherStatus = WeatherStatus.SUNNY;
+				this.curWeather = WeatherStatus.SUNNY;
 			}else {
-				this.curWeatherStatus = WeatherStatus.RAINY;
+				this.curWeather = WeatherStatus.RAINY;
 			}
 		}else {
 			if(randomNum < 0.5) {
-				this.curWeatherStatus = WeatherStatus.RAINY;
+				this.curWeather = WeatherStatus.RAINY;
 			}else if(randomNum < 0.9){
-				this.curWeatherStatus = WeatherStatus.CLOUDY;
+				this.curWeather = WeatherStatus.CLOUDY;
 			}else {
-				this.curWeatherStatus = WeatherStatus.SUNNY;
+				this.curWeather = WeatherStatus.SUNNY;
 			}
 		}
     }

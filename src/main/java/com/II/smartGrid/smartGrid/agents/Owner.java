@@ -9,8 +9,6 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
 import com.ii.smartgrid.smartgrid.behaviours.owner.CheckOwnerMessages;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.PowerPlantDistributeEnergy;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.ProduceEnergy;
 import com.ii.smartgrid.smartgrid.model.Appliance;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
 import com.ii.smartgrid.smartgrid.model.Routine;
@@ -31,15 +29,15 @@ import jade.domain.FIPAAgentManagement.*;
 
 public class Owner extends CustomAgent{
 	
-	private List<String> smartHomesNames;
+	private List<String> smartHomeNames;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Override
     public void setup() {
-		smartHomesNames = new ArrayList<String>();
+		smartHomeNames = new ArrayList<String>();
 		Object[] args = this.getArguments();
 		for(int i = 0; i < args.length; i++) {
-			smartHomesNames.add((String) args[i]);
+			smartHomeNames.add((String) args[i]);
 		}		
         /*
          * setta una routine del tipo:
@@ -52,12 +50,12 @@ public class Owner extends CustomAgent{
 		
     }
 
-	public List<String> getSmartHomesNames() {
-		return smartHomesNames;
+	public List<String> getSmartHomeNames() {
+		return smartHomeNames;
 	}
 
 	@Override
 	public String toString() {
-		return "Owner [smartHomesNames=" + smartHomesNames + ", objectMapper=" + objectMapper + "]";
+		return "Owner [smartHomeNames=" + smartHomeNames + ", objectMapper=" + objectMapper + "]";
 	}
 }

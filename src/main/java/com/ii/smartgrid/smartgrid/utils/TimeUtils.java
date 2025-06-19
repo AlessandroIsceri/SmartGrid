@@ -68,5 +68,11 @@ public class TimeUtils {
 		return formattedHours + ":" + formattedMinutes;
 	}
 	
+    public static int getHourFromTurn(int turn){
+        initTurnDuration();
+		int turnInMinutes = turn * turnDuration;
+		int hours = turnInMinutes / 60;
+        return hours;
+    }
 	
 }

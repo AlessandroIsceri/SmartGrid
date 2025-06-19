@@ -10,8 +10,6 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.PowerPlantDistributeEnergy;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.ProduceEnergy;
 import com.ii.smartgrid.smartgrid.behaviours.smarthome.EditRoutine;
 import com.ii.smartgrid.smartgrid.behaviours.smarthome.FollowRoutine;
 import com.ii.smartgrid.smartgrid.behaviours.smarthome.ManageEnergy;
@@ -183,7 +181,7 @@ public class SmartHome extends CustomAgent{
 
         @Override
         protected void executeTurn(ACLMessage replyMsg, SequentialBehaviour sequentialTurnBehaviour) {
-            log("" + ((SmartHome) myAgent).getStatus());
+            log("home status: " + ((SmartHome) myAgent).getStatus());
             if(((SmartHome) myAgent).getStatus() == SmartHomeStatus.WORKING){
                 sequentialTurnBehaviour.addSubBehaviour(new FollowRoutine((SmartHome) myAgent));
                 sequentialTurnBehaviour.addSubBehaviour(new ManageEnergy((SmartHome) myAgent));

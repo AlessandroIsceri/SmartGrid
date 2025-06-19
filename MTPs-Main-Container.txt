@@ -1,1 +1,1 @@
-http://LAPTOP-NIU1NTHH.mshome.net:7778/acc
+http://host.docker.internal:7778/acc

@@ -31,7 +31,7 @@ public class FollowRoutine extends OneShotBehaviour {
 		List<Task> tasks = routine.getTasks();
 		
 		int curTurn = ((SmartHome) myAgent).getCurTurn();
-		WeatherStatus weather = ((SmartHome) myAgent).getCurWeatherStatus();
+		WeatherStatus weather = ((SmartHome) myAgent).getCurWeather();
 		double expectedConsumption = ((SmartHome) myAgent).getExpectedConsumption();
 		int turnDuration = TimeUtils.getTurnDuration();
 		

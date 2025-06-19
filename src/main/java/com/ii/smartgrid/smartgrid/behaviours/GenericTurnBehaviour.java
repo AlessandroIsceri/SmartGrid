@@ -6,6 +6,7 @@ import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 //import com.II.smartgrid.smartgrid.agents.SendEndTurnMsg;
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
+import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WindSpeedStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +30,6 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 												 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 		ACLMessage receivedMsg = myAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("INIT TURN MSG RECEIVED");
 			String receivedContent = receivedMsg.getContent();
 			TypeReference<HashMap<String, Integer>> typeRef = new TypeReference<HashMap<String, Integer>>() {};
 			HashMap<String, Integer> jsonObject;
@@ -38,8 +38,10 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 				int curTurn = jsonObject.get("curTurn");
 				((CustomAgent) myAgent).setCurTurn(curTurn);
 				int weather = jsonObject.get("weather");
-				((CustomAgent) myAgent).setCurWeatherStatus(WeatherStatus.values()[weather]);
-                ((CustomAgent) myAgent).log("Received weather: " + ((CustomAgent) myAgent).getCurWeatherStatus());
+				((CustomAgent) myAgent).setCurWeather(WeatherStatus.values()[weather]);
+                int windSpeed = jsonObject.get("windSpeed");
+				((CustomAgent) myAgent).setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
+
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
