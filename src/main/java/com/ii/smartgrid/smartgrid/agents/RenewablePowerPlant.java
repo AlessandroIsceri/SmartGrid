@@ -21,7 +21,7 @@ public abstract class RenewablePowerPlant extends PowerPlant{
         }
 
         @Override
-        protected void executeTurn(ACLMessage replyMessage, SequentialBehaviour sequentialTurnBehaviour) {
+        protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             sequentialTurnBehaviour.addSubBehaviour(new SendProducedEnergyBehaviour((RenewablePowerPlant) myAgent));    
         }
     

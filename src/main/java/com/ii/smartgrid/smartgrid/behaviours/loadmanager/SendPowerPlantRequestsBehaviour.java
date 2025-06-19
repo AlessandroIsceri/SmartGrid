@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.LoadManager;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -53,7 +54,7 @@ public class SendPowerPlantRequestsBehaviour extends Behaviour{
                     HashMap<String, Double> jsonObject;
                     try {
                         jsonObject = objectMapper.readValue(receivedMessage.getContent(), typeRef);
-                        double receivedEnergy = jsonObject.get("energy");
+                        double receivedEnergy = jsonObject.get(MessageUtil.GIVEN_ENERGY);
                         ((LoadManager) myAgent).removeExpectedConsumption(receivedEnergy);
                     } catch (JsonMappingException e) {
                         // TODO Auto-generated catch block
@@ -62,7 +63,7 @@ public class SendPowerPlantRequestsBehaviour extends Behaviour{
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                }else if(receivedMessage.getPerformative() == ACLMessage.REFUSE){
+                } else if(receivedMessage.getPerformative() == ACLMessage.REFUSE){
                     ((LoadManager) myAgent).log(receivedMessage.getSender().getLocalName() + " refused to send energy");
                 }
                 
@@ -85,11 +86,10 @@ public class SendPowerPlantRequestsBehaviour extends Behaviour{
         }
     }
 
-    private void sendRequestToPP(String ppName, double expectedConsumption){
-        ACLMessage requestEnergyMessage = new ACLMessage(ACLMessage.REQUEST);
-        requestEnergyMessage.setContent("{\"requestedEnergy\": " + expectedConsumption + "}");
-        requestEnergyMessage.addReceiver(new AID(ppName, AID.ISLOCALNAME));
-        myAgent.send(requestEnergyMessage);
+    private void sendRequestToPP(String ppName, double expectedConsumption){        
+        HashMap<String, Object> content = new HashMap<String, Object>();
+        content.put(MessageUtil.REQUESTED_ENERGY, expectedConsumption);
+        ((LoadManager) myAgent).createAndSend(ACLMessage.REQUEST, ppName, content);
         block();
     }
 

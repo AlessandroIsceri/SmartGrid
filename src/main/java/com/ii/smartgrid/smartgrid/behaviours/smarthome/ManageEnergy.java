@@ -1,11 +1,13 @@
 package com.ii.smartgrid.smartgrid.behaviours.smarthome;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -69,36 +71,30 @@ public class ManageEnergy extends Behaviour{
 
         if(availableEnergy > expectedConsumption) {
 			// Store extra energy into home's battery (if available)
+            String gridName = ((SmartHome) myAgent).getGridName();
+            Map<String, Object> content = new HashMap<String, Object>();
+            content.put(MessageUtil.OPERATION, MessageUtil.RELEASE);
 			if(battery != null){
 				double extraEnergy = battery.fillBattery(availableEnergy - expectedConsumption);
                 // Release extra energy into the grid
-                sendReleaseEnergyMsg(extraEnergy);
+                content.put(MessageUtil.RELEASED_ENERGY, extraEnergy);
 			} else {
 				// Battery not available -> release extra energy into the grid
-				sendReleaseEnergyMsg(availableEnergy - expectedConsumption);
+                content.put(MessageUtil.RELEASED_ENERGY, (availableEnergy - expectedConsumption));
 			}
+            ((SmartHome) myAgent).createAndSend(ACLMessage.INFORM, gridName, content, "release-" + myAgent.getLocalName());
+            state = Status.FINISHED;
 		} else {
 			// Request energy from the grid
-			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-            msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
-            msg.setContent("{ \"operation\" : \"consume\", \"energy\": " + (expectedConsumption - availableEnergy) + "}");
-            myAgent.send(msg);
-            // ((SmartHome) myAgent).log("MESSAGE info:  " + msg.toString());
+            Map<String, Object> content = new HashMap<String, Object>();
+            content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
+            content.put(MessageUtil.REQUESTED_ENERGY, (expectedConsumption - availableEnergy));
+            ((SmartHome) myAgent).createAndSend(ACLMessage.REQUEST, ((SmartHome) myAgent).getGridName(), content);
             state = Status.RECEIVE_ANSWER;
 		}
         ((SmartHome) myAgent).log("ManageEnergy FINISHED");
         block();
     }
-	
-	private void sendReleaseEnergyMsg(double energy) {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
-        msg.setConversationId("release-"+myAgent.getLocalName());
-		msg.setContent("{ \"operation\" : \"release\", \"energy\": " + energy + "}");
-		myAgent.send(msg);
-        state = Status.FINISHED;
-	}
-
 
     private void receive_answer(){
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.AGREE), 
@@ -113,9 +109,9 @@ public class ManageEnergy extends Behaviour{
             if(receivedMsg.getPerformative() == ACLMessage.AGREE){
                 try {
                     jsonObject = objectMapper.readValue(receivedContent, typeRef);
-                    String operation = (String) jsonObject.get("operation");
-                    double energy = (double) jsonObject.get("energy");
-                    if(operation.equals("consume")){
+                    String operation = (String) jsonObject.get(MessageUtil.OPERATION);
+                    double energy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
+                    if(operation.equals(MessageUtil.CONSUME)){
                         ((SmartHome) myAgent).log("Energy consumed");
                     }else{
                         ((SmartHome) myAgent).log("Error: invalid operation");
@@ -127,14 +123,10 @@ public class ManageEnergy extends Behaviour{
                 //possible blackout 
                 try {
                     jsonObject = objectMapper.readValue(receivedContent, typeRef);
-                    String operation = (String) jsonObject.get("operation");
-                    double energy = (double) jsonObject.get("energy");
-                    if(operation.equals("consume")){
+                    String operation = (String) jsonObject.get(MessageUtil.OPERATION);
+                    double energy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
+                    if(operation.equals(MessageUtil.CONSUME)){
                         ((SmartHome) myAgent).log("ATTENTION: Blackout soon");
-                        // ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.INFORM);
-                        // replyMsg.setConversationId("blackout-" + myAgent.getLocalName());
-                        // replyMsg.setContent("{\"energy\": " + energy + "}");
-                        // myAgent.send(replyMsg);
                         ((SmartHome) myAgent).shutDown();
                     }else{
                         ((SmartHome) myAgent).log("Error: invalid operation");

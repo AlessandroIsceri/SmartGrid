@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.LoadManager;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.agents.LoadManager;
 
@@ -35,7 +36,7 @@ public class ReceiveGridRequestsBehaviour extends Behaviour{
 			String receivedContent = receivedMsg.getContent();
 			/**
 			 * {
-			 * 		"energy": 200.0
+			 * 		"requestedEnergy": 200.0
 			 * }
 			 */
             ObjectMapper objectMapper = new ObjectMapper();
@@ -43,11 +44,11 @@ public class ReceiveGridRequestsBehaviour extends Behaviour{
 				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 				HashMap<String, Object> jsonObject;
 				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				double energy = (double) jsonObject.get("energy");
-                ((LoadManager) myAgent).log("energy: " + energy);
+				double requestedEnergy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
+                ((LoadManager) myAgent).log(MessageUtil.REQUESTED_ENERGY + requestedEnergy);
                 String sender = receivedMsg.getSender().getLocalName();
-                ((LoadManager) myAgent).addGridRequestedEnergy(sender, energy);
-				((LoadManager) myAgent).addExpectedConsumption(energy);
+                ((LoadManager) myAgent).addGridRequestedEnergy(sender, requestedEnergy);
+				((LoadManager) myAgent).addExpectedConsumption(requestedEnergy);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}

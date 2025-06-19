@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.agents.PowerPlant;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import jade.core.behaviours.Behaviour;
@@ -40,21 +41,22 @@ public class DistributeNonRenewableEnergy extends Behaviour{
 				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 				HashMap<String, Object> jsonObject;
 				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				double requestedEnergy = (double) jsonObject.get("requestedEnergy");
+				double requestedEnergy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
                 double hProduction = ((NonRenewablePowerPlant) myAgent).gethProduction();
                 double turnProduction = hProduction / 60 * TimeUtils.getTurnDuration();
 
-                ACLMessage replyMsg = receivedMessage.createReply(ACLMessage.AGREE);
                 
-				double energySent = 0;
+				double givenEnergy = 0;
 				if(requestedEnergy < turnProduction){
-                    energySent = requestedEnergy;
+                    givenEnergy = requestedEnergy;
                 } else {
-					energySent = turnProduction;
+					givenEnergy = turnProduction;
 				}
-				
-				replyMsg.setContent("{\"energy\": " + energySent + "}");
-				myAgent.send(replyMsg);	
+                
+				HashMap<String, Object> content = new HashMap<String, Object>();
+        		content.put(MessageUtil.GIVEN_ENERGY, givenEnergy);
+                ((NonRenewablePowerPlant) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMessage, content);
+
 				finished = true;
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();

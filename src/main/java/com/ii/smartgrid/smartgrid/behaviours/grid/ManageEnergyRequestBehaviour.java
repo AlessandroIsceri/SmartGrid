@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -48,16 +49,14 @@ public class ManageEnergyRequestBehaviour extends Behaviour{
 					TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 					HashMap<String, Object> jsonObject;
 					jsonObject = objectMapper.readValue(receivedContent, typeRef);
-					String operation = (String) jsonObject.get("operation");
-					double energy = (double) jsonObject.get("energy");
+					String operation = (String) jsonObject.get(MessageUtil.OPERATION);
 					
-					((Grid) myAgent).log("operation: " + operation);
-					((Grid) myAgent).log("energy: " + energy);
-					
-					if (operation.equals("consume")) {
-						((Grid) myAgent).addExpectedConsumption(energy);
-                        ((Grid) myAgent).addEnergyRequest(sender, energy);
-					} else {
+                    if(operation.equals(MessageUtil.CONSUME)) {
+                        double requestedEnergy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
+                        ((Grid) myAgent).addExpectedConsumption(requestedEnergy);
+                        ((Grid) myAgent).addEnergyRequest(sender, requestedEnergy);
+                        ((Grid) myAgent).log("Requested Energy: " + requestedEnergy);
+                    } else {
 						((Grid) myAgent).log("Error: invalid parameter \"operation\": " + operation);
 					}
 				} catch (JsonProcessingException e) {
@@ -72,19 +71,21 @@ public class ManageEnergyRequestBehaviour extends Behaviour{
                 String conversationId = receivedMsg.getConversationId();
                 try {
                     jsonObject = objectMapper.readValue(receivedContent, typeRef);
-                    String operation = (String) jsonObject.get("operation");
-                    if(conversationId.contains("blackout")){
-                        boolean blackout = (boolean) jsonObject.get("blackout");
+                    String operation = (String) jsonObject.get(MessageUtil.OPERATION);
+                    if(conversationId.contains(MessageUtil.BLACKOUT)){
+                        boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                         if(!blackout){
                             ((Grid) myAgent).removeSmartHomeWithoutPower(sender);
                         }
-                    } else{
-                        double energy = (double) jsonObject.get("energy");
-                        ((Grid) myAgent).removeExpectedConsumption(energy);
+                    } else{ 
+                        
+                        double releasedEnergy = (double) jsonObject.get(MessageUtil.RELEASED_ENERGY);
+                        ((Grid) myAgent).log("Released Energy: " + releasedEnergy);
+                        ((Grid) myAgent).removeExpectedConsumption(releasedEnergy);
                         if(((Grid) myAgent).containsSmartHomeWithoutPower(sender)){
                             // false -> energy restored independently
                             // true -> home still in blackout		
-                            boolean blackout = (boolean) jsonObject.get("blackout");
+                            boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                             if(!blackout){
                                 ((Grid) myAgent).removeSmartHomeWithoutPower(sender);
                             }

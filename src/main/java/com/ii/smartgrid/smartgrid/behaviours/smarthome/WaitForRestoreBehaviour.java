@@ -3,10 +3,12 @@ package com.ii.smartgrid.smartgrid.behaviours.smarthome;
 import java.beans.Customizer;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,29 +67,30 @@ public class WaitForRestoreBehaviour extends Behaviour{
             double storedEnergy = battery.getStoredEnergy();
             ((SmartHome) myAgent).log("storedEnergy: " + storedEnergy);
             double capacity = battery.getMaxCapacity();
+            
+            
+            Map<String, Object> content = new HashMap<String, Object>();
+            String gridName = ((SmartHome) myAgent).getGridName();
+            String conversationId = "blackout-" + myAgent.getLocalName();
             if(capacity * 0.5 < storedEnergy + expectedProduction){
                 ((SmartHome) myAgent).log("Ho almeno metà batteria piena, provo a ripartire");
                 ((SmartHome) myAgent).restorePower(expectedProduction);
-                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
-                msg.setConversationId("blackout-" + myAgent.getLocalName());
-                msg.setContent("{\"blackout\":false}");
-                myAgent.send(msg);
+                content.put(MessageUtil.BLACKOUT, false);
             }else{
                 battery.fillBattery(expectedProduction);
-                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
-                msg.setConversationId("blackout-" + myAgent.getLocalName());
-                msg.setContent("{\"blackout\":true}");
-                myAgent.send(msg);
+                content.put(MessageUtil.BLACKOUT, true);
             }
+            ((SmartHome) myAgent).createAndSend(ACLMessage.INFORM, gridName, content, conversationId);
 		}else{
             ((SmartHome) myAgent).log("Non ho una batteria, ma ho dei pannelli, rilascio l'energia in rete");
-            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-            msg.addReceiver(new AID(((SmartHome) myAgent).getGridName(), AID.ISLOCALNAME));
-            msg.setConversationId("release-"+myAgent.getLocalName());
-            msg.setContent("{ \"operation\" : \"release\", \"energy\": " + expectedProduction + ", \"blackout\":true}");
-            myAgent.send(msg);
+            
+            Map<String, Object> content = new HashMap<String, Object>();
+            String gridName = ((SmartHome) myAgent).getGridName();
+            String conversationId = "release-"+myAgent.getLocalName();
+            content.put(MessageUtil.OPERATION, MessageUtil.RELEASE);
+            content.put(MessageUtil.RELEASED_ENERGY, expectedProduction);
+            content.put(MessageUtil.BLACKOUT, true);
+            ((SmartHome) myAgent).createAndSend(ACLMessage.INFORM, gridName, content, conversationId);
         }
         state = Status.RECEIVING_MSGS;
     }
@@ -110,9 +113,9 @@ public class WaitForRestoreBehaviour extends Behaviour{
                 ((SmartHome) myAgent).log("Restore MSG received");
                 try {
                     jsonObject = objectMapper.readValue(receivedContent, typeRef);
-                    double energy = jsonObject.get("energy");
-                    if(energy >= 0){
-                        ((SmartHome) myAgent).restorePower(energy);
+                    double receivedEnergy = jsonObject.get(MessageUtil.GIVEN_ENERGY);
+                    if(receivedEnergy >= 0){
+                        ((SmartHome) myAgent).restorePower(receivedEnergy);
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();

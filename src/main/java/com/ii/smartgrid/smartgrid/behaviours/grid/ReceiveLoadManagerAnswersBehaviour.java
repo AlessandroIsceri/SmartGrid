@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.Grid;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -34,8 +35,8 @@ public class ReceiveLoadManagerAnswersBehaviour extends Behaviour{
 				TypeReference<HashMap<String, Double>> typeRef = new TypeReference<HashMap<String, Double>>() {};
 				HashMap<String, Double> jsonObject;
 				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				double givenEnergy = (double) jsonObject.get("givenEnergy");
-                double neededEnergy = (double) jsonObject.get("neededEnergy");
+				double givenEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
+                double neededEnergy = (double) jsonObject.get(MessageUtil.NEEDED_ENERGY);
                 ((Grid) myAgent).addEnergy(givenEnergy);
 
                 if (givenEnergy < neededEnergy) {

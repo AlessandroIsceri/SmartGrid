@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 //import com.II.smartgrid.smartgrid.agents.SendEndTurnMsg;
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WindSpeedStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,29 +36,28 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 			HashMap<String, Integer> jsonObject;
 			try {
 				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				int curTurn = jsonObject.get("curTurn");
+				int curTurn = jsonObject.get(MessageUtil.CURRENT_TURN);
 				((CustomAgent) myAgent).setCurTurn(curTurn);
-				int weather = jsonObject.get("weather");
+				int weather = jsonObject.get(MessageUtil.CURRENT_WEATHER);
 				((CustomAgent) myAgent).setCurWeather(WeatherStatus.values()[weather]);
-                int windSpeed = jsonObject.get("windSpeed");
+                int windSpeed = jsonObject.get(MessageUtil.CURRENT_WIND_SPEED);
 				((CustomAgent) myAgent).setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
 
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
 			
-            ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.INFORM);
 			
 			SequentialBehaviour sequentialTurnBehaviour = new SequentialBehaviour(myAgent){
              	@Override
              	public int onEnd(){
-                    myAgent.send(replyMsg);
+					((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg);
                     ((CustomAgent) myAgent).log("Turn finished");
                     return 0;
                 }
             };
 			
-			executeTurn(replyMsg, sequentialTurnBehaviour);
+			executeTurn(sequentialTurnBehaviour);
             myAgent.addBehaviour(sequentialTurnBehaviour);
             block();
 		}else {
@@ -65,5 +65,5 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 		}
 	}
 
-    abstract protected void executeTurn(ACLMessage replyMessage, SequentialBehaviour sequentialTurnBehaviour);
+    abstract protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour);
 }

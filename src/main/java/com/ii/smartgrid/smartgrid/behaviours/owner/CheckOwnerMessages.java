@@ -13,6 +13,7 @@ import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.model.Appliance;
 import com.ii.smartgrid.smartgrid.model.Routine;
 import com.ii.smartgrid.smartgrid.model.Task;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,24 +45,16 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 				String receivedContent = receivedMsg.getContent();
 				try {
 					jsonObject = objectMapper.readValue(receivedContent, typeRef);
-					String operation = (String) jsonObject.get("operation");
-					String homeID = (String) jsonObject.get("smartHome");
-					ArrayList<Task> tasks = (ArrayList<Task>) objectMapper.convertValue(jsonObject.get("tasks"), new TypeReference<List<Task>>() {});
-					
-					ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.AGREE);
-					myAgent.send(replyMsg);
+					String homeName = (String) jsonObject.get(MessageUtil.SMART_HOME);
+
+					((Owner) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
 					
 					List<String> smartHomesNames = ((Owner) myAgent).getSmartHomeNames();
 					for(int i = 0; i < smartHomesNames.size(); i++) {
 						String curName = smartHomesNames.get(i);
-						if(curName.equals(homeID)) {
-							ACLMessage updateRoutineMsg = new ACLMessage(ACLMessage.REQUEST);
-							jsonObject.remove("smartHome");
-							updateRoutineMsg.setContent(objectMapper.writeValueAsString(jsonObject));
-							updateRoutineMsg.setConversationId(receivedMsg.getConversationId());
-							AID smartHomeAID = new AID(curName, AID.ISLOCALNAME);
-							updateRoutineMsg.addReceiver(smartHomeAID);
-							myAgent.send(updateRoutineMsg);
+						if(curName.equals(homeName)) {
+                            jsonObject.remove(MessageUtil.SMART_HOME);
+                            ((Owner) myAgent).createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
 						}
 					}
 					((Owner) myAgent).log("Sent Update Routine Request");

@@ -180,7 +180,7 @@ public class SmartHome extends CustomAgent{
         }
 
         @Override
-        protected void executeTurn(ACLMessage replyMsg, SequentialBehaviour sequentialTurnBehaviour) {
+        protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             log("home status: " + ((SmartHome) myAgent).getStatus());
             if(((SmartHome) myAgent).getStatus() == SmartHomeStatus.WORKING){
                 sequentialTurnBehaviour.addSubBehaviour(new FollowRoutine((SmartHome) myAgent));

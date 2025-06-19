@@ -43,7 +43,7 @@ public class NonRenewablePowerPlant extends PowerPlant{
         }
 
         @Override
-        protected void executeTurn(ACLMessage replyMessage, SequentialBehaviour sequentialTurnBehaviour) {
+        protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             //riceve un messaggio con la richiesta di energia
             //risponde inviando l'energia richiesta
             

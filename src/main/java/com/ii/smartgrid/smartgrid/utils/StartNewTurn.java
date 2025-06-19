@@ -1,6 +1,9 @@
 package com.ii.smartgrid.smartgrid.utils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 
@@ -49,23 +52,19 @@ public class StartNewTurn extends CyclicBehaviour {
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        String content = "{\"curTurn\":" + ((SimulationSettings) myAgent).getCurTurn()
-					      + ", \"weather\": "+ ((SimulationSettings) myAgent).getCurWeather().ordinal() 
-                          + ", \"windSpeed\": "+ ((SimulationSettings) myAgent).getCurWindSpeed().ordinal() + "}";
+		Map<String, Object> content = new HashMap<String, Object>();
+		content.put(MessageUtil.CURRENT_TURN, ((SimulationSettings) myAgent).getCurTurn());
+        content.put(MessageUtil.CURRENT_WEATHER, ((SimulationSettings) myAgent).getCurWeather().ordinal());
+        content.put(MessageUtil.CURRENT_WIND_SPEED, ((SimulationSettings) myAgent).getCurWindSpeed().ordinal());
 
         ((CustomAgent) myAgent).log("Weather: " + ((CustomAgent) myAgent).getCurWeather());
         ((CustomAgent) myAgent).log("Wind speed: " + ((CustomAgent) myAgent).getCurWindSpeed());
 
 		List<String> allAgentNames = ((SimulationSettings) myAgent).getAgentNames();
 		for(int i = 0; i < allAgentNames.size(); i++) {
-			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-			msg.setConversationId("turn-" + allAgentNames.get(i));
-			msg.addReceiver(new AID(allAgentNames.get(i), AID.ISLOCALNAME));
-			msg.setContent(content);
-			myAgent.send(msg);
+            ((SimulationSettings) myAgent).createAndSend(ACLMessage.INFORM, allAgentNames.get(i), content, "turn-" + allAgentNames.get(i));
 		}
 	}
 

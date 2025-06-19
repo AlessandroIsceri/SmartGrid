@@ -72,7 +72,7 @@ public class LoadManager extends CustomAgent{
         }
 
         @Override
-        protected void executeTurn(ACLMessage replyMessage, SequentialBehaviour sequentialTurnBehaviour) {
+        protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             // riceve le richieste dalle grid
             // manda richieste ai powerplant **dove ER > ENR** e riceve risposta dai powerplant
             // manda risposte alle grid

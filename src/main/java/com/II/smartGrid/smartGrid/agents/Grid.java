@@ -170,7 +170,7 @@ public class Grid extends CustomAgent{
         }
 
         @Override
-        protected void executeTurn(ACLMessage replyMessage, SequentialBehaviour sequentialTurnBehaviour) {
+        protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             //ricevi le richieste (o se in blackout o meno una casa)
             //chiedi energia al load manager
             //aspetta risposta load manager x sapere quanta energia arriverà

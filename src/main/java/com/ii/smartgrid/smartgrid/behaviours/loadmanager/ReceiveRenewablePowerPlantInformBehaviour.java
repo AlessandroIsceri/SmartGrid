@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.LoadManager;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.agents.LoadManager;
 
 import jade.core.behaviours.Behaviour;
@@ -42,9 +43,9 @@ public class ReceiveRenewablePowerPlantInformBehaviour extends Behaviour{
 				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 				HashMap<String, Object> jsonObject;
 				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				double energy = (double) jsonObject.get("energy");
-                ((LoadManager) myAgent).log("energy: " + energy);
-				((LoadManager) myAgent).removeExpectedConsumption(energy);
+				double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
+                ((LoadManager) myAgent).log("receivedEnergy: " + receivedEnergy);
+				((LoadManager) myAgent).removeExpectedConsumption(receivedEnergy);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}

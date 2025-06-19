@@ -1,8 +1,11 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
 import java.util.LinkedHashMap;
+import java.util.HashMap;
+
 
 import com.ii.smartgrid.smartgrid.agents.LoadManager;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
@@ -18,15 +21,15 @@ public class SendGridAnswer extends OneShotBehaviour{
     public void action() {
         double expectedConsumption = ((LoadManager) myAgent).getExpectedConsumption();
         
-        ACLMessage message = new ACLMessage(ACLMessage.AGREE);
         // "givenEnergy" : 2000
-        // "neededEnergy": 2000
-
+        // "neededEnergy": 2000        
         LinkedHashMap<String, Double> gridRequestedEnergy = ((LoadManager) myAgent).getGridRequestedEnergy();
         for(String gridName : gridRequestedEnergy.keySet()){
-            message.setContent("{\"givenEnergy\": " + (gridRequestedEnergy.get(gridName) - expectedConsumption) + ", \"neededEnergy\": " + gridRequestedEnergy.get(gridName) + "}");
-            message.addReceiver(new AID(gridName, AID.ISLOCALNAME));
-            myAgent.send(message);
+            
+            HashMap<String, Object> content = new HashMap<String, Object>();
+            content.put(MessageUtil.GIVEN_ENERGY, (gridRequestedEnergy.get(gridName) - expectedConsumption));
+            content.put(MessageUtil.NEEDED_ENERGY, gridRequestedEnergy.get(gridName));
+            ((LoadManager) myAgent).createAndSend(ACLMessage.AGREE, gridName, content);
         }
     }
 

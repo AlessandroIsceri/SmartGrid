@@ -3,10 +3,12 @@ package com.ii.smartgrid.smartgrid.behaviours.smarthome;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.model.Routine;
 import com.ii.smartgrid.smartgrid.model.Task;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,10 +48,10 @@ public class EditRoutine extends CyclicBehaviour{
 				Routine routine = ((SmartHome) myAgent).getRoutine();
 				
 				//rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
-				ACLMessage replyMsg = receivedMsg.createReply(ACLMessage.AGREE);
-				myAgent.send(replyMsg);
 				
-				boolean result = true;
+				((SmartHome) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
+				
+    			boolean result = true;
 				if(operation.equals("add")) {
 					result = routine.addTasks(tasks);
 				} else if (operation.equals("remove")){
@@ -58,9 +60,11 @@ public class EditRoutine extends CyclicBehaviour{
 					((SmartHome) myAgent).log("Error: invalid parameter \"operation\": " + operation);
 					result = false;
 				}
-				ACLMessage replyMsgInform = receivedMsg.createReply(ACLMessage.INFORM);
-				replyMsgInform.setContent("{\"result\": " + result + "}");
-				myAgent.send(replyMsgInform);
+
+                Map<String, Object> content = new HashMap<String, Object>();
+                content.put(MessageUtil.RESULT, result);
+                ((SmartHome) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
+
 				((SmartHome) myAgent).log("Routine updated");
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
