@@ -1,6 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 //import com.II.smartgrid.smartgrid.agents.SendEndTurnMsg;
@@ -31,23 +32,15 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 												 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 		ACLMessage receivedMsg = myAgent.receive(mt);
 		if (receivedMsg != null) {
-			String receivedContent = receivedMsg.getContent();
-			TypeReference<HashMap<String, Integer>> typeRef = new TypeReference<HashMap<String, Integer>>() {};
-			HashMap<String, Integer> jsonObject;
-			try {
-				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				int curTurn = jsonObject.get(MessageUtil.CURRENT_TURN);
-				((CustomAgent) myAgent).setCurTurn(curTurn);
-				int weather = jsonObject.get(MessageUtil.CURRENT_WEATHER);
-				((CustomAgent) myAgent).setCurWeather(WeatherStatus.values()[weather]);
-                int windSpeed = jsonObject.get(MessageUtil.CURRENT_WIND_SPEED);
-				((CustomAgent) myAgent).setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
-
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+			Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
 			
-			
+			int curTurn = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
+			((CustomAgent) myAgent).setCurTurn(curTurn);
+			int weather = (int) jsonObject.get(MessageUtil.CURRENT_WEATHER);
+			((CustomAgent) myAgent).setCurWeather(WeatherStatus.values()[weather]);
+			int windSpeed = (int) jsonObject.get(MessageUtil.CURRENT_WIND_SPEED);
+			((CustomAgent) myAgent).setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
+					
 			SequentialBehaviour sequentialTurnBehaviour = new SequentialBehaviour(myAgent){
              	@Override
              	public int onEnd(){

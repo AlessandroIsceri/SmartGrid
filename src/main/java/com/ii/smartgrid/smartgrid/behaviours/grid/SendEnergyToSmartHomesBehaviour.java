@@ -11,8 +11,8 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class DistributeEnergyBehaviour extends OneShotBehaviour{
-    public DistributeEnergyBehaviour(Grid grid){
+public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
+    public SendEnergyToSmartHomesBehaviour(Grid grid){
         super(grid);
     }
 

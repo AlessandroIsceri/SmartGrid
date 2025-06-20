@@ -6,8 +6,8 @@ public class WashingMachine extends Appliance {
 		super();
 	}
 	
-	public WashingMachine(double hConsumption, boolean alwaysOn) {
-		super(hConsumption, alwaysOn);
+	public WashingMachine(double hourlyConsumption, boolean alwaysOn) {
+		super(hourlyConsumption, alwaysOn);
 	}
 	
 	

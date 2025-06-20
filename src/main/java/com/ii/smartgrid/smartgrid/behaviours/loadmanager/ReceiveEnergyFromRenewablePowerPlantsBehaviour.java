@@ -1,6 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,13 +15,13 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveRenewablePowerPlantInformBehaviour extends Behaviour{
+public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends Behaviour{
     
     private int requestCont = 0;
     private boolean finished = false;
     private int renewablePowerPlantCount = ((LoadManager) myAgent).getRenewablePowerPlantNames().size();
 
-    public ReceiveRenewablePowerPlantInformBehaviour(LoadManager loadManager){
+    public ReceiveEnergyFromRenewablePowerPlantsBehaviour(LoadManager loadManager){
         super(loadManager);
     }
 
@@ -32,23 +33,15 @@ public class ReceiveRenewablePowerPlantInformBehaviour extends Behaviour{
 		if (receivedMsg != null) {
             ((LoadManager) myAgent).log("ho ricevuto una richiesta");
             requestCont++;
-			String receivedContent = receivedMsg.getContent();
 			/**
 			 * {
 			 * 		"energy": 200.0
 			 * }
 			 */
-            ObjectMapper objectMapper = new ObjectMapper();
-			try {
-				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-				HashMap<String, Object> jsonObject;
-				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
-                ((LoadManager) myAgent).log("receivedEnergy: " + receivedEnergy);
-				((LoadManager) myAgent).removeExpectedConsumption(receivedEnergy);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+            Map<String, Object> jsonObject = ((LoadManager) myAgent).convertAndReturnContent(receivedMsg);
+            double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
+            ((LoadManager) myAgent).log("receivedEnergy: " + receivedEnergy);
+            ((LoadManager) myAgent).removeExpectedConsumption(receivedEnergy);
 
             if(requestCont < renewablePowerPlantCount){
                 block();

@@ -7,6 +7,7 @@ import jade.lang.acl.ACLMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.Owner;
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
@@ -19,11 +20,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-public class CheckOwnerMessages extends CyclicBehaviour {
+public class CheckOwnerMessagesBehaviour extends CyclicBehaviour {
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-	public CheckOwnerMessages(Owner owner) {
+	public CheckOwnerMessagesBehaviour(Owner owner) {
 		super(owner);
 	}
 	
@@ -39,28 +40,20 @@ public class CheckOwnerMessages extends CyclicBehaviour {
 				 * 		"tasks": task[] sempre JSON 
 				 * }
 				 */
-				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-				HashMap<String, Object> jsonObject;
+				Map<String, Object> jsonObject = ((Owner) myAgent).convertAndReturnContent(receivedMsg);
+				String homeName = (String) jsonObject.get(MessageUtil.SMART_HOME);
+                ((Owner) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
+                
+                List<String> smartHomesNames = ((Owner) myAgent).getSmartHomeNames();
+                for(int i = 0; i < smartHomesNames.size(); i++) {
+                    String curName = smartHomesNames.get(i);
+                    if(curName.equals(homeName)) {
+                        jsonObject.remove(MessageUtil.SMART_HOME);
+                        ((Owner) myAgent).createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
+                    }
+                }
+                ((Owner) myAgent).log("Sent Update Routine Request");
 				
-				String receivedContent = receivedMsg.getContent();
-				try {
-					jsonObject = objectMapper.readValue(receivedContent, typeRef);
-					String homeName = (String) jsonObject.get(MessageUtil.SMART_HOME);
-
-					((Owner) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
-					
-					List<String> smartHomesNames = ((Owner) myAgent).getSmartHomeNames();
-					for(int i = 0; i < smartHomesNames.size(); i++) {
-						String curName = smartHomesNames.get(i);
-						if(curName.equals(homeName)) {
-                            jsonObject.remove(MessageUtil.SMART_HOME);
-                            ((Owner) myAgent).createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
-						}
-					}
-					((Owner) myAgent).log("Sent Update Routine Request");
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
 			}else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
 				//owner -> manda msg request -> smartHome riceve, manda agree ed esegue -> inform è andata bene
 				System.out.println("RECEIVED AGREE FOR " + receivedMsg.getConversationId());

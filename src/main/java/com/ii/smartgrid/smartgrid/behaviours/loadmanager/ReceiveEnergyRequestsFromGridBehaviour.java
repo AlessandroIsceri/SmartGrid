@@ -1,6 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,13 +16,13 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveGridRequestsBehaviour extends Behaviour{
+public class ReceiveEnergyRequestsFromGridBehaviour extends Behaviour{
     
     private boolean finished = false;
     private int requestCont = 0;
     private int gridCount = ((LoadManager) myAgent).getGridNames().size();
 
-    public ReceiveGridRequestsBehaviour (LoadManager loadManager){
+    public ReceiveEnergyRequestsFromGridBehaviour (LoadManager loadManager){
         super(loadManager);
     }
 
@@ -33,25 +34,17 @@ public class ReceiveGridRequestsBehaviour extends Behaviour{
 		if (receivedMsg != null) {
             ((LoadManager) myAgent).log("ho ricevuto una richiesta");
             requestCont++;
-			String receivedContent = receivedMsg.getContent();
 			/**
 			 * {
 			 * 		"requestedEnergy": 200.0
 			 * }
 			 */
-            ObjectMapper objectMapper = new ObjectMapper();
-			try {
-				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-				HashMap<String, Object> jsonObject;
-				jsonObject = objectMapper.readValue(receivedContent, typeRef);
-				double requestedEnergy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
-                ((LoadManager) myAgent).log(MessageUtil.REQUESTED_ENERGY + requestedEnergy);
-                String sender = receivedMsg.getSender().getLocalName();
-                ((LoadManager) myAgent).addGridRequestedEnergy(sender, requestedEnergy);
-				((LoadManager) myAgent).addExpectedConsumption(requestedEnergy);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+            Map<String, Object> jsonObject = ((LoadManager) myAgent).convertAndReturnContent(receivedMsg);
+            double requestedEnergy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
+            ((LoadManager) myAgent).log(MessageUtil.REQUESTED_ENERGY + requestedEnergy);
+            String sender = receivedMsg.getSender().getLocalName();
+            ((LoadManager) myAgent).addGridRequestedEnergy(sender, requestedEnergy);
+            ((LoadManager) myAgent).addExpectedConsumption(requestedEnergy);
 
             if(requestCont < gridCount){
                 block();

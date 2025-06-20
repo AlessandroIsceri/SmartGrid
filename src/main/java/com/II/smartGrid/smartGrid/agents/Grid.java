@@ -8,12 +8,11 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.DistributeEnergyBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.ManageEnergyRequestBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveLoadManagerAnswersBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.RequestEnergyBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.RestoreHomesBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.smarthome.FollowRoutine;
+import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyFromLoadManagerBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyRequestsFromSmartHomesBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyRequestToLoadManagerBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyToSmartHomesBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.SendRestoreMessagesToSmartHomesBehaviour;
 
 import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
@@ -146,19 +145,6 @@ public class Grid extends CustomAgent{
 		smartHomesWithoutPower.remove(smartHomeName);
 	}
 
-	// public Map<String, Double> getHomesRestoreInfo(){
-	// 	// FIFO queue for restoring power
-    //     Map<String, Double> ret = new LinkedHashMap<String, Double>();
-	// 	for(String key : smartHomesWithoutPower.keySet()){
-    //         double requestedEnergy = smartHomesWithoutPower.get(key);
-	// 		if(currentEnergy > requestedEnergy){
-    //             currentEnergy -= requestedEnergy;
-	// 			ret.put(key, requestedEnergy);
-    //         }
-	// 	}
-    //     return ret;
-	// }
-
     public int getSmartHomeWithoutPowerSize(){
         return smartHomesWithoutPower.size();
     }
@@ -174,15 +160,19 @@ public class Grid extends CustomAgent{
             //ricevi le richieste (o se in blackout o meno una casa)
             //chiedi energia al load manager
             //aspetta risposta load manager x sapere quanta energia arriverà
-            //invia le risposte
+            //invia le risposte alle case
             //aspetta i messaggi di blackout
             //restora le case se riesci
-            sequentialTurnBehaviour.addSubBehaviour(new ManageEnergyRequestBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new RequestEnergyBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveLoadManagerAnswersBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new DistributeEnergyBehaviour((Grid) myAgent));
-            // sequentialTurnBehaviour.addSubBehaviour(new ManageBlackoutBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new RestoreHomesBehaviour((Grid) myAgent));
+
+			//SendXYZ -> inviare messaggi 
+			//ReceiveXYZ -> ricevere risposte ai messaggi
+
+
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartHomesBehaviour((Grid) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToLoadManagerBehaviour((Grid) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromLoadManagerBehaviour((Grid) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToSmartHomesBehaviour((Grid) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendRestoreMessagesToSmartHomesBehaviour((Grid) myAgent));
             ((Grid) myAgent).setExpectedConsumption(getBlackoutEnergyRequest());
         }
 

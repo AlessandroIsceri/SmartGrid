@@ -11,9 +11,9 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 
-public class RestoreHomesBehaviour extends OneShotBehaviour {
+public class SendRestoreMessagesToSmartHomesBehaviour extends OneShotBehaviour {
 
-    public RestoreHomesBehaviour(Grid grid){
+    public SendRestoreMessagesToSmartHomesBehaviour(Grid grid){
         super(grid);
     }
 

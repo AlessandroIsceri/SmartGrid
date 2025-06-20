@@ -1,6 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours.grid;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
@@ -10,16 +11,16 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class RequestEnergyBehaviour extends OneShotBehaviour{
+public class SendEnergyRequestToLoadManagerBehaviour extends OneShotBehaviour{
 
-    public RequestEnergyBehaviour(Grid grid) {
+    public SendEnergyRequestToLoadManagerBehaviour(Grid grid) {
         super(grid);
     }
 
     @Override
     public void action() {
         String loadManagerName = ((Grid) myAgent).getLoadManagerName();
-        HashMap<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<String, Object>();
         if(((Grid) myAgent).getExpectedConsumption() < 0){
             content.put(MessageUtil.REQUESTED_ENERGY, 0.0);
         }else{

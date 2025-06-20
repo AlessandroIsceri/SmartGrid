@@ -18,14 +18,14 @@ import java.util.Objects;
 public abstract class Appliance {
 	protected boolean alwaysOn;	
 	protected boolean on;
-	protected double hConsumption;
+	protected double hourlyConsumption;
 	
 	protected Appliance() {
 		super();
 	}
 	
-	protected Appliance(double hConsumption, boolean alwaysOn) {
-		this.hConsumption = hConsumption;
+	protected Appliance(double hourlyConsumption, boolean alwaysOn) {
+		this.hourlyConsumption = hourlyConsumption;
 		this.alwaysOn = alwaysOn;
 	}
 
@@ -45,12 +45,12 @@ public abstract class Appliance {
 		this.on = on;
 	}
 
-	public double gethConsumption() {
-		return hConsumption;
+	public double getHourlyConsumption() {
+		return hourlyConsumption;
 	}
 
-	public void sethConsumption(double hConsumption) {
-		this.hConsumption = hConsumption;
+	public void setHourlyConsumption(double hourlyConsumption) {
+		this.hourlyConsumption = hourlyConsumption;
 	}
 
 	@Override
@@ -63,13 +63,13 @@ public abstract class Appliance {
 			return false;
 		Appliance other = (Appliance) obj;
 		return alwaysOn == other.alwaysOn
-				&& Double.doubleToLongBits(hConsumption) == Double.doubleToLongBits(other.hConsumption)
+				&& Double.doubleToLongBits(hourlyConsumption) == Double.doubleToLongBits(other.hourlyConsumption)
 				&& on == other.on;
 	}
 
 	@Override
 	public String toString() {
-		return "Appliance [alwaysOn=" + alwaysOn + ", on=" + on + ", hConsumption=" + hConsumption + "]";
+		return "Appliance [alwaysOn=" + alwaysOn + ", on=" + on + ", hourlyConsumption=" + hourlyConsumption + "]";
 	}
 	
 	

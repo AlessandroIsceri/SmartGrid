@@ -8,21 +8,21 @@ import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 
 public class SolarPowerPlant extends RenewablePowerPlant{
 
-    private double hProductionSunny;
-	private double hProductionRainy;
-	private double hProductionCloudy;
+    private double hourlyProductionSunny;
+	private double hourlyProductionRainy;
+	private double hourlyProductionCloudy;
 
     @Override
     public void setup(){
         status = PPStatus.ON;
         Object[] args = this.getArguments();
         
-        loadManagerName = (String) args[args.length - 6];
-        hProductionSunny = Double.parseDouble((String) args[args.length - 5]);
-        hProductionRainy = Double.parseDouble((String) args[args.length - 4]);
-        hProductionCloudy = Double.parseDouble((String) args[args.length - 3]);
-        double maxCapacity = Double.parseDouble((String) args[args.length - 2]);
-        double storedEnergy = Double.parseDouble((String) args[args.length - 1]);
+        loadManagerName = (String) args[0];
+        hourlyProductionSunny = Double.parseDouble((String) args[1]);
+        hourlyProductionRainy = Double.parseDouble((String) args[2]);
+        hourlyProductionCloudy = Double.parseDouble((String) args[3]);
+        double maxCapacity = Double.parseDouble((String) args[4]);
+        double storedEnergy = Double.parseDouble((String) args[5]);
         
         battery = new Battery(maxCapacity, storedEnergy);
 
@@ -32,7 +32,7 @@ public class SolarPowerPlant extends RenewablePowerPlant{
     }
 
     @Override
-    public double getHProduction() {
+    public double getHourlyProduction() {
 		//Night time from 20:00  to 6:00
         int hour = TimeUtils.getHourFromTurn(curTurn);
         if(hour < 6 || hour > 19) {
@@ -41,11 +41,11 @@ public class SolarPowerPlant extends RenewablePowerPlant{
         
 		switch(curWeather) {
 			case SUNNY:
-				return hProductionSunny;
+				return hourlyProductionSunny;
 			case RAINY:
-				return hProductionRainy;
+				return hourlyProductionRainy;
 			case CLOUDY:
-				return hProductionCloudy;
+				return hourlyProductionCloudy;
 			default:
                 log("Error: Weather not found");
 				return 0;

@@ -10,14 +10,16 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.smarthome.EditRoutine;
-import com.ii.smartgrid.smartgrid.behaviours.smarthome.FollowRoutine;
-import com.ii.smartgrid.smartgrid.behaviours.smarthome.ManageEnergy;
+import com.ii.smartgrid.smartgrid.behaviours.smarthome.CheckSmartHomeMessagesBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.smarthome.ReceiveEnergyFromGridBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.smarthome.SendEnergyRequestToGridBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.smarthome.SendEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.smarthome.WaitForRestoreBehaviour;
 import com.ii.smartgrid.smartgrid.model.Appliance;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
 import com.ii.smartgrid.smartgrid.model.Routine;
+import com.ii.smartgrid.smartgrid.model.Task;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,17 +37,17 @@ public class SmartHome extends CustomAgent{
 	private Routine routine;
 	private ObjectMapper mapper;
 	private double expectedConsumption;
+    private double expectedProduction;
 	private String gridName;
 
 	private enum SmartHomeStatus {BLACKOUT, WORKING};
 	private SmartHomeStatus status = SmartHomeStatus.WORKING;
 	
-	
 	@Override
     public void setup() {    
         File from = new File((String) this.getArguments()[0]); 
 		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-        
+        //TODO REFACTOR THIS PART
         mapper = new ObjectMapper();
         
         try {
@@ -68,7 +70,7 @@ public class SmartHome extends CustomAgent{
         
         for(int i = 0; i < appliances.size(); i++) {
         	if(appliances.get(i).isAlwaysOn() == true) {
-        		expectedConsumption = expectedConsumption + appliances.get(i).gethConsumption() / 60 * TimeUtils.getTurnDuration();
+        		expectedConsumption = expectedConsumption + appliances.get(i).getHourlyConsumption() / 60 * TimeUtils.getTurnDuration();
         	}
         	
         }
@@ -81,7 +83,7 @@ public class SmartHome extends CustomAgent{
         //spegnere/accendere gli elettrodomestici in base alla routine decisa dall'owner
             
         this.addBehaviour(new SmartHomeTurnBehaviour(this));
-        addBehaviour(new EditRoutine(this));
+        this.addBehaviour(new CheckSmartHomeMessagesBehaviour(this));
     }
 
 	public List<Appliance> getAppliances() {
@@ -147,8 +149,23 @@ public class SmartHome extends CustomAgent{
 				+ expectedConsumption + "]";
 	}
 
+	public double getAvailableEnergy(){
+        if(battery != null){
+            return expectedProduction += battery.getStoredEnergy();
+        }
+		return expectedProduction;
+	}
 
-	public void shutDown(){
+
+	public double getExpectedProduction() {
+        return expectedProduction;
+    }
+
+    public void setExpectedProduction(double expectedProduction) {
+        this.expectedProduction = expectedProduction;
+    }
+
+    public void shutDown(){
 		for(Appliance appliance: appliances){
 			appliance.setOn(false);
 		}
@@ -163,7 +180,7 @@ public class SmartHome extends CustomAgent{
 		for(Appliance appliance: appliances){
 			if(appliance.isAlwaysOn()){
 				appliance.setOn(true);
-                expectedConsumption += appliance.gethConsumption() / 60 * TimeUtils.getTurnDuration();
+                expectedConsumption += appliance.getHourlyConsumption() / 60 * TimeUtils.getTurnDuration();
 			}
 		}
         status = SmartHomeStatus.WORKING;
@@ -171,6 +188,35 @@ public class SmartHome extends CustomAgent{
 
     public SmartHomeStatus getStatus() {
         return status;
+    }
+
+    public void followRoutine(){
+        expectedConsumption = 0;
+		expectedProduction = 0;
+
+		int turnDuration = TimeUtils.getTurnDuration();
+		for(Task curTask : routine.getTasks()) {
+			int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
+			int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
+			if(startTurn == curTurn) {
+				curTask.getAppliance().setOn(true);
+				expectedConsumption += curTask.getAppliance().getHourlyConsumption() / 60 * turnDuration;
+				log("Turn dur: " + turnDuration + " - " + "adding consumption: " + curTask.getAppliance().getHourlyConsumption());
+			} else if(endTurn == curTurn) {
+				curTask.getAppliance().setOn(false);
+				expectedConsumption -= curTask.getAppliance().getHourlyConsumption() / 60 * turnDuration;
+				log("Turn dur: " + turnDuration + " - " + "removing consumption: " + curTask.getAppliance().getHourlyConsumption());
+			}
+		}
+
+        int hour = TimeUtils.getHourFromTurn(curTurn);
+		
+		for(EnergyProducer energyProducer: energyProducers) {
+			expectedProduction += energyProducer.getHourlyProduction(curWeather, hour) / 60 * TimeUtils.getTurnDuration();
+		}
+		
+        log("expectedProduction: " + expectedProduction);
+        log("expectedConsumption: " + expectedConsumption);
     }
 
     private class SmartHomeTurnBehaviour extends GenericTurnBehaviour{
@@ -183,8 +229,19 @@ public class SmartHome extends CustomAgent{
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             log("home status: " + ((SmartHome) myAgent).getStatus());
             if(((SmartHome) myAgent).getStatus() == SmartHomeStatus.WORKING){
-                sequentialTurnBehaviour.addSubBehaviour(new FollowRoutine((SmartHome) myAgent));
-                sequentialTurnBehaviour.addSubBehaviour(new ManageEnergy((SmartHome) myAgent));
+                
+				((SmartHome) myAgent).followRoutine();
+			
+                double availableEnergy = ((SmartHome) myAgent).getAvailableEnergy();
+				double expectedConsumption = ((SmartHome) myAgent).getExpectedConsumption();
+
+                if(expectedConsumption > availableEnergy){
+                    sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToGridBehaviour((SmartHome) myAgent));
+                    sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromGridBehaviour((SmartHome) myAgent));
+                }else{
+                    sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToGridBehaviour((SmartHome) myAgent));
+                }
+                
             }
             else if(((SmartHome) myAgent).getStatus() == SmartHomeStatus.BLACKOUT){
 				log("else (status blackout)");

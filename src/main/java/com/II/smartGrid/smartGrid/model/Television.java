@@ -8,7 +8,7 @@ public class Television extends Appliance {
 		super();
 	}
 	
-	public Television(double hConsumption, boolean alwaysOn) {
-		super(hConsumption, alwaysOn);
+	public Television(double hourlyConsumption, boolean alwaysOn) {
+		super(hourlyConsumption, alwaysOn);
 	}
 }

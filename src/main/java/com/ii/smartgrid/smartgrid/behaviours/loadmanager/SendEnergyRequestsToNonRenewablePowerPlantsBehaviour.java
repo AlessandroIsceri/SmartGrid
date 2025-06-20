@@ -21,14 +21,14 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class SendPowerPlantRequestsBehaviour extends Behaviour{
+public class SendEnergyRequestsToNonRenewablePowerPlantsBehaviour extends Behaviour{
 
     // private int lastRequestIndex = 0;
     private boolean firstRequest;
     private boolean finished = false;
     private Iterator<String> iterator; 
 
-    public SendPowerPlantRequestsBehaviour(LoadManager loadManager) {
+    public SendEnergyRequestsToNonRenewablePowerPlantsBehaviour(LoadManager loadManager) {
         super(loadManager);
         firstRequest = true;
         List<String> nonRenewablePowerPlantsInfo = ((LoadManager) myAgent).getNonRenewablePowerPlantNames();
@@ -47,22 +47,11 @@ public class SendPowerPlantRequestsBehaviour extends Behaviour{
         
             ACLMessage receivedMessage = myAgent.receive(mt);
             if(receivedMessage != null){
-                //map: <PPname, hProduction> 
+                //map: <PPname, hourlyProduction> 
                 if(receivedMessage.getPerformative() == ACLMessage.AGREE){
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    TypeReference<HashMap<String, Double>> typeRef = new TypeReference<HashMap<String, Double>>() {};
-                    HashMap<String, Double> jsonObject;
-                    try {
-                        jsonObject = objectMapper.readValue(receivedMessage.getContent(), typeRef);
-                        double receivedEnergy = jsonObject.get(MessageUtil.GIVEN_ENERGY);
-                        ((LoadManager) myAgent).removeExpectedConsumption(receivedEnergy);
-                    } catch (JsonMappingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (JsonProcessingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    Map<String, Object> jsonObject = ((LoadManager) myAgent).convertAndReturnContent(receivedMessage);
+                    double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
+                    ((LoadManager) myAgent).removeExpectedConsumption(receivedEnergy); 
                 } else if(receivedMessage.getPerformative() == ACLMessage.REFUSE){
                     ((LoadManager) myAgent).log(receivedMessage.getSender().getLocalName() + " refused to send energy");
                 }
@@ -87,7 +76,7 @@ public class SendPowerPlantRequestsBehaviour extends Behaviour{
     }
 
     private void sendRequestToPP(String ppName, double expectedConsumption){        
-        HashMap<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<String, Object>();
         content.put(MessageUtil.REQUESTED_ENERGY, expectedConsumption);
         ((LoadManager) myAgent).createAndSend(ACLMessage.REQUEST, ppName, content);
         block();

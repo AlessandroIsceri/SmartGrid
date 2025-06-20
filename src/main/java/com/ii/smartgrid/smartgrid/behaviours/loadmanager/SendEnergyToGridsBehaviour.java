@@ -1,6 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.HashMap;
 
 
@@ -11,9 +12,9 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendGridAnswer extends OneShotBehaviour{
+public class SendEnergyToGridsBehaviour extends OneShotBehaviour{
 
-    public SendGridAnswer(LoadManager loadManager){
+    public SendEnergyToGridsBehaviour(LoadManager loadManager){
         super(loadManager);
     }
     
@@ -23,10 +24,10 @@ public class SendGridAnswer extends OneShotBehaviour{
         
         // "givenEnergy" : 2000
         // "neededEnergy": 2000        
-        LinkedHashMap<String, Double> gridRequestedEnergy = ((LoadManager) myAgent).getGridRequestedEnergy();
+        Map<String, Double> gridRequestedEnergy = ((LoadManager) myAgent).getGridRequestedEnergy();
         for(String gridName : gridRequestedEnergy.keySet()){
             
-            HashMap<String, Object> content = new HashMap<String, Object>();
+            Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.GIVEN_ENERGY, (gridRequestedEnergy.get(gridName) - expectedConsumption));
             content.put(MessageUtil.NEEDED_ENERGY, gridRequestedEnergy.get(gridName));
             ((LoadManager) myAgent).createAndSend(ACLMessage.AGREE, gridName, content);

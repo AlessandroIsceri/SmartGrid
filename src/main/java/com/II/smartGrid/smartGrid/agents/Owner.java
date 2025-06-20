@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
-import com.ii.smartgrid.smartgrid.behaviours.owner.CheckOwnerMessages;
+import com.ii.smartgrid.smartgrid.behaviours.owner.CheckOwnerMessagesBehaviour;
 import com.ii.smartgrid.smartgrid.model.Appliance;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
 import com.ii.smartgrid.smartgrid.model.Routine;
@@ -23,9 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jade.core.Agent;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.AMSService;
-
-import jade.domain.AMSService;
-import jade.domain.FIPAAgentManagement.*;
 
 public class Owner extends CustomAgent{
 	
@@ -46,7 +43,7 @@ public class Owner extends CustomAgent{
          * */
         
         this.log("Setup completed");
-		addBehaviour(new CheckOwnerMessages(this));
+		addBehaviour(new CheckOwnerMessagesBehaviour(this));
 		
     }
 

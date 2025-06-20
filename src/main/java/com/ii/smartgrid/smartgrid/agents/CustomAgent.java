@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WindSpeedStatus;
@@ -71,6 +73,21 @@ public abstract class CustomAgent extends Agent{
         return msg;
 	}
 	
+    public Map<String, Object> convertAndReturnContent(ACLMessage receivedMessage){
+        String receivedContent = receivedMessage.getContent();
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, Object> jsonObject = null;
+		try {
+            jsonObject = objectMapper.readValue(receivedContent, typeRef);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+		return jsonObject;
+    }
+
 	public int getCurTurn() {
 		return curTurn;
 	}

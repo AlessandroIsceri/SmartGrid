@@ -7,23 +7,23 @@ import com.ii.smartgrid.smartgrid.model.Battery;
 public class WindPowerPlant extends RenewablePowerPlant{
 
 
-    private double hProductionCalm;
-	private double hProductionModerateBreeze;
-    private double hProductionGale;
-	private double hProductionHurricane;
+    private double hourlyProductionCalm;
+	private double hourlyProductionModerateBreeze;
+    private double hourlyProductionGale;
+	private double hourlyProductionHurricane;
 
     @Override
     public void setup(){
         status = PPStatus.ON;
         Object[] args = this.getArguments();
         
-        loadManagerName = (String) args[args.length - 7];
-        hProductionCalm = Double.parseDouble((String) args[args.length - 6]);
-        hProductionModerateBreeze = Double.parseDouble((String) args[args.length - 5]);
-        hProductionGale = Double.parseDouble((String) args[args.length - 4]);
-        hProductionHurricane = Double.parseDouble((String) args[args.length - 3]);
-        double maxCapacity = Double.parseDouble((String) args[args.length - 2]);
-        double storedEnergy = Double.parseDouble((String) args[args.length - 1]);
+        loadManagerName = (String) args[0];
+        hourlyProductionCalm = Double.parseDouble((String) args[1]);
+        hourlyProductionModerateBreeze = Double.parseDouble((String) args[2]);
+        hourlyProductionGale = Double.parseDouble((String) args[3]);
+        hourlyProductionHurricane = Double.parseDouble((String) args[4]);
+        double maxCapacity = Double.parseDouble((String) args[5]);
+        double storedEnergy = Double.parseDouble((String) args[6]);
         
         battery = new Battery(maxCapacity, storedEnergy);
         addBehaviour(new RenewablePowerPlantBehaviour(this));
@@ -35,16 +35,16 @@ public class WindPowerPlant extends RenewablePowerPlant{
 
 
     @Override
-    public double getHProduction() {
+    public double getHourlyProduction() {
 		switch(curWindSpeed) {
 			case CALM:
-				return hProductionCalm;
+				return hourlyProductionCalm;
 			case MODERATE_BREEZE:
-				return hProductionModerateBreeze;
+				return hourlyProductionModerateBreeze;
 			case GALE:
-				return hProductionGale;
+				return hourlyProductionGale;
             case HURRICANE:
-                return hProductionHurricane;
+                return hourlyProductionHurricane;
 			default:
                 log("Error: WindSpeed not found");
 				return 0;

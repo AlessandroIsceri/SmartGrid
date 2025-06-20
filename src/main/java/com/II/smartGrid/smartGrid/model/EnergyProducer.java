@@ -15,6 +15,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 })
 
 public interface EnergyProducer {
-	public abstract double getHProduction(WeatherStatus weather, int hour);
+	public abstract double getHourlyProduction(WeatherStatus weather, int hour);
 }
 

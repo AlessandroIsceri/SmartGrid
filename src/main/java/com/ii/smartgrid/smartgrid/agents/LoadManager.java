@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveGridRequestsBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveRenewablePowerPlantInformBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendGridAnswer;
-import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendPowerPlantRequestsBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveEnergyFromRenewablePowerPlantsBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveEnergyRequestsFromGridBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendEnergyRequestsToNonRenewablePowerPlantsBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendEnergyToGridsBehaviour;
 
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -19,7 +19,7 @@ public class LoadManager extends CustomAgent{
 	private List<String> gridNames;
     private List<String> renewablePowerPlantNames;
     private List<String> nonRenewablePowerPlantNames;
-    private LinkedHashMap<String, Double> gridRequestedEnergy;
+    private Map<String, Double> gridRequestedEnergy;
     private double expectedConsumption;
 
     @Override
@@ -74,13 +74,14 @@ public class LoadManager extends CustomAgent{
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             // riceve le richieste dalle grid
+            // ricevi l'energia rinnovabile prodotta
             // manda richieste ai powerplant **dove ER > ENR** e riceve risposta dai powerplant
             // manda risposte alle grid
         
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveGridRequestsBehaviour((LoadManager) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveRenewablePowerPlantInformBehaviour((LoadManager) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendPowerPlantRequestsBehaviour((LoadManager) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendGridAnswer((LoadManager) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromGridBehaviour((LoadManager) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromRenewablePowerPlantsBehaviour((LoadManager) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestsToNonRenewablePowerPlantsBehaviour((LoadManager) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToGridsBehaviour((LoadManager) myAgent));
             ((LoadManager) myAgent).setExpectedConsumption(0);
         }
 
@@ -126,7 +127,7 @@ public class LoadManager extends CustomAgent{
         gridRequestedEnergy.put(sender, energy);
     }
 
-    public LinkedHashMap<String, Double> getGridRequestedEnergy() {
+    public Map<String, Double> getGridRequestedEnergy() {
         return gridRequestedEnergy;
     }
 }

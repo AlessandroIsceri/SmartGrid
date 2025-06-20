@@ -55,8 +55,7 @@ public class WaitForRestoreBehaviour extends Behaviour{
 		double expectedProduction = 0;
 		WeatherStatus curWeatherStatus = ((SmartHome) myAgent).getCurWeather();
 		for(int i = 0; i < energyProducers.size(); i++) {
-            //hproduction / 60 * turnDuration)
-			expectedProduction += energyProducers.get(i).getHProduction(curWeatherStatus, hour) / 60 * TimeUtils.getTurnDuration();
+			expectedProduction += energyProducers.get(i).getHourlyProduction(curWeatherStatus, hour) / 60 * TimeUtils.getTurnDuration();
 		}
         ((SmartHome) myAgent).log("PV: expectedProduction: " + expectedProduction);
 		
@@ -107,18 +106,11 @@ public class WaitForRestoreBehaviour extends Behaviour{
            
             if(receivedMsg.getPerformative() == ACLMessage.INFORM && receivedMsg.getConversationId().equals("restore-" + myAgent.getLocalName())){
                 String receivedContent = receivedMsg.getContent();
-                ObjectMapper objectMapper = new ObjectMapper();
-                TypeReference<HashMap<String, Double>> typeRef = new TypeReference<HashMap<String, Double>>() {};
-                HashMap<String, Double> jsonObject;
+                Map<String, Object> jsonObject = ((SmartHome) myAgent).convertAndReturnContent(receivedMsg);
                 ((SmartHome) myAgent).log("Restore MSG received");
-                try {
-                    jsonObject = objectMapper.readValue(receivedContent, typeRef);
-                    double receivedEnergy = jsonObject.get(MessageUtil.GIVEN_ENERGY);
-                    if(receivedEnergy >= 0){
-                        ((SmartHome) myAgent).restorePower(receivedEnergy);
-                    }
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
+                if(receivedEnergy >= 0){
+                    ((SmartHome) myAgent).restorePower(receivedEnergy);
                 }
             }else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
                 ((SmartHome) myAgent).log("Energy consumed");
