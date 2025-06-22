@@ -9,7 +9,6 @@ import com.ii.smartgrid.smartgrid.agents.SmartHome;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyProducer;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import jade.core.behaviours.OneShotBehaviour;

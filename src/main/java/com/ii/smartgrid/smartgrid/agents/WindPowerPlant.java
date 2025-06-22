@@ -30,10 +30,6 @@ public class WindPowerPlant extends RenewablePowerPlant{
         this.log("Setup completed");
     }
 
-    
-    //Scala di Beaufort
-
-
     @Override
     public double getHourlyProduction() {
 		switch(curWindSpeed) {

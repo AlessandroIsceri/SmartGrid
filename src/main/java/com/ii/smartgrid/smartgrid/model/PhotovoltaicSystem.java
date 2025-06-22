@@ -1,6 +1,6 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
 public class PhotovoltaicSystem implements EnergyProducer{
 	private double hourlyProductionSunny;

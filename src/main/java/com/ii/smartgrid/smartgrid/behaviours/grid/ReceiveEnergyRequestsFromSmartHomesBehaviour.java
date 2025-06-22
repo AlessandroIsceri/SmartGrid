@@ -6,7 +6,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.agents.Grid;
 import com.ii.smartgrid.smartgrid.agents.SmartHome;
@@ -21,7 +20,6 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends Behaviour{
 
     private int requestCont = 0;
     private boolean finished = false;
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     public ReceiveEnergyRequestsFromSmartHomesBehaviour(Grid grid){
         super(grid);

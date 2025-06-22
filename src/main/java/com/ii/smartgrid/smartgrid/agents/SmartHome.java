@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
@@ -51,7 +52,7 @@ public class SmartHome extends CustomAgent{
         mapper = new ObjectMapper();
         
         try {
-			HashMap<String, Object> jsonObject = mapper.readValue(from, typeRef);
+			Map<String, Object> jsonObject = mapper.readValue(from, typeRef);
 
 			//appliances = (ArrayList<Appliance>) jsonObject.get("appliances");
 			appliances = mapper.convertValue(jsonObject.get("appliances"), new TypeReference<List<Appliance>>() { });

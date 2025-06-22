@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
 import jade.core.Agent;
 import jade.tools.DummyAgent.DummyAgent;
@@ -21,9 +23,9 @@ public class SimulationSettings extends CustomAgent{
 	
 	private int nTurns;
 	private List<String> agentNames;
-	public enum WeatherStatus {SUNNY, RAINY, CLOUDY};
-    public enum WindSpeedStatus {CALM, MODERATE_BREEZE, GALE, HURRICANE};
 	private int weatherTurnDuration;
+    private double[][] weatherTransitionProbabilities;
+    private double[][] windSpeedTransitionProbabilities;
 
 	@Override
     public void setup() {   
@@ -32,14 +34,19 @@ public class SimulationSettings extends CustomAgent{
         
         agentNames = new ArrayList<String>();
 		Object[] args = this.getArguments();
-		for(int i = 0; i < args.length - 1; i++) {
+		for(int i = 0; i < args.length - 3; i++) {
 			agentNames.add((String) args[i]);
 		}
-        String weatherDuration = (String) args[args.length - 1];
+        String weatherDuration = (String) args[args.length - 3];
+		double latitude = Double.parseDouble((String) args[args.length - 2]);
+		double longitude = Double.parseDouble((String) args[args.length - 1]);
         weatherTurnDuration = TimeUtils.convertTimeToTurn(weatherDuration);
         curWeather = WeatherStatus.SUNNY;
-        curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
-        
+        curWindSpeed = WindSpeedStatus.CALM;
+
+        weatherTransitionProbabilities = WeatherUtil.getWeatherTransitionProbabilities(latitude, longitude);
+        windSpeedTransitionProbabilities = WeatherUtil.getWindTransitionProbabilities(latitude, longitude);
+
         this.log("Setup completed");
         addBehaviour(new StartNewTurn(this));  
 	}
@@ -65,80 +72,27 @@ public class SimulationSettings extends CustomAgent{
         this.curTurn++;
 	}
 
+
     private void updateWindSpeed() {
-        double randomNum = Math.random(); 
-		// Current state	    CALM (C)		MODERATE_BREEZE (M)		GALE (G)    HURRICANE(H)
-		// CALM (S)		            0.6	        0.4	                    0.0	        0.0
-		// MODERATE_BREEZE (C)		0.2	        0.5	                    0.3	        0.0
-		// GALE (R)		            0.0			0.3				        0.4         0.3
-        // HURRICANE (H)            0.0         0.1                     0.4 	    0.5
-		// TODO: CERCA DATI AFFIDABILI
-		if(curWindSpeed == WindSpeedStatus.CALM) {
-			if(randomNum < 0.6) {
-				this.curWindSpeed = WindSpeedStatus.CALM;
-			}else{
-				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
+        int curStateRow = curWindSpeed.ordinal();
+		double sum = Math.random();
+		for(int i = 0; i < WindSpeedStatus.values().length; i++){
+            sum -= windSpeedTransitionProbabilities[curStateRow][i];
+			if(sum < 0){
+				curWindSpeed = WindSpeedStatus.values()[i];
+				break;
 			}
-		}else if(curWindSpeed == WindSpeedStatus.MODERATE_BREEZE) {
-			if(randomNum < 0.5) {
-				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
-			}else if(randomNum < 0.8){
-				this.curWindSpeed = WindSpeedStatus.GALE;
-			}else{
-				this.curWindSpeed = WindSpeedStatus.CALM;
-			}
-		}else if(curWindSpeed == WindSpeedStatus.GALE){
-			if(randomNum < 0.4) {
-				this.curWindSpeed = WindSpeedStatus.GALE;
-			}else if(randomNum < 0.7){
-				this.curWindSpeed = WindSpeedStatus.HURRICANE;
-			}else {
-				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
-			}
-		}else{
-            if(randomNum < 0.5) {
-				this.curWindSpeed = WindSpeedStatus.HURRICANE;
-			}else if(randomNum < 0.9){
-				this.curWindSpeed = WindSpeedStatus.GALE;
-			}else {
-				this.curWindSpeed = WindSpeedStatus.MODERATE_BREEZE;
-			}
-        }
+		}
     }
 
     private void updateWeather(){
-		double randomNum = Math.random(); 
-		
-		// Current state	Sunny (S)		Cloudy (C)		Rainy (R)
-		// Sunny (S)		0.7				0.2				0.1
-		// Cloudy (C)		0.3				0.5				0.2
-		// Rainy (R)		0.1				0.4				0.5
-		// TODO: CERCA DATI AFFIDABILI
-
-		
-		if(curWeather == WeatherStatus.SUNNY) {
-			if(randomNum < 0.7) {
-				this.curWeather = WeatherStatus.SUNNY;
-			}else if(randomNum < 0.9){
-				this.curWeather = WeatherStatus.CLOUDY;
-			}else {
-				this.curWeather = WeatherStatus.RAINY;
-			}
-		}else if(curWeather == WeatherStatus.CLOUDY) {
-			if(randomNum < 0.5) {
-				this.curWeather = WeatherStatus.CLOUDY;
-			}else if(randomNum < 0.8){
-				this.curWeather = WeatherStatus.SUNNY;
-			}else {
-				this.curWeather = WeatherStatus.RAINY;
-			}
-		}else {
-			if(randomNum < 0.5) {
-				this.curWeather = WeatherStatus.RAINY;
-			}else if(randomNum < 0.9){
-				this.curWeather = WeatherStatus.CLOUDY;
-			}else {
-				this.curWeather = WeatherStatus.SUNNY;
+        int curStateRow = curWeather.ordinal();
+		double sum = Math.random();
+		for(int i = 0; i < WeatherStatus.values().length; i++){
+            sum -= weatherTransitionProbabilities[curStateRow][i];
+			if(sum < 0){
+				curWeather = WeatherStatus.values()[i];
+				break;
 			}
 		}
     }

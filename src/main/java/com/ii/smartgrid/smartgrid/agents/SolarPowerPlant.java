@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
 
 public class SolarPowerPlant extends RenewablePowerPlant{
 

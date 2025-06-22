@@ -9,8 +9,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WindSpeedStatus;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
 import jade.core.AID;
 import jade.core.Agent;

@@ -1,6 +1,6 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings.WeatherStatus;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
