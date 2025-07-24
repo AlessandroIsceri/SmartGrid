@@ -4,4 +4,4 @@ call mvn compile
 @REM call mvn package
 @REM call mvn install
 call mvn -Pjade-main exec:java
-@REM mvn -Pjade-start-owner exec:java
+@REM mvn -Pjade-setup-simulation exec:java  

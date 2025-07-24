@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 //import com.II.smartgrid.smartgrid.agents.SendEndTurnMsg;
-import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
@@ -19,6 +19,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public abstract class GenericTurnBehaviour extends CyclicBehaviour{
+
+	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -45,7 +47,7 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
              	@Override
              	public int onEnd(){
 					((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg);
-                    ((CustomAgent) myAgent).log("Turn finished");
+                    ((CustomAgent) myAgent).log("Turn finished", BEHAVIOUR_NAME);
                     return 0;
                 }
             };

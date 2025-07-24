@@ -55,3 +55,6 @@ local.properties
 todo.txt
 assumptions.txt
 legacy/
+technicalInfo.txt
+
+.vscode

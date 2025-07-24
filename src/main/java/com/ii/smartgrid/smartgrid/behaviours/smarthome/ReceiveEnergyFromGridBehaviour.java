@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.model.Battery;
-import com.ii.smartgrid.smartgrid.model.EnergyProducer;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,11 +22,13 @@ import jade.lang.acl.MessageTemplate;
 import jade.tools.sniffer.Message;
 
 public class ReceiveEnergyFromGridBehaviour extends Behaviour{
-	
+    
+    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+
     private boolean finished = false;
 
-	public ReceiveEnergyFromGridBehaviour(SmartHome smartHome) {
-		super(smartHome);
+	public ReceiveEnergyFromGridBehaviour(SmartHomeAgent smartHomeAgent) {
+		super(smartHomeAgent);
 	}
 
 	@Override
@@ -35,25 +37,25 @@ public class ReceiveEnergyFromGridBehaviour extends Behaviour{
                                                 MessageTemplate.MatchPerformative(ACLMessage.REFUSE));
         ACLMessage receivedMsg = myAgent.receive();
 		if (receivedMsg != null) {
-            ((SmartHome) myAgent).log("ReceiveEnergyFromGridBehaviour received a message");
-            Map<String, Object> jsonObject = ((SmartHome) myAgent).convertAndReturnContent(receivedMsg);
+            ((CustomAgent) myAgent).log("ReceiveEnergyFromGridBehaviour received a message", BEHAVIOUR_NAME);
+            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
             if(receivedMsg.getPerformative() == ACLMessage.AGREE){
                 String operation = (String) jsonObject.get(MessageUtil.OPERATION);
                 double energy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
                 if(operation.equals(MessageUtil.CONSUME)){
-                    ((SmartHome) myAgent).log("Energy consumed");
+                    ((CustomAgent) myAgent).log("Energy consumed", BEHAVIOUR_NAME);
                 }else{
-                    ((SmartHome) myAgent).log("Error: invalid operation");
+                    ((CustomAgent) myAgent).log("Error: invalid operation", BEHAVIOUR_NAME);
                 }
             } else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
                 //possible blackout 
                 String operation = (String) jsonObject.get(MessageUtil.OPERATION);
                 double energy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
                 if(operation.equals(MessageUtil.CONSUME)){
-                    ((SmartHome) myAgent).log("ATTENTION: Blackout soon");
-                    ((SmartHome) myAgent).shutDown();
+                    ((CustomAgent) myAgent).log("ATTENTION: Blackout soon", BEHAVIOUR_NAME);
+                    ((SmartHomeAgent) myAgent).getSmartHome().shutDown();
                 }else{
-                    ((SmartHome) myAgent).log("Error: invalid operation");
+                    ((CustomAgent) myAgent).log("Error: invalid operation", BEHAVIOUR_NAME);
                 }
             } else {
                 block();
@@ -61,7 +63,7 @@ public class ReceiveEnergyFromGridBehaviour extends Behaviour{
 		} else {
 			block();
 		}
-        ((SmartHome) myAgent).log("ReceiveEnergyFromGridBehaviour finished");
+        ((CustomAgent) myAgent).log("ReceiveEnergyFromGridBehaviour finished", BEHAVIOUR_NAME);
         finished = true;
 	}
 

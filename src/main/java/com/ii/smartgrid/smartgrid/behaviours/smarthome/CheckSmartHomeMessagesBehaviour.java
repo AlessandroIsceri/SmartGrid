@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.SmartHome;
+import com.ii.smartgrid.smartgrid.model.SmartHome;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.model.Routine;
 import com.ii.smartgrid.smartgrid.model.Task;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
@@ -18,11 +20,13 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
-	
+
+	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-	public CheckSmartHomeMessagesBehaviour(SmartHome smartHome) {
-		super(smartHome);
+	public CheckSmartHomeMessagesBehaviour(SmartHomeAgent smartHomeAgent) {
+		super(smartHomeAgent);
 	}
 
 	@Override
@@ -37,14 +41,15 @@ public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
 			 * 		"tasks": task[] sempre JSON 
 			 * }
 			 */
-			Map<String, Object> jsonObject = ((SmartHome) myAgent).convertAndReturnContent(receivedMsg);
+            SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
+			Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
             ArrayList<Task> tasks = (ArrayList<Task>) objectMapper.convertValue(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
-            Routine routine = ((SmartHome) myAgent).getRoutine();
+            Routine routine = smartHome.getRoutine();
             
             //rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
             
-            ((SmartHome) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
+            ((CustomAgent) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
             
             boolean result = true;
             if(operation.equals(MessageUtil.ADD)) {
@@ -52,15 +57,15 @@ public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
             } else if (operation.equals(MessageUtil.REMOVE)){
                     result = routine.removeTasks(tasks);
             } else {
-                ((SmartHome) myAgent).log("Error: invalid parameter \"operation\": " + operation);
+                ((CustomAgent) myAgent).log("Error: invalid parameter \"operation\": " + operation, BEHAVIOUR_NAME);
                 result = false;
             }
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.RESULT, result);
-            ((SmartHome) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
+            ((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
 
-			((SmartHome) myAgent).log("Routine updated");
+			((CustomAgent) myAgent).log("Routine updated", BEHAVIOUR_NAME);
 			
 		} else {
 			block();

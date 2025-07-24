@@ -10,9 +10,9 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.agents.Grid;
-import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlant;
-import com.ii.smartgrid.smartgrid.agents.PowerPlant;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlantAgent;
+import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
@@ -23,19 +23,20 @@ import jade.lang.acl.MessageTemplate;
 
 public class SendNonRenewableEnergyToLoadManagerBehaviour extends OneShotBehaviour{
 
-    
-	private NonRenewablePowerPlant powerPlant;
-	
-	public SendNonRenewableEnergyToLoadManagerBehaviour(NonRenewablePowerPlant nonRenewablePowerPlant) {
-		this.powerPlant = powerPlant;
+    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+
+	public SendNonRenewableEnergyToLoadManagerBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
+		super(nonRenewablePowerPlantAgent);
 	}
 	
 	@Override
 	public void action() {
         
-        double requestedEnergy = ((NonRenewablePowerPlant) myAgent).getRequestedEnergy();
-        double hourlyProduction = ((NonRenewablePowerPlant) myAgent).getHourlyProduction();
-        double turnProduction = hourlyProduction / 60 * TimeUtils.getTurnDuration();
+        NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
+
+        double requestedEnergy = nonRenewablePowerPlant.getRequestedEnergy();
+        double hourlyProduction = nonRenewablePowerPlant.getHourlyProduction();
+        double turnProduction = hourlyProduction * TimeUtils.getTurnDurationHours();
         
         double givenEnergy = 0;
         if(requestedEnergy < turnProduction){
@@ -46,8 +47,8 @@ public class SendNonRenewableEnergyToLoadManagerBehaviour extends OneShotBehavio
         
         Map<String, Object> content = new HashMap<String, Object>();
         content.put(MessageUtil.GIVEN_ENERGY, givenEnergy);
-        String loadManagerName = ((NonRenewablePowerPlant) myAgent).getLoadManagerName();
-        ((NonRenewablePowerPlant) myAgent).createAndSend(ACLMessage.AGREE, loadManagerName, content);
+        String loadManagerName = nonRenewablePowerPlant.getLoadManagerName();
+        ((CustomAgent) myAgent).createAndSend(ACLMessage.AGREE, loadManagerName, content);
 	}
 
 }

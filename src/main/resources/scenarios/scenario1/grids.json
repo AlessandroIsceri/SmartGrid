@@ -1,0 +1,12 @@
+{
+    "Grid-1":{
+        "currentEnergy" : 100,
+        "maxCapacity": 5000,
+        "smartHomeNames": ["SmartHome-1"],
+        "loadManagerName" : "LoadManager-1",
+        "coordinates":{
+            "latitude": 2.823847438209252, 
+            "longitude": 104.16354506562476
+        }
+    }
+}

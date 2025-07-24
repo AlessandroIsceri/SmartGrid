@@ -1,8 +1,17 @@
 package com.ii.smartgrid.smartgrid.agents;
 
+import com.ii.smartgrid.smartgrid.model.Cable;
+import com.ii.smartgrid.smartgrid.model.CustomObject;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import java.util.Map;
+import java.util.function.ObjIntConsumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Time;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,20 +23,33 @@ import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
 public abstract class CustomAgent extends Agent{
 	protected int curTurn;
 	protected WeatherStatus curWeather;
 	protected WindSpeedStatus curWindSpeed;
+    protected Logger logger = LoggerFactory.getLogger(CustomAgent.class);
+    protected double radiantLatitude;
+    protected double radiantLongitude;
+    // protected Map<String, Cable> connectedAgents;
+    protected CustomObject referencedObject;
 
-	public void log(String message){
-		//1 - day 1 - 00:15 - HOME1 --> messaggio
-		//24:00 = 1440 minutes
-		int turnDuration = TimeUtils.getTurnDuration();
-		int day = ((curTurn * turnDuration) / 1440) + 1;
-		int curDayTurn = curTurn % (1440 / turnDuration);
-		System.out.println(this.curTurn + " - " + "Day " + day + " - " + TimeUtils.convertTurnToTime(curDayTurn) + " - " + this.getLocalName() + " --> " + message);
+    public void blockBehaviourIfQueueIsEmpty(Behaviour b){
+        if(getCurQueueSize() == 0){
+            b.block();
+        }
+    }
+
+    protected void log(String message){
+        int day = TimeUtils.getCurrentDayFromTurn(curTurn);
+		logger.info(this.curTurn + " - " + "Day " + day + " - " + TimeUtils.convertTurnToTime(this.curTurn) + " - " + this.getLocalName() + " --> " + message);
+    }
+
+	public void log(String message, String behaviourName){
+		int day = TimeUtils.getCurrentDayFromTurn(curTurn);
+		logger.info(this.curTurn + " - " + "Day " + day + " - " + TimeUtils.convertTurnToTime(this.curTurn) + " - " + this.getLocalName() + ":" + behaviourName + " --> " + message);
 	}
 	
 	private String convertContentToJSON(Map<String, Object> content){
@@ -53,7 +75,6 @@ public abstract class CustomAgent extends Agent{
         this.send(reply);
     }
 
-
     public void createAndSend(int performative, String receiverName, Map<String, Object> content){
 		this.send(buildMessage(performative, receiverName, content));
 	}
@@ -69,10 +90,27 @@ public abstract class CustomAgent extends Agent{
 	private ACLMessage buildMessage(int performative, String receiverName, Map<String, Object> content){
 		ACLMessage msg = new ACLMessage(performative);
         msg.addReceiver(new AID(receiverName, AID.ISLOCALNAME));
+
+        Object givenEnergy = content.get(MessageUtil.GIVEN_ENERGY);
+        if(givenEnergy != null){
+            content.put(MessageUtil.GIVEN_ENERGY, updateEnergyValue(receiverName, (double) givenEnergy));
+        }
+
+        Object releasedEnergy = content.get(MessageUtil.GIVEN_ENERGY);
+        if(releasedEnergy != null){
+            content.put(MessageUtil.RELEASED_ENERGY, updateEnergyValue(receiverName, (double) releasedEnergy));
+        }
+
         msg.setContent(convertContentToJSON(content));
         return msg;
 	}
-	
+
+    private double updateEnergyValue(String receiverName, double producedEnergy){
+        Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
+        Cable cable = connectedAgents.get(receiverName);
+        return cable.computeTransmittedPower(producedEnergy);
+    }
+
     public Map<String, Object> convertAndReturnContent(ACLMessage receivedMessage){
         String receivedContent = receivedMessage.getContent();
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
@@ -111,5 +149,9 @@ public abstract class CustomAgent extends Agent{
     public void setCurWindSpeed(WindSpeedStatus curWindSpeed) {
         this.curWindSpeed = curWindSpeed;
     }
-	
+
+    public CustomObject getReferencedObject() {
+        return referencedObject;
+    }
+
 }

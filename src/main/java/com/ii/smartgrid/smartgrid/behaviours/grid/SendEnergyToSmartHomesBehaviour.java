@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.Grid;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.GridAgent;
+import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
@@ -12,15 +14,19 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
-    public SendEnergyToSmartHomesBehaviour(Grid grid){
-        super(grid);
+
+    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+
+    public SendEnergyToSmartHomesBehaviour(GridAgent gridAgent){
+        super(gridAgent);
     }
 
     @Override
     public void action() {
-        Map<String, Double> smartHomesEnergyRequests = ((Grid) myAgent).getSmartHomesEnergyRequests();
-        ((Grid) myAgent).log(smartHomesEnergyRequests.toString());
-        double currentEnergy = ((Grid) myAgent).getCurrentEnergy();
+        Grid grid = ((GridAgent) myAgent).getGrid();
+        Map<String, Double> smartHomesEnergyRequests = grid.getSmartHomesEnergyRequests();
+        ((CustomAgent) myAgent).log(smartHomesEnergyRequests.toString(), BEHAVIOUR_NAME);
+        double currentEnergy = grid.getCurrentEnergy();
         for(String smartHomeName : smartHomesEnergyRequests.keySet()){
             double requestedEnergy = smartHomesEnergyRequests.get(smartHomeName); 
             Map<String, Object> content = new HashMap<String, Object>();
@@ -28,13 +34,13 @@ public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
             content.put(MessageUtil.REQUESTED_ENERGY, requestedEnergy);
             if(currentEnergy >= requestedEnergy){
                 currentEnergy -= requestedEnergy;
-                ((Grid) myAgent).createAndSend(ACLMessage.AGREE, smartHomeName, content);
+                ((CustomAgent) myAgent).createAndSend(ACLMessage.AGREE, smartHomeName, content);
             }else{
-                ((Grid) myAgent).createAndSend(ACLMessage.REFUSE, smartHomeName, content);
-                ((Grid) myAgent).addSmartHomeWithoutPower(smartHomeName, requestedEnergy);
-                ((Grid) myAgent).removeEnergyRequest(smartHomeName);
+                ((CustomAgent) myAgent).createAndSend(ACLMessage.REFUSE, smartHomeName, content);
+                grid.addSmartHomeWithoutPower(smartHomeName, requestedEnergy);
             }
+            grid.removeEnergyRequest(smartHomeName);
         }
-        ((Grid) myAgent).setCurrentEnergy(currentEnergy);
+        grid.setCurrentEnergy(currentEnergy);
     }
 }

@@ -4,25 +4,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlantAgent;
+import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.SolarPowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendProducedEnergyToLoadManagerBehaviour extends OneShotBehaviour{
+public abstract class SendProducedEnergyToLoadManagerBehaviour extends OneShotBehaviour{
 
-    public SendProducedEnergyToLoadManagerBehaviour(RenewablePowerPlant renewablePowerPlant){
-        super(renewablePowerPlant);
+    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+
+    public SendProducedEnergyToLoadManagerBehaviour(RenewablePowerPlantAgent renewablePowerPlantAgent){
+        super(renewablePowerPlantAgent);
     }
 
     @Override
     public void action() {        
-        double expectedProduction = ((RenewablePowerPlant) myAgent).getHourlyProduction();
-        String loadManagerName = ((RenewablePowerPlant) myAgent).getLoadManagerName();
+        RenewablePowerPlant renewablePowerPlant = ((RenewablePowerPlantAgent) myAgent).getRenewablePowerPlant();
+        double expectedProduction = this.getHourlyProduction(renewablePowerPlant);
+        String loadManagerName = renewablePowerPlant.getLoadManagerName();
         Map<String, Object> content = new HashMap<String, Object>();
         content.put(MessageUtil.GIVEN_ENERGY, expectedProduction);
-        ((RenewablePowerPlant) myAgent).createAndSend(ACLMessage.INFORM, loadManagerName, content);
+        ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, loadManagerName, content);
     }
+
+    protected abstract double getHourlyProduction(RenewablePowerPlant renewablePowerPlant);
+
 }

@@ -3,7 +3,9 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.Grid;
+import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
@@ -13,36 +15,39 @@ import jade.lang.acl.ACLMessage;
 
 public class SendRestoreMessagesToSmartHomesBehaviour extends OneShotBehaviour {
 
-    public SendRestoreMessagesToSmartHomesBehaviour(Grid grid){
-        super(grid);
+    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+
+    public SendRestoreMessagesToSmartHomesBehaviour(GridAgent gridAgent){
+        super(gridAgent);
     }
 
     @Override
     public void action() {
-        double currentEnergy = ((Grid) myAgent).getCurrentEnergy();
-        double maxCapacity = ((Grid) myAgent).getMaxCapacity();
+        Grid grid = ((GridAgent) myAgent).getGrid();
+        double currentEnergy = grid.getCurrentEnergy();
+        double maxCapacity = grid.getMaxCapacity();
         if(maxCapacity * 0.5 < currentEnergy){
             // The grid has enough energy so it can be distributed
-            Map<String, Double> receivers = ((Grid) myAgent).getSmartHomesWithoutPower();
+            Map<String, Double> receivers = grid.getSmartHomesWithoutPower();
             for(String receiverName : receivers.keySet()){
                 double requestedEnergy = receivers.get(receiverName);
-                if(((Grid) myAgent).consumeEnergy(requestedEnergy)){
+                if (grid.consumeEnergy(requestedEnergy)){
                     Map<String, Object> content = new HashMap<String, Object>();
                     content.put(MessageUtil.GIVEN_ENERGY, requestedEnergy);
-                    ((Grid) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content, "restore-" + receiverName);
-                    ((Grid) myAgent).removeSmartHomeWithoutPower(receiverName);
+                    ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content, "restore-" + receiverName);
+                    grid.removeSmartHomeWithoutPower(receiverName);
                 }    
             }
         }
 
-        Map<String, Double> receivers = ((Grid) myAgent).getSmartHomesWithoutPower();
-        ((Grid) myAgent).log("SH without power:" + receivers.toString());
+        Map<String, Double> receivers = grid.getSmartHomesWithoutPower();
+        ((CustomAgent) myAgent).log("SH without power:" + receivers.toString(), BEHAVIOUR_NAME);
         for(String receiverName : receivers.keySet()){
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.GIVEN_ENERGY, -1.0);
-            ((Grid) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content, "restore-" + receiverName);
-            ((Grid) myAgent).removeSmartHomeWithoutPower(receiverName);
+            ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content, "restore-" + receiverName);
+            grid.removeSmartHomeWithoutPower(receiverName);
         }
 
     }

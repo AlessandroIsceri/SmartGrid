@@ -1,0 +1,75 @@
+{
+    "SmartHome-1": {
+        "coordinates":{
+            "latitude": 2.8250926770207165,
+            "longitude": 104.16364967701783
+        },
+        "appliances":[
+            {
+				"type":"Television",
+				"alwaysOn":false,
+				"on":false,
+				"hourlyConsumption":200.0
+            },
+            {
+				"type":"Television",
+				"alwaysOn":false,
+				"on":false,
+				"hourlyConsumption":120.0
+            },
+				{
+				"type":"WashingMachine",
+				"alwaysOn":false,
+				"on":false,
+				"hourlyConsumption":250.0
+            }
+        ],
+        "homePhotovoltaicSystem":{
+            "efficiency": 0.1,
+            "area": 40,
+            "latitude": 2.8250926770207165,
+            "azimuthAngleArray": 0,
+            "tiltAngle": 30
+        },
+        "gridName": "Grid-1",
+        "maxPower":500.0,
+        "battery": {
+            "maxCapacity": 1000,
+            "storedEnergy": 0
+        },
+        "routine":{
+            "tasks":[
+                {
+                    "appliance":{
+                        "type":"Television",
+                        "alwaysOn":false,
+                        "on":false,
+                        "hourlyConsumption":200.0
+                    },
+                    "startTime":"00:30",
+                    "endTime":"02:00"
+                },
+                {
+                    "appliance":{
+                        "type":"Television",
+                        "alwaysOn":false,
+                        "on":false,
+                        "hourlyConsumption":120.0
+                    },
+                    "startTime":"00:30",
+                    "endTime":"02:00"
+                },
+                {
+                    "appliance":{
+                        "type":"Television",
+                        "alwaysOn":false,
+                        "on":false,
+                        "hourlyConsumption":120.0
+                    },
+                    "startTime":"06:00",
+                    "endTime":"06:00"
+                }
+            ]
+        }
+    }
+}

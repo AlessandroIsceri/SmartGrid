@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.agents;
+package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,17 @@ import jade.core.behaviours.ParallelBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class PowerPlant extends CustomAgent {
+public abstract class PowerPlant extends CustomObject{
 	
 	public enum PPStatus {ON, OFF, MAINTENANCE};
 	protected PPStatus status;
     protected String loadManagerName;
 	protected Battery battery;
     protected double curTurnExpectedProduction;
+
+
+    public abstract double getHourlyProduction(Object... weatherConditions);
+
 
 	public PPStatus getStatus() {
 		return status;

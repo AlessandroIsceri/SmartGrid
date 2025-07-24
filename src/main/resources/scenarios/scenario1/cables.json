@@ -1,0 +1,46 @@
+{
+    "types" : {
+        "copperHigh2.5": {
+            "cableSection": 2.5,
+            "resistivity": 1.68e-8,
+            "voltage": 11000
+        },
+        "copperLow2.5": {
+            "cableSection": 2.5,
+            "resistivity": 1.68e-8,
+            "voltage": 230
+        }
+    },
+    "links": [
+        {
+            "from" : "SmartHome-1",
+            "to" : "Grid-1",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "LoadManager-1",
+            "to" : "Grid-1",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "LoadManager-1",
+            "to" : "SolarPowerPlant-1",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "LoadManager-1",
+            "to" : "WindPowerPlant-1",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "LoadManager-1",
+            "to" : "HydroPowerPlant-1",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "LoadManager-1",
+            "to" : "DieselPowerPlant-1",
+            "cableType" : "copperHigh2.5"
+        }
+    ]
+}

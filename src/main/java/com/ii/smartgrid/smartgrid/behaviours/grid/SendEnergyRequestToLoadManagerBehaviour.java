@@ -3,30 +3,32 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.Grid;
+import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.agents.GridAgent;
+import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.AID;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyRequestToLoadManagerBehaviour extends OneShotBehaviour{
+    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
-    public SendEnergyRequestToLoadManagerBehaviour(Grid grid) {
-        super(grid);
+    public SendEnergyRequestToLoadManagerBehaviour(GridAgent gridAgent) {
+        super(gridAgent);
     }
 
     @Override
     public void action() {
-        String loadManagerName = ((Grid) myAgent).getLoadManagerName();
+        Grid grid= ((GridAgent) myAgent).getGrid();
+        String loadManagerName = grid.getLoadManagerName();
         Map<String, Object> content = new HashMap<String, Object>();
-        if(((Grid) myAgent).getExpectedConsumption() < 0){
+        if(grid.getExpectedConsumption() < 0){
             content.put(MessageUtil.REQUESTED_ENERGY, 0.0);
         }else{
-            content.put(MessageUtil.REQUESTED_ENERGY, ((Grid) myAgent).getExpectedConsumption());
+            content.put(MessageUtil.REQUESTED_ENERGY, grid.getExpectedConsumption());
         }
-        ((Grid) myAgent).createAndSend(ACLMessage.REQUEST, loadManagerName, content);
+        ((CustomAgent) myAgent).createAndSend(ACLMessage.REQUEST, loadManagerName, content);
     }
 
 }

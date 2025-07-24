@@ -1,0 +1,11 @@
+{
+    "DieselPowerPlant-1": {
+        "loadManagerName" : "LoadManager-1",
+        "enginePower": 2500000,
+        "efficiency": 0.9,
+        "coordinates":{
+            "latitude": 2.82431943118895,
+            "longitude": 104.16497639061139
+        }
+    }
+}

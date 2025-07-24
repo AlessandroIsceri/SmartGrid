@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.agents;
+package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.PowerPlant.PPStatus;
+import com.ii.smartgrid.smartgrid.model.PowerPlant.PPStatus;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyFromLoadManagerBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyRequestsFromSmartHomesBehaviour;
@@ -18,38 +18,22 @@ import jade.core.Agent;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class Grid extends CustomAgent{
+public class Grid extends CustomObject{
 
 	private double currentEnergy;
 	private double maxCapacity;
 	private List<String> smartHomeNames;
-	private List<String> powerPlantNames;
 	private Map<String, Double> smartHomesWithoutPower;
     private Map<String, Double> smartHomesEnergyRequests;
     private double expectedConsumption;
 	private String loadManagerName;
 
-	@Override
-    public void setup() {
-		Object[] args = this.getArguments();
-		smartHomeNames = new ArrayList<String>();
-		smartHomesWithoutPower = new LinkedHashMap<String, Double>();
-        smartHomesEnergyRequests = new LinkedHashMap<String, Double>();
-		boolean readingSmartHomes = true;
-		
-		for(int i = 0; i < args.length - 3; i++) {
-			String curArg = ((String) args[i]);
-            smartHomeNames.add(curArg);
-		}
-		
-		this.loadManagerName = (String) args[args.length - 3];
-		this.maxCapacity = Double.parseDouble((String) args[args.length - 2]);
-		this.currentEnergy = Double.parseDouble((String) args[args.length - 1]);
+	public Grid(){
+        smartHomesWithoutPower = new HashMap<String, Double>();       
+        smartHomesEnergyRequests = new HashMap<String, Double>();
+        expectedConsumption = 0;
+    }
 
-        addBehaviour(new GridBehaviour(this));
-        this.log("Setup completed");        
-	}
-	
 	public double addEnergy(double newEnergy) {
 		if(currentEnergy + newEnergy <= maxCapacity){
 			currentEnergy = currentEnergy + newEnergy;
@@ -85,14 +69,6 @@ public class Grid extends CustomAgent{
 		this.smartHomeNames = smartHomeNames;
 	}
 
-	public List<String> getPowerPlantNames() {
-		return powerPlantNames;
-	}
-
-	public void setPowerPlantNames(List<String> powerPlantNames) {
-		this.powerPlantNames = powerPlantNames;
-	}
-
     public Map<String, Double> getSmartHomesEnergyRequests() {
         return smartHomesEnergyRequests;
     }
@@ -109,19 +85,11 @@ public class Grid extends CustomAgent{
 		smartHomesEnergyRequests.remove(smartHomeName);
 	}
 
-    @Override
-	public String toString() {
-		return "Grid [currentEnergy=" + currentEnergy + ", maxCapacity=" + maxCapacity + ", smartHomeNames="
-				+ smartHomeNames + ", powerPlantNames=" + powerPlantNames + "]";
-	}
-
 	public boolean consumeEnergy(double requestedEnergy) {
 		if(currentEnergy >= requestedEnergy) {
 			currentEnergy -= requestedEnergy;
-            this.log("currentEnergy: " + currentEnergy);
             return true;
 		}
-        this.log("(LOW ENERGY IN GRID) currentEnergy: " + currentEnergy);
         return false;
 	}
 
@@ -147,35 +115,6 @@ public class Grid extends CustomAgent{
 
     public int getSmartHomeWithoutPowerSize(){
         return smartHomesWithoutPower.size();
-    }
-
-    private class GridBehaviour extends GenericTurnBehaviour{
-
-        public GridBehaviour(Grid grid) {
-            super(grid);
-        }
-
-        @Override
-        protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
-            //ricevi le richieste (o se in blackout o meno una casa)
-            //chiedi energia al load manager
-            //aspetta risposta load manager x sapere quanta energia arriverà
-            //invia le risposte alle case
-            //aspetta i messaggi di blackout
-            //restora le case se riesci
-
-			//SendXYZ -> inviare messaggi 
-			//ReceiveXYZ -> ricevere risposte ai messaggi
-
-
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartHomesBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToLoadManagerBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromLoadManagerBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToSmartHomesBehaviour((Grid) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendRestoreMessagesToSmartHomesBehaviour((Grid) myAgent));
-            ((Grid) myAgent).setExpectedConsumption(getBlackoutEnergyRequest());
-        }
-
     }
 
     public void removeExpectedConsumption(double energy) {

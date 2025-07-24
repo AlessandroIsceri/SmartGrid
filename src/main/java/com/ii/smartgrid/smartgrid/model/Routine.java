@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
+
 public class Routine {
 	
 	/*
@@ -50,13 +52,12 @@ public class Routine {
 		// check if one of the new tasks has conflict with already running appliance
 		for(Task new_task : newTasks){
 			Appliance appliance = new_task.getAppliance();
-			LocalTime new_start = LocalTime.parse(new_task.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
-			LocalTime new_end = LocalTime.parse(new_task.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
-			
+            LocalTime new_start = TimeUtils.getLocalTimeFromString(new_task.getStartTime());
+			LocalTime new_end = TimeUtils.getLocalTimeFromString(new_task.getEndTime());
 			for(Task old_task : this.tasks){
 				if (old_task.getAppliance().equals(appliance)){
-					LocalTime old_start = LocalTime.parse(old_task.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
-					LocalTime old_end = LocalTime.parse(old_task.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+					LocalTime old_start = TimeUtils.getLocalTimeFromString(old_task.getStartTime());
+					LocalTime old_end = TimeUtils.getLocalTimeFromString(old_task.getEndTime());
 					
 					//conflict caused by intersection of intervals 
 					
@@ -93,8 +94,8 @@ public class Routine {
 	private enum TaskStatus {OK, TO_SPLIT, TO_DELETE};
 	
 	private TaskStatus checkTask(Task task) {
-		LocalTime start = LocalTime.parse(task.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
-		LocalTime end = LocalTime.parse(task.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime start = TimeUtils.getLocalTimeFromString(task.getStartTime());
+        LocalTime end = TimeUtils.getLocalTimeFromString(task.getEndTime());
 		if(start.compareTo(end) > 0) {
 			return TaskStatus.TO_SPLIT;
 		} else if(start.compareTo(end) == 0) {

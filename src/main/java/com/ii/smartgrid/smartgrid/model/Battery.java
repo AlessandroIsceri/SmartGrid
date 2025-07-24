@@ -1,5 +1,7 @@
 package com.ii.smartgrid.smartgrid.model;
 
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
+
 public class Battery {
 	private double maxCapacity;
 	private double storedEnergy;
@@ -34,14 +36,28 @@ public class Battery {
 		this.storedEnergy = storedEnergy;
 	}
 	
+    public double requestEnergy(double requestedEnergy){
+        double requestedEnergyWH = requestedEnergy * TimeUtils.getTurnDurationHours(); //convert Watts in Watts Hour
+        if(storedEnergy >= requestedEnergyWH){
+            storedEnergy -= requestedEnergyWH;
+            return requestedEnergy;
+        }else{
+            double oldStored = storedEnergy;
+            storedEnergy = 0;
+            return oldStored;
+        }
+    }
 	
 	public double fillBattery(double energy){
-		if(storedEnergy + energy <= maxCapacity){
-			storedEnergy += energy;
+
+        double energyWH = energy * TimeUtils.getTurnDurationHours(); //convert Watts in Watts Hour
+
+		if(storedEnergy + energyWH <= maxCapacity){
+			storedEnergy += energyWH;
 			return 0;
 		}
 		else {
-			double excess = energy - (maxCapacity - storedEnergy);
+			double excess = energy - (maxCapacity - energyWH);
 			storedEnergy = maxCapacity;
 			return excess;
 		}
