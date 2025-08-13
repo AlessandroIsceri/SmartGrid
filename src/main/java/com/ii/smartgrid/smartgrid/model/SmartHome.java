@@ -2,6 +2,7 @@ package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
@@ -114,12 +115,17 @@ public class SmartHome extends CustomObject{
             for(Task curTask : routine.getTasks()) {
                 int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
                 int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
+                String applianceName = curTask.getApplianceName();
                 if(startTurn == curTurn) {
-                    curTask.getAppliance().setOn(true);
-                    expectedConsumption += curTask.getAppliance().getHourlyConsumption() * turnDurationHours;
+                    // Find the object with the given name using stream
+                    Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
+                    curAppliance.setOn(true);
+                    expectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
+                    
                 } else if(endTurn == curTurn) {
-                    curTask.getAppliance().setOn(false);
-                    expectedConsumption -= curTask.getAppliance().getHourlyConsumption() * turnDurationHours;
+                    Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
+                    curAppliance.setOn(false);
+                    expectedConsumption -= curAppliance.getHourlyConsumption() * turnDurationHours;
                 }
             }
         }
@@ -131,9 +137,6 @@ public class SmartHome extends CustomObject{
             expectedProduction = expectedProduction + battery.getAvailableEnergy();
         }
     }
-    // public double computeExpectedProduction(int curTurn, WeatherStatus curWeather){
-    //     return homePhotovoltaicSystem.getHourlyProduction(curWeather, curTurn) * TimeUtils.getTurnDurationHours();
-    // }
 
     public HomePhotovoltaicSystem getHomePhotovoltaicSystem() {
         return homePhotovoltaicSystem;

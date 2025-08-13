@@ -1,31 +1,16 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
-import java.util.Objects;
-
-@JsonTypeInfo(
-	use = Id.NAME,
-	include = JsonTypeInfo.As.PROPERTY,
-	property = "type")
-
-@JsonSubTypes({
-    @Type(value = Television.class),
-    @Type(value = WashingMachine.class)
-})
-public abstract class Appliance {
-	protected boolean alwaysOn;	
-	protected boolean on;
-	protected double hourlyConsumption;
+public class Appliance {
+    private String name;
+	private boolean alwaysOn;	
+	private boolean on;
+	private double hourlyConsumption;
 	
-	protected Appliance() {
+	private Appliance() {
 		super();
 	}
 	
-	protected Appliance(double hourlyConsumption, boolean alwaysOn) {
+	private Appliance(double hourlyConsumption, boolean alwaysOn) {
 		this.hourlyConsumption = hourlyConsumption;
 		this.alwaysOn = alwaysOn;
 	}
@@ -54,25 +39,43 @@ public abstract class Appliance {
 		this.hourlyConsumption = hourlyConsumption;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Appliance other = (Appliance) obj;
-		return alwaysOn == other.alwaysOn
-				&& Double.doubleToLongBits(hourlyConsumption) == Double.doubleToLongBits(other.hourlyConsumption)
-				&& on == other.on;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public String toString() {
-		return "Appliance [alwaysOn=" + alwaysOn + ", on=" + on + ", hourlyConsumption=" + hourlyConsumption + "]";
-	}
-	
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Appliance other = (Appliance) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (alwaysOn != other.alwaysOn)
+            return false;
+        if (on != other.on)
+            return false;
+        if (Double.doubleToLongBits(hourlyConsumption) != Double.doubleToLongBits(other.hourlyConsumption))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Appliance [name=" + name + ", alwaysOn=" + alwaysOn + ", on=" + on + ", hourlyConsumption="
+                + hourlyConsumption + "]";
+    }
+    
 	
 	
 }

@@ -3,7 +3,7 @@ package com.ii.smartgrid.smartgrid.model;
 import java.util.Objects;
 
 public class Task {
-	private Appliance appliance;
+	private String applianceName;
 	private String startTime;
 	private String endTime;
 	
@@ -11,12 +11,12 @@ public class Task {
 		super();
 	}
 	
-	public Appliance getAppliance() {
-		return appliance;
+	public String getApplianceName() {
+		return applianceName;
 	}
 	
-	public void setAppliance(Appliance appliance) {
-		this.appliance = appliance;
+	public void setApplianceName(String applianceName) {
+		this.applianceName = applianceName;
 	}
 	
 	public String getStartTime() {
@@ -35,30 +35,46 @@ public class Task {
 		this.endTime = endTime;
 	}
 
-	public Task(Appliance appliance, String startTime, String endTime) {
+	public Task(String applianceName, String startTime, String endTime) {
 		super();
-		this.appliance = appliance;
+		this.applianceName = applianceName;
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Task other = (Task) obj;
-		return Objects.equals(appliance, other.appliance) && Objects.equals(endTime, other.endTime)
-				&& Objects.equals(startTime, other.startTime);
-	}
+    @Override
+    public String toString() {
+        return "Task [applianceName=" + applianceName + ", startTime=" + startTime + ", endTime=" + endTime + "]";
+    }
 
-	@Override
-	public String toString() {
-		return "Task [appliance=" + appliance + ", startTime=" + startTime + ", endTime=" + endTime + "]";
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Task other = (Task) obj;
+        if (applianceName == null) {
+            if (other.applianceName != null)
+                return false;
+        } else if (!applianceName.equals(other.applianceName))
+            return false;
+        if (startTime == null) {
+            if (other.startTime != null)
+                return false;
+        } else if (!startTime.equals(other.startTime))
+            return false;
+        if (endTime == null) {
+            if (other.endTime != null)
+                return false;
+        } else if (!endTime.equals(other.endTime))
+            return false;
+        return true;
+    }
+
+	
 	
 	
 	

@@ -7,19 +7,19 @@
         "priority": "LOW",
         "appliances":[
             {
-				"type":"Television",
+				"name":"Television-1",
 				"alwaysOn":false,
 				"on":false,
 				"hourlyConsumption":200.0
             },
             {
-				"type":"Television",
+				"name":"Television-2",
 				"alwaysOn":false,
 				"on":false,
 				"hourlyConsumption":120.0
             },
-				{
-				"type":"WashingMachine",
+			{
+				"name":"WashingMachine-1",
 				"alwaysOn":false,
 				"on":false,
 				"hourlyConsumption":250.0
@@ -44,32 +44,17 @@
         "routine":{
             "tasks":[
                 {
-                    "appliance":{
-                        "type":"Television",
-                        "alwaysOn":false,
-                        "on":false,
-                        "hourlyConsumption":200.0
-                    },
+                    "applianceName":"Television-1",
                     "startTime":"00:30",
                     "endTime":"02:00"
                 },
                 {
-                    "appliance":{
-                        "type":"Television",
-                        "alwaysOn":false,
-                        "on":false,
-                        "hourlyConsumption":120.0
-                    },
+                    "applianceName":"Television-2",
                     "startTime":"00:30",
                     "endTime":"02:00"
                 },
                 {
-                    "appliance":{
-                        "type":"WashingMachine",
-                        "alwaysOn":false,
-                        "on":false,
-                        "hourlyConsumption":120.0
-                    },
+                    "applianceName":"WashingMachine-1",
                     "startTime":"06:00",
                     "endTime":"06:00"
                 }
@@ -84,19 +69,19 @@
         "priority": "MEDIUM",
         "appliances": [
             {
-                "type": "Television",
+                "name": "Television-1",
                 "alwaysOn": false,
                 "on": false,
                 "hourlyConsumption": 1500.0
             },
             {
-                "type": "Television",
+                "name": "Television-2",
                 "alwaysOn": true,
                 "on": true,
                 "hourlyConsumption": 200.0
             },
             {
-                "type": "WashingMachine",
+                "name": "WashingMachine-1",
                 "alwaysOn": false,
                 "on": false,
                 "hourlyConsumption": 300.0
@@ -121,32 +106,17 @@
         "routine": {
             "tasks": [
                 {
-                    "appliance": {
-                        "type": "Television",
-                        "alwaysOn": false,
-                        "on": false,
-                        "hourlyConsumption": 1500.0
-                    },
+                    "applianceName": "Television-1",
                     "startTime": "12:00",
                     "endTime": "15:00"
                 },
                 {
-                    "appliance": {
-                        "type": "Television",
-                        "alwaysOn": true,
-                        "on": true,
-                        "hourlyConsumption": 200.0
-                    },
+                    "applianceName": "Television-2",
                     "startTime": "00:00",
                     "endTime": "23:59"
                 },
                 {
-                    "appliance": {
-                        "type": "WashingMachine",
-                        "alwaysOn": false,
-                        "on": false,
-                        "hourlyConsumption": 300.0
-                    },
+                    "applianceName": "WashingMachine-1",
                     "startTime": "18:00",
                     "endTime": "20:00"
                 }
@@ -161,7 +131,7 @@
         "priority": "LOW",
         "appliances": [
             {
-                "type": "Television",
+                "name": "Television-1",
                 "alwaysOn": false,
                 "on": false,
                 "hourlyConsumption": 1500.0
@@ -178,12 +148,7 @@
         "routine": {
             "tasks": [
                 {
-                    "appliance": {
-                        "type": "Television",
-                        "alwaysOn": false,
-                        "on": false,
-                        "hourlyConsumption": 1500.0
-                    },
+                    "applianceName": "Television-1",
                     "startTime": "05:00",
                     "endTime": "07:00"
                 }

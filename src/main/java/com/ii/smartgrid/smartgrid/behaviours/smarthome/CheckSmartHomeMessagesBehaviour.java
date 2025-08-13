@@ -50,7 +50,7 @@ public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
             
             boolean result = true;
             if(operation.equals(MessageUtil.ADD)) {
-                result = routine.addTasks(tasks);
+                result = routine.addTasks(tasks, smartHome.getAppliances());
             } else if (operation.equals(MessageUtil.REMOVE)){
                 result = routine.removeTasks(tasks);
             } else {

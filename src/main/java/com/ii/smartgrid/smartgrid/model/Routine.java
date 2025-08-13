@@ -24,7 +24,6 @@ public class Routine {
 	}
 	
 	public Routine(List<Task> tasks) {
-		//this.tasks = new ArrayList<Task>();
 		this.tasks = tasks;
 	}
 	
@@ -43,21 +42,25 @@ public class Routine {
 
 	
 	
-	public boolean addTasks(List<Task> newTasks) {
+	public boolean addTasks(List<Task> newTasks, List<Appliance> appliances) {
 		
 		if(divideTasks(newTasks) == false) {
 			return false;
 		}
 		
 		// check if one of the new tasks has conflict with already running appliance
-		for(Task new_task : newTasks){
-			Appliance appliance = new_task.getAppliance();
-            LocalTime new_start = TimeUtils.getLocalTimeFromString(new_task.getStartTime());
-			LocalTime new_end = TimeUtils.getLocalTimeFromString(new_task.getEndTime());
-			for(Task old_task : this.tasks){
-				if (old_task.getAppliance().equals(appliance)){
-					LocalTime old_start = TimeUtils.getLocalTimeFromString(old_task.getStartTime());
-					LocalTime old_end = TimeUtils.getLocalTimeFromString(old_task.getEndTime());
+		for(Task newTask : newTasks){
+			String newApplianceName = newTask.getApplianceName();
+            Appliance newAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(newApplianceName)).findFirst().get();
+
+            LocalTime newStart = TimeUtils.getLocalTimeFromString(newTask.getStartTime());
+			LocalTime newEnd = TimeUtils.getLocalTimeFromString(newTask.getEndTime());
+			for(Task oldTask : this.tasks){
+                String oldApplianceName = oldTask.getApplianceName();
+                Appliance oldAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(oldApplianceName)).findFirst().get();
+				if (oldAppliance.equals(newAppliance)){
+					LocalTime oldStart = TimeUtils.getLocalTimeFromString(oldTask.getStartTime());
+					LocalTime oldEnd = TimeUtils.getLocalTimeFromString(oldTask.getEndTime());
 					
 					//conflict caused by intersection of intervals 
 					
@@ -77,7 +80,7 @@ public class Routine {
 					
 					// start old 12.30; end old 13.30 
 					// start new 13.30; end new 16; caso giusto funziona
-					if((old_start.compareTo(new_end) < 0) && (new_start.compareTo(old_end) < 0)){
+					if((oldStart.compareTo(newEnd) < 0) && (newStart.compareTo(oldEnd) < 0)){
 						return false;
 					}
 				}
@@ -105,15 +108,15 @@ public class Routine {
 	}
 	
 	private boolean divideTasks(List<Task> tasks) {
-		ListIterator<Task> listIterator = tasks.listIterator();
-		while (listIterator.hasNext()) {
-			Task curTask = listIterator.next();
+		ListIterator<Task> tasksIterator = tasks.listIterator();
+		while (tasksIterator.hasNext()) {
+			Task curTask = tasksIterator.next();
 			TaskStatus curTaskStatus = checkTask(curTask);
 			if(curTaskStatus == TaskStatus.TO_SPLIT) {
-				Task task1 = new Task(curTask.getAppliance(), curTask.getStartTime(), "00:00");
-				Task task2 = new Task(curTask.getAppliance(), "00:00", curTask.getEndTime());
-				listIterator.add(task1);
-				listIterator.add(task2);
+				Task task1 = new Task(curTask.getApplianceName(), curTask.getStartTime(), "00:00");
+				Task task2 = new Task(curTask.getApplianceName(), "00:00", curTask.getEndTime());
+				tasksIterator.add(task1);
+				tasksIterator.add(task2);
 			}
 			else if(curTaskStatus == TaskStatus.TO_DELETE) {
 				return false;
