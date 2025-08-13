@@ -1,31 +1,22 @@
 package com.ii.smartgrid.smartgrid.utils;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
-import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
-import jade.tools.DummyAgent.DummyAgent;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
+import us.dustinj.timezonemap.TimeZone;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 public class SimulationSettings extends CustomAgent{
 	
@@ -39,10 +30,12 @@ public class SimulationSettings extends CustomAgent{
     private double[][] windSpeedTransitionProbabilities;
     enum SimulationStatus {ON, OFF};
     private SimulationStatus simulationStatus;
+    private Random generator;
 	
 
 	@Override
     public void setup() {   
+        generator = new Random(42);
         Properties prop = new Properties();
         try (FileInputStream fis = new FileInputStream(CONFIG_PATH)) {
             prop.load(fis);
@@ -51,10 +44,18 @@ public class SimulationSettings extends CustomAgent{
         }
         String turnDurationStr = prop.getProperty("turn_duration");
         TimeUtils.computeAndSetTurnDuration(turnDurationStr);
-        
+            
         double latitude = Double.parseDouble(prop.getProperty("latitude"));
         double longitude = Double.parseDouble(prop.getProperty("longitude"));
                 
+        TimeZoneMap map = TimeZoneMap.forEverywhere();
+        TimeZone tz = map.getOverlappingTimeZone(latitude, longitude);
+        String timeZone = tz.getZoneId();
+        TimeUtils.setTimeZone(timeZone);
+
+        String simulationStartDate = prop.getProperty("simulation_start_date");
+        TimeUtils.setSimulationStartDate(simulationStartDate);
+
         String weatherTurnDurationStr = prop.getProperty("weather_turn_duration");
         TimeUtils.computeAndSetWeatherTurnDuration(weatherTurnDurationStr);
 
@@ -66,9 +67,26 @@ public class SimulationSettings extends CustomAgent{
         
         try {
             ContainerController conC = this.getContainerController();
+
+            // int numberOfGrids = 0;
+            // int numberOfNonRenewablePowerPlants = 0;
+            // for(String agentName : agentNames){
+            //     if(agentName.startsWith("Grid")){
+            //         numberOfGrids++;
+            //     } else if(agentName.startsWith("NonRenewablePowerPlant")){
+            //         numberOfNonRenewablePowerPlants++;
+            //     }
+            // }
+
             for(String agentName : agentNames){
                 String className = agentName.split("-")[0]; 
-                AgentController ac = conC.createNewAgent(agentName, PACKAGE_PATH + "." + className + "Agent", null);
+                Object[] params = null;
+                // if(agentName.contains("LoadManager")){
+                //     params = new Object[2];
+                //     params[0] = numberOfGrids;
+                //     params[1] = numberOfNonRenewablePowerPlants;
+                // }
+                AgentController ac = conC.createNewAgent(agentName, PACKAGE_PATH + "." + className + "Agent", params);
                 ac.start();
             }        
             
@@ -100,6 +118,15 @@ public class SimulationSettings extends CustomAgent{
 
         WeatherUtil.setSunriseAndSunset(latitude, longitude);
 
+        double priceVolatility = Double.parseDouble(prop.getProperty("price_volatility"));
+        double priceTrend = Double.parseDouble(prop.getProperty("price_trend"));
+
+        EnergyUtil.setPriceVolatility(priceVolatility);
+        EnergyUtil.setPriceTrend(priceTrend);
+        
+        String countryCode = EnergyUtil.getCountryFromCoordinates(latitude, longitude);
+        curElectricityPrice = EnergyUtil.getMeanElectricityPrice(countryCode);
+
         this.log("Setup completed");
         addBehaviour(new StartNewTurn(this));  
         addBehaviour(new CheckSimulationSettingsMessages(this));  
@@ -107,7 +134,7 @@ public class SimulationSettings extends CustomAgent{
 
     void sendMessages() {
 		try {
-			Thread.sleep(200);
+			Thread.sleep(50);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -115,6 +142,7 @@ public class SimulationSettings extends CustomAgent{
 		content.put(MessageUtil.CURRENT_TURN, this.curTurn);
         content.put(MessageUtil.CURRENT_WEATHER, this.curWeather.ordinal());
         content.put(MessageUtil.CURRENT_WIND_SPEED, this.curWindSpeed.ordinal());
+        content.put(MessageUtil.ELECTRICITY_PRICE, this.curElectricityPrice);
 
         this.log("Weather: " + this.curWeather);
         this.log("Wind speed: " + this.curWindSpeed);
@@ -147,13 +175,14 @@ public class SimulationSettings extends CustomAgent{
             updateWindSpeed();
 			this.log("Weather updated: " + this.curWeather);
 		}
+        curElectricityPrice = EnergyUtil.randomWalk(curElectricityPrice);
         this.curTurn++;
 	}
 
 
     private void updateWindSpeed() {
         int curStateRow = curWindSpeed.ordinal();
-		double sum = Math.random();
+		double sum = generator.nextDouble();
 		for(int i = 0; i < WindSpeedStatus.values().length; i++){
             sum -= windSpeedTransitionProbabilities[curStateRow][i];
 			if(sum < 0){
@@ -165,7 +194,7 @@ public class SimulationSettings extends CustomAgent{
 
     private void updateWeather(){
         int curStateRow = curWeather.ordinal();
-		double sum = Math.random();
+		double sum = generator.nextDouble();
 		for(int i = 0; i < WeatherStatus.values().length; i++){
             sum -= weatherTransitionProbabilities[curStateRow][i];
 			if(sum < 0){

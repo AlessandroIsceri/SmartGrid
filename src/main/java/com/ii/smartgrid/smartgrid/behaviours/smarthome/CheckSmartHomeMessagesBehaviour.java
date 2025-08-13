@@ -13,7 +13,6 @@ import com.ii.smartgrid.smartgrid.model.Task;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -22,8 +21,6 @@ import jade.lang.acl.MessageTemplate;
 public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
 
 	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
-	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	public CheckSmartHomeMessagesBehaviour(SmartHomeAgent smartHomeAgent) {
 		super(smartHomeAgent);
@@ -44,18 +41,18 @@ public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
             SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
 			Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
-            ArrayList<Task> tasks = (ArrayList<Task>) objectMapper.convertValue(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
+            List<Task> tasks = (List<Task>) ((CustomAgent) myAgent).readValueFromJson(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
+            
             Routine routine = smartHome.getRoutine();
             
             //rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
-            
             ((CustomAgent) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
             
             boolean result = true;
             if(operation.equals(MessageUtil.ADD)) {
                 result = routine.addTasks(tasks);
             } else if (operation.equals(MessageUtil.REMOVE)){
-                    result = routine.removeTasks(tasks);
+                result = routine.removeTasks(tasks);
             } else {
                 ((CustomAgent) myAgent).log("Error: invalid parameter \"operation\": " + operation, BEHAVIOUR_NAME);
                 result = false;
@@ -65,8 +62,7 @@ public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
             content.put(MessageUtil.RESULT, result);
             ((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
 
-			((CustomAgent) myAgent).log("Routine updated", BEHAVIOUR_NAME);
-			
+			((CustomAgent) myAgent).log("Routine updated", BEHAVIOUR_NAME);			
 		} else {
 			block();
 		}

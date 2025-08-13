@@ -1,15 +1,11 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-import java.util.ArrayList;
-
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.ReceiveNonRenewableEnergyRequestFromLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendNonRenewableEnergyToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendNonRenewableEnergyToGridBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.UpdateNonRenewableStatus;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 
 import jade.core.behaviours.SequentialBehaviour;
-import jade.lang.acl.ACLMessage;
 
 public abstract class NonRenewablePowerPlantAgent extends PowerPlantAgent{
 
@@ -27,11 +23,12 @@ public abstract class NonRenewablePowerPlantAgent extends PowerPlantAgent{
 
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
-            //riceve un messaggio con la richiesta di energia
-            //risponde inviando l'energia richiesta
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveNonRenewableEnergyRequestFromLoadManagerBehaviour((NonRenewablePowerPlantAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendNonRenewableEnergyToLoadManagerBehaviour((NonRenewablePowerPlantAgent) myAgent));
-
+            //se è attivo, invia l'energia prodotta
+            NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
+            if(nonRenewablePowerPlant.isOn()){
+                sequentialTurnBehaviour.addSubBehaviour(new SendNonRenewableEnergyToGridBehaviour((NonRenewablePowerPlantAgent) myAgent));
+            }
+            sequentialTurnBehaviour.addSubBehaviour(new UpdateNonRenewableStatus((NonRenewablePowerPlantAgent) myAgent));
         }
 
     }

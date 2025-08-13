@@ -5,11 +5,11 @@ import com.ii.smartgrid.smartgrid.agents.SolarPowerPlantAgent;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
-public class SendProducedSolarEnergyToLoadManagerBehaviour extends SendProducedEnergyToLoadManagerBehaviour{
+public class SendProducedSolarEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
-    public SendProducedSolarEnergyToLoadManagerBehaviour(SolarPowerPlantAgent solarPowerPlantAgent){
+    public SendProducedSolarEnergyToGridBehaviour(SolarPowerPlantAgent solarPowerPlantAgent){
         super(solarPowerPlantAgent);
     }
     

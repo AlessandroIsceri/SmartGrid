@@ -1,12 +1,42 @@
 {
     "Grid-1":{
-        "currentEnergy" : 100,
-        "maxCapacity": 5000,
         "smartHomeNames": ["SmartHome-1"],
         "loadManagerName" : "LoadManager-1",
+        "gridNames": ["Grid-2"],
+        "nonRenewablePowerPlantNames": [],
+        "renewablePowerPlantNames": ["SolarPowerPlant-1", "HydroPowerPlant-1", "WindPowerPlant-1"],
         "coordinates":{
-            "latitude": 2.823847438209252, 
+            "latitude":2.823847438209252, 
             "longitude": 104.16354506562476
         }
-    }
+    },
+    "Grid-2":{
+        "smartHomeNames": ["SmartHome-2"],
+        "loadManagerName" : "LoadManager-1",
+        "gridNames": ["Grid-1", "Grid-3"],
+        "nonRenewablePowerPlantNames": ["DieselPowerPlant-1"],
+        "renewablePowerPlantNames": [],
+        "coordinates":{
+            "latitude": 2.796110387446461, 
+            "longitude": 104.2020387357403
+        }
+    },
+    "Grid-3":{
+        "smartHomeNames": ["SmartHome-3"],
+        "loadManagerName" : "LoadManager-1",
+        "gridNames": ["Grid-2"],
+        "nonRenewablePowerPlantNames": [],
+        "renewablePowerPlantNames": [],
+        "coordinates":{
+            "latitude": 2.87576165040307, 
+            "longitude": 104.15522440231217
+        },
+        "battery" : {
+            "voltage" : 400.0,
+            "maxCapacityInAmp": 10800.0,
+            "dischargeCurrent": 700.0,
+            "efficiency": 0.9,
+            "storedEnergy": 0.0
+        }
+    }    
 }

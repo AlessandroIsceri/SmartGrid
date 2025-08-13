@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import java.util.Objects;
 
-@JsonTypeInfo(use = Id.NAME,
+@JsonTypeInfo(
+	use = Id.NAME,
 	include = JsonTypeInfo.As.PROPERTY,
 	property = "type")
 

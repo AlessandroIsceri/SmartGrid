@@ -26,7 +26,7 @@ public class WeatherUtil {
     
     public enum WeatherStatus {SUNNY, CLOUDY, RAINY, SNOWY};
     public enum WindSpeedStatus {CALM, LIGHT_AIR, LIGHT_BREEZE, GENTLE_BREEZE, MODERATE_BREEZE, FRESH_BREEZE, STRONG_BREEZE, NEAR_GALE, GALE, STRONG_GALE, STORM, VIOLENT_STORM, HURRICANE}
-    public static double[] windSpeedAvg = {0.5, 3.5, 9, 15.5, 24, 34, 44.5, 56, 68.5, 82, 96, 110.5, 125};
+    public static double[] windSpeedAvg = {0.5, 3.5, 9.0, 15.5, 24.0, 34.0, 44.5, 56.0, 68.5, 82.0, 96.0, 110.5, 125.0};
     public static int[] cloudCoverageAvg = new int[WeatherStatus.values().length];
     public static List<String> sunriseHours = new ArrayList<String>();
     public static List<String> sunsetHours = new ArrayList<String>();
@@ -62,12 +62,12 @@ public class WeatherUtil {
             parameters.put(frequence, requestedParameter);
             
             // Set TimeZone
-            TimeZoneMap map = TimeZoneMap.forEverywhere();
-            TimeZone tz = map.getOverlappingTimeZone(latitude, longitude);
-            String timezone = tz.getZoneId();
+            // TimeZoneMap map = TimeZoneMap.forEverywhere();
+            // TimeZone tz = map.getOverlappingTimeZone(latitude, longitude);
+            // String timezone = tz.getZoneId();
             // System.out.println("Timezone: " + timezone);
-            parameters.put("timezone", timezone);
-            
+            String timeZone = TimeUtils.getTimeZone();
+            parameters.put("timezone", timeZone);
             StringBuilder result = new StringBuilder();
             for (Map.Entry<String, String> entry : parameters.entrySet()) {
                 result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
@@ -77,7 +77,7 @@ public class WeatherUtil {
             }
 
             String resultString = result.toString();
-            // System.out.println("*****" + resultString);
+            
             if(resultString.length() > 0){
                 resultString = resultString.substring(0, resultString.length() - 1);
             }else{

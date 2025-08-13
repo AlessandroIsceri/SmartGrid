@@ -1,60 +1,48 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.model.Battery;
-
-import jade.core.Agent;
-import jade.core.behaviours.ParallelBehaviour;
-import jade.core.behaviours.SequentialBehaviour;
-import jade.lang.acl.ACLMessage;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 public abstract class PowerPlant extends CustomObject{
 	
-	public enum PPStatus {ON, OFF, MAINTENANCE};
-	protected PPStatus status;
-    protected String loadManagerName;
-	protected Battery battery;
-    protected double curTurnExpectedProduction;
+	protected boolean on;
+    protected String gridName;
+    // protected double curTurnExpectedProduction;
 
 
     public abstract double getHourlyProduction(Object... weatherConditions);
 
 
-	public PPStatus getStatus() {
-		return status;
-	}
-
-	public Battery getBattery() {
-        return battery;
-    }
-
-    public void setBattery(Battery battery) {
-        this.battery = battery;
-    }
+	
 
     public double getCurTurnExpectedProduction() {
-        return curTurnExpectedProduction;
+        return getHourlyProduction() * TimeUtils.getTurnDurationHours();
     }
 
-    public void setCurTurnExpectedProduction(double curTurnExpectedProduction) {
-        this.curTurnExpectedProduction = curTurnExpectedProduction;
+    // public void setCurTurnExpectedProduction(double curTurnExpectedProduction) {
+    //     this.curTurnExpectedProduction = curTurnExpectedProduction;
+    // }
+
+    
+    public String getGridName(){
+        return gridName;
     }
 
-	public void setStatus(PPStatus status) {
-		this.status = status;
-	}
+    public void setGridName(String gridName){
+        this.gridName = gridName;
+    }
 
-    public String getLoadManagerName() {
-        return loadManagerName;
+    public boolean isOn() {
+        return on;
+    }
+
+    public void setOn(boolean on) {
+        this.on = on;
     }
 
     @Override
     public String toString() {
-        return "PowerPlant [status=" + status + ", loadManagerName=" + loadManagerName + ", battery=" + battery
-                + ", curTurnExpectedProduction=" + curTurnExpectedProduction + "]";
-    }	
+        return "PowerPlant [on=" + on + "]";
+    }
+
 }
 

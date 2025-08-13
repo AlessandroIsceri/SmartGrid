@@ -1,38 +1,18 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.utils.JsonUtil;
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
-import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
-
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.lang.acl.ACLMessage;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class CustomObject{
+    
+    public enum Priority {@JsonProperty("HIGH") HIGH, @JsonProperty("MEDIUM") MEDIUM, @JsonProperty("LOW") LOW};
+    
     protected Map<String, Cable> connectedAgents;
     protected Coordinates coordinates;
-   
+
     public CustomObject(){
         super();
         connectedAgents = new HashMap<String, Cable>();
@@ -68,4 +48,8 @@ public abstract class CustomObject{
         this.coordinates = coordinates;
     }
     
+    public Cable getCable(String agentName){
+        return connectedAgents.get(agentName);
+    }
+
 }

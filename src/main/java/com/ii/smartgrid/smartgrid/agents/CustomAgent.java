@@ -6,18 +6,20 @@ import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import java.util.Map;
-import java.util.function.ObjIntConsumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Time;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
@@ -31,10 +33,23 @@ public abstract class CustomAgent extends Agent{
 	protected WeatherStatus curWeather;
 	protected WindSpeedStatus curWindSpeed;
     protected Logger logger = LoggerFactory.getLogger(CustomAgent.class);
-    protected double radiantLatitude;
-    protected double radiantLongitude;
     // protected Map<String, Cable> connectedAgents;
     protected CustomObject referencedObject;
+    protected double curElectricityPrice;
+    private ObjectMapper objectMapper;
+
+    protected CustomAgent(){
+        super();
+        objectMapper = new ObjectMapper();
+        // BasicPolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+        //                                                                  .allowIfSubType("com.ii.smartgrid.smartgrid.model")
+        //                                                                  .allowIfSubType("java.util")
+        //                                                                  .allowIfSubType("java.lang")
+        //                                                                  .build();
+
+        // objectMapper.activateDefaultTyping(ptv, DefaultTyping.OBJECT_AND_NON_CONCRETE);
+        //  objectMapper.activateDefaultTyping(ptv, DefaultTyping.NON_CONCRETE_AND_ARRAYS);
+    }
 
     public void blockBehaviourIfQueueIsEmpty(Behaviour b){
         if(getCurQueueSize() == 0){
@@ -53,10 +68,11 @@ public abstract class CustomAgent extends Agent{
 	}
 	
 	private String convertContentToJSON(Map<String, Object> content){
-		ObjectMapper mapper = new ObjectMapper();
         String ret = "";
         try {
-            ret = mapper.writeValueAsString(content);
+            //TODO RIMUOVI
+            content.put(MessageUtil.CURRENT_TURN, curTurn);
+            ret = this.objectMapper.writeValueAsString(content);
         } catch (JsonProcessingException e) {
             log("Error: an error occurred while creating the JSON content");
             e.printStackTrace();
@@ -90,22 +106,11 @@ public abstract class CustomAgent extends Agent{
 	private ACLMessage buildMessage(int performative, String receiverName, Map<String, Object> content){
 		ACLMessage msg = new ACLMessage(performative);
         msg.addReceiver(new AID(receiverName, AID.ISLOCALNAME));
-
-        Object givenEnergy = content.get(MessageUtil.GIVEN_ENERGY);
-        if(givenEnergy != null){
-            content.put(MessageUtil.GIVEN_ENERGY, updateEnergyValue(receiverName, (double) givenEnergy));
-        }
-
-        Object releasedEnergy = content.get(MessageUtil.GIVEN_ENERGY);
-        if(releasedEnergy != null){
-            content.put(MessageUtil.RELEASED_ENERGY, updateEnergyValue(receiverName, (double) releasedEnergy));
-        }
-
         msg.setContent(convertContentToJSON(content));
         return msg;
 	}
 
-    private double updateEnergyValue(String receiverName, double producedEnergy){
+    public double updateEnergyValue(String receiverName, double producedEnergy){
         Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
         Cable cable = connectedAgents.get(receiverName);
         return cable.computeTransmittedPower(producedEnergy);
@@ -114,10 +119,17 @@ public abstract class CustomAgent extends Agent{
     public Map<String, Object> convertAndReturnContent(ACLMessage receivedMessage){
         String receivedContent = receivedMessage.getContent();
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-		ObjectMapper objectMapper = new ObjectMapper();
+
 		Map<String, Object> jsonObject = null;
 		try {
-            jsonObject = objectMapper.readValue(receivedContent, typeRef);
+            jsonObject = this.objectMapper.readValue(receivedContent, typeRef);
+            //TODO RIMUOVI (e rimuovi anche cur turn come content)
+            // int curTurnFromMsg = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
+            // if(curTurnFromMsg != curTurn){
+            //     log("WRONG TURN " + curTurnFromMsg);
+            //     log("sender " + receivedMessage.getSender().getLocalName());
+            //     log("content " + receivedContent);
+            // }
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -153,5 +165,36 @@ public abstract class CustomAgent extends Agent{
     public CustomObject getReferencedObject() {
         return referencedObject;
     }
+
+    public double getCurElectricityPrice() {
+        return curElectricityPrice;
+    }
+
+    public void setCurElectricityPrice(double curElectricityPrice) {
+        this.curElectricityPrice = curElectricityPrice;
+    }
+
+    public <T> T readValueFromJson(Object object, Class<T> clazz) {
+        return this.objectMapper.convertValue(object, clazz);
+    }
+
+    public <T> T readValueFromJson(Object object, TypeReference<T> typeReference) {
+        String jsonString;
+        // try {
+        //     jsonString = objectMapper.writeValueAsString(object);
+        //     log("***" + jsonString);
+        //     return objectMapper.readValue(jsonString, typeReference);
+        // } catch (JsonProcessingException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
+        return this.objectMapper.convertValue(object, typeReference);
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    
 
 }

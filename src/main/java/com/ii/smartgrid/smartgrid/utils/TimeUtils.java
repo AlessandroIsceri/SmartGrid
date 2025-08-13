@@ -1,9 +1,14 @@
 package com.ii.smartgrid.smartgrid.utils;
 
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 
@@ -32,6 +37,8 @@ public class TimeUtils {
 	
 	private static int turnDuration;
 	private static int weatherTurnDuration;
+    private static long simulationStartDateInMillis;
+    private static String timeZone;
 
 	static void computeAndSetTurnDuration(String newTurnDuration){
         turnDuration = convertDurationInMinutes(newTurnDuration);
@@ -62,8 +69,8 @@ public class TimeUtils {
 		return turnDuration;
 	}
 
-	public static int getTurnDurationHours(){
-		return turnDuration / 60;
+	public static double getTurnDurationHours(){
+		return (double) turnDuration / 60.0;
 	}
 	
 	public static LocalTime getLocalTimeFromString(String time){
@@ -126,4 +133,37 @@ public class TimeUtils {
 		return weatherTurnDuration;
 	}
 	
+	public static int getMinutesFromTurn(int turn){
+		int turnInMinutes = turn * turnDuration;
+        return turnInMinutes;
+	}
+
+    public static String getTimeZone(){
+        return timeZone;
+    }
+
+    private static int getMillisFromTurn(int turn){
+        return getMinutesFromTurn(turn) * 60 * 1000;
+    }
+
+    public static int getTimeZoneOffset(int turn){
+        long millis = simulationStartDateInMillis + getMillisFromTurn(turn);
+        int timeZoneOffset = TimeZone.getTimeZone(timeZone).getOffset(millis);
+        return getHoursFromMillis(timeZoneOffset);
+    }
+
+	public static int getHoursFromMillis(int millis){
+		return millis / 1000 / 60 / 60;
+	}
+
+    public static void setTimeZone(String newTimeZone){
+        timeZone = newTimeZone;
+    }
+
+	public static void setSimulationStartDate(String simulationStartDate) { 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(simulationStartDate, formatter);
+        simulationStartDateInMillis = localDate.atStartOfDay(ZoneId.of(timeZone)).toInstant().toEpochMilli();
+	}
+
 }

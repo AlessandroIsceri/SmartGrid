@@ -46,7 +46,6 @@ public class JsonUtil {
         HYDRO_POWERPLANTS_PATH = BASE_PATH + "hydroPowerplants.json";
         WIND_POWERPLANTS_PATH = BASE_PATH + "windPowerPlants.json";
         OWNERS_PATH = BASE_PATH + "owners.json";
-        System.out.println("OWNERS_PATH: " + OWNERS_PATH);
     }
 
     public static <T> T readJsonFile(String path, String key, Class<T> clazz) {

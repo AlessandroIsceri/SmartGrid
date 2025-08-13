@@ -1,10 +1,10 @@
 {
     "SolarPowerPlant-1": {
-        "loadManagerName" : "LoadManager-1",
+        "gridName": "Grid-1",
         "efficiency": 0.1,
-        "area": 5000,
-        "azimuthAngleArray": 0,
-        "tiltAngle": 30,
+        "area": 5000.0,
+        "azimuthAngleArray": 0.0,
+        "tiltAngle": 30.0,
         "coordinates": {
             "latitude" : 2.8249031004478966, 
             "longitude" : 104.16163910828905

@@ -4,6 +4,7 @@
             "latitude": 2.8250926770207165,
             "longitude": 104.16364967701783
         },
+        "priority": "LOW",
         "appliances":[
             {
 				"type":"Television",
@@ -26,16 +27,19 @@
         ],
         "homePhotovoltaicSystem":{
             "efficiency": 0.1,
-            "area": 40,
-            "latitude": 2.8250926770207165,
-            "azimuthAngleArray": 0,
-            "tiltAngle": 30
+            "area": 40.0,
+            "latitude": 2.8250926770202165,
+            "longitude": 104.16364967701783,
+            "azimuthAngleArray": 0.0,
+            "tiltAngle": 30.0
         },
         "gridName": "Grid-1",
-        "maxPower":500.0,
         "battery": {
-            "maxCapacity": 1000,
-            "storedEnergy": 0
+            "maxCapacityInWatt": 5120,
+            "storedEnergy": 0.0,
+            "dischargeCurrent": 200.0,
+            "efficiency": 0.9,
+            "voltage" : 25.6
         },
         "routine":{
             "tasks":[
@@ -61,13 +65,127 @@
                 },
                 {
                     "appliance":{
-                        "type":"Television",
+                        "type":"WashingMachine",
                         "alwaysOn":false,
                         "on":false,
                         "hourlyConsumption":120.0
                     },
                     "startTime":"06:00",
                     "endTime":"06:00"
+                }
+            ]
+        }
+    },
+    "SmartHome-2": {
+        "coordinates": {
+            "latitude": 2.7977118626651656,
+            "longitude": 104.20501610019711
+        },
+        "priority": "MEDIUM",
+        "appliances": [
+            {
+                "type": "Television",
+                "alwaysOn": false,
+                "on": false,
+                "hourlyConsumption": 1500.0
+            },
+            {
+                "type": "Television",
+                "alwaysOn": true,
+                "on": true,
+                "hourlyConsumption": 200.0
+            },
+            {
+                "type": "WashingMachine",
+                "alwaysOn": false,
+                "on": false,
+                "hourlyConsumption": 300.0
+            }
+        ],
+        "homePhotovoltaicSystem":{
+            "efficiency": 0.1,
+            "area": 40.0,
+            "latitude": 2.8250926770207165,
+            "longitude": 104.20501610019711,
+            "azimuthAngleArray": 0.0,
+            "tiltAngle": 30.0
+        },
+        "gridName": "Grid-2",
+        "battery": {
+            "maxCapacityInWatt": 5120,
+            "storedEnergy": 200.0,
+            "dischargeCurrent": 200.0,
+            "efficiency": 0.9,
+            "voltage" : 25.6
+        },
+        "routine": {
+            "tasks": [
+                {
+                    "appliance": {
+                        "type": "Television",
+                        "alwaysOn": false,
+                        "on": false,
+                        "hourlyConsumption": 1500.0
+                    },
+                    "startTime": "12:00",
+                    "endTime": "15:00"
+                },
+                {
+                    "appliance": {
+                        "type": "Television",
+                        "alwaysOn": true,
+                        "on": true,
+                        "hourlyConsumption": 200.0
+                    },
+                    "startTime": "00:00",
+                    "endTime": "23:59"
+                },
+                {
+                    "appliance": {
+                        "type": "WashingMachine",
+                        "alwaysOn": false,
+                        "on": false,
+                        "hourlyConsumption": 300.0
+                    },
+                    "startTime": "18:00",
+                    "endTime": "20:00"
+                }
+            ]
+        }
+    },
+    "SmartHome-3": {
+        "coordinates": {
+            "latitude": 2.8768855601061474,
+            "longitude": 104.15517868982923
+        },
+        "priority": "LOW",
+        "appliances": [
+            {
+                "type": "Television",
+                "alwaysOn": false,
+                "on": false,
+                "hourlyConsumption": 1500.0
+            }
+        ],
+        "gridName": "Grid-3",
+        "battery": {
+            "maxCapacityInWatt": 5120,
+            "storedEnergy": 200.0,
+            "dischargeCurrent": 200.0,
+            "efficiency": 0.9,
+            "voltage" : 25.6
+        },
+        "routine": {
+            "tasks": [
+                {
+                    "appliance": {
+                        "type": "Television",
+                        "alwaysOn": false,
+                        "on": false,
+                        "hourlyConsumption": 1500.0
+                    },
+                    "startTime": "05:00",
+                    "endTime": "07:00"
                 }
             ]
         }

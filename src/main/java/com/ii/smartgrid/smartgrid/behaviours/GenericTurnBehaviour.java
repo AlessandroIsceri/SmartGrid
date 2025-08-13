@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-//import com.II.smartgrid.smartgrid.agents.SendEndTurnMsg;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
@@ -22,7 +20,6 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 
 	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
-	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	public GenericTurnBehaviour(CustomAgent agent) {
         super(agent);
@@ -42,6 +39,8 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
 			((CustomAgent) myAgent).setCurWeather(WeatherStatus.values()[weather]);
 			int windSpeed = (int) jsonObject.get(MessageUtil.CURRENT_WIND_SPEED);
 			((CustomAgent) myAgent).setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
+            double electricityPrice = (double) jsonObject.get(MessageUtil.ELECTRICITY_PRICE);
+			((CustomAgent) myAgent).setCurElectricityPrice(electricityPrice);
 					
 			SequentialBehaviour sequentialTurnBehaviour = new SequentialBehaviour(myAgent){
              	@Override

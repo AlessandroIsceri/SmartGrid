@@ -33,11 +33,11 @@ public class Coordinates {
         this.longitude = longitude;
     }
 
-    public double getRadiantLatitude() {
+    public double getRadiansLatitude() {
         return Math.toRadians(latitude);
     }
 
-    public double getRadiantLongitude() {
+    public double getRadiansLongitude() {
         return Math.toRadians(longitude);
     }
 

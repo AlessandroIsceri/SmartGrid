@@ -1,6 +1,8 @@
 package com.ii.smartgrid.smartgrid.behaviours;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
@@ -9,7 +11,7 @@ import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.Coordinates;
 import com.ii.smartgrid.smartgrid.model.CustomObject;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
-import com.ii.smartgrid.smartgrid.utils.CableUtil;
+import com.ii.smartgrid.smartgrid.utils.EnergyUtil;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings;
 
@@ -33,6 +35,13 @@ public class CoordinatesDiscoveryBehaviour extends Behaviour{
 
     @Override
     public void action() {
+
+        if(neighborsCont == 0){
+            this.state = Status.FINISHED;
+            
+            return;
+        }
+
         //send messages
         switch (state) {
             case SENDING_MSGS:
@@ -47,6 +56,7 @@ public class CoordinatesDiscoveryBehaviour extends Behaviour{
     }
 
     private void sendCoordinates(){
+        ((CustomAgent) myAgent).log("Sending coordinates...", BEHAVIOUR_NAME);
         CustomObject referencedObject = ((CustomAgent) myAgent).getReferencedObject();
         Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
         for(String agentName : connectedAgents.keySet()){
@@ -63,23 +73,28 @@ public class CoordinatesDiscoveryBehaviour extends Behaviour{
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 		ACLMessage receivedMsg = myAgent.receive(mt);
 		if (receivedMsg != null) {
+            String otherAgentName = receivedMsg.getSender().getLocalName();
+            String myAgentName = myAgent.getLocalName();      
+            ((CustomAgent) myAgent).log("Received coordinates from " + otherAgentName, BEHAVIOUR_NAME);
             Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
             if(operation.equals(MessageUtil.DISCOVERY)){
-                String otherAgentName = receivedMsg.getSender().getLocalName();
-                String myAgentName = myAgent.getLocalName();       
-
                 requestCont++;
                 double latitude = (double) jsonObject.get(MessageUtil.LATITUDE);
                 double longitude = (double) jsonObject.get(MessageUtil.LONGITUDE);
                 Coordinates otherCoordinates = new Coordinates(latitude, longitude);
                 Coordinates myCoordinates = ((CustomAgent) myAgent).getReferencedObject().getCoordinates();
                 
-                Cable cableInfo = CableUtil.getCableTypeInfo(myAgentName, otherAgentName);
+                Cable cableInfo = EnergyUtil.getCableTypeInfo(myAgentName, otherAgentName);
                 double cableSection = cableInfo.getCableSection();
                 double resistivity = cableInfo.getResistivity();
                 double voltage = cableInfo.getVoltage();
-                Cable cable = new Cable(cableSection, resistivity, voltage, myCoordinates, otherCoordinates);
+                // String to = cableInfo.getTo();
+                // String from = cableInfo.getFrom();
+                String from = myAgentName;
+                String to = otherAgentName;
+                String cableType = cableInfo.getCableType();
+                Cable cable = new Cable(cableSection, resistivity, voltage, myCoordinates, otherCoordinates, to, from, cableType);
 
                 ((CustomAgent) myAgent).getReferencedObject().addCable(otherAgentName, cable);
             } else {
@@ -91,7 +106,11 @@ public class CoordinatesDiscoveryBehaviour extends Behaviour{
                 ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
             }else{
                 ((CustomAgent) myAgent).log("Coordinates discovery done", BEHAVIOUR_NAME);
+                
+                sendInformationToLoadManager();
+                
                 state = Status.FINISHED;
+                ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             }
 		} else {
 			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
@@ -101,6 +120,10 @@ public class CoordinatesDiscoveryBehaviour extends Behaviour{
     @Override
     public boolean done() {
         return state == Status.FINISHED;
+    }
+
+    protected void sendInformationToLoadManager(){
+        
     }
 
 }

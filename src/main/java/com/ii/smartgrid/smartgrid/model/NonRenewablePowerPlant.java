@@ -1,38 +1,25 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import java.util.ArrayList;
-
-import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.ReceiveNonRenewableEnergyRequestFromLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendNonRenewableEnergyToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.model.Battery;
-
-import jade.core.behaviours.SequentialBehaviour;
-import jade.lang.acl.ACLMessage;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 public abstract class NonRenewablePowerPlant extends PowerPlant{
 
-    protected double hourlyProduction;
-    protected double requestedEnergy;
+    // protected double hourlyProduction;
+    // protected double requestedEnergy;
+    protected String loadManagerName;
 
     public NonRenewablePowerPlant() {
         super();
     }
 
-    public void setHourlyProduction(double hourlyProduction) {
-        this.hourlyProduction = hourlyProduction;
+    public abstract double getHourlyProduction(Object... weatherConditions);
+
+    public String getLoadManagerName() {
+        return loadManagerName;
     }
 
-    public double getHourlyProduction() {
-        return hourlyProduction;
-    }
-
-    public double getRequestedEnergy() {
-        return requestedEnergy;
-    }
-
-    public void setRequestedEnergy(double requestedEnergy) {
-        this.requestedEnergy = requestedEnergy;
+    public void setLoadManagerName(String loadManagerName) {
+        this.loadManagerName = loadManagerName;
     }
 
 

@@ -1,12 +1,6 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import com.ii.smartgrid.smartgrid.model.Battery;
-import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil;
-import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
 public class WindPowerPlant extends RenewablePowerPlant{
@@ -63,13 +57,13 @@ public class WindPowerPlant extends RenewablePowerPlant{
 		WindSpeedStatus curWindSpeed = (WindSpeedStatus) weatherConditions[0];
 
         double energyProd = 0.0;
-        double wind_speed = 0.0;
-        wind_speed = WeatherUtil.windSpeedAvg[curWindSpeed.ordinal()];
+        double windSpeed = 0.0;
+        windSpeed = WeatherUtil.windSpeedAvg[curWindSpeed.ordinal()];
         // conversion from km/h to m/s
-        wind_speed = wind_speed / 3.6;
+        windSpeed = windSpeed / 3.6;
         
-        rotorSweptArea = (Math.PI * (rotorDiameter / 2));
-        energyProd = 0.5 * airDensity * rotorSweptArea * Math.pow(wind_speed, 3) * PRESSURE_COEFFICIENT;
+        rotorSweptArea = (Math.PI * (rotorDiameter / 2.0));
+        energyProd = 0.5 * airDensity * rotorSweptArea * Math.pow(windSpeed, 3) * PRESSURE_COEFFICIENT;
         return energyProd;
 	}   
 

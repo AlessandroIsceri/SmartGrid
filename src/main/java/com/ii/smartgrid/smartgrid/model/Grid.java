@@ -2,98 +2,104 @@ package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.model.PowerPlant.PPStatus;
-import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyFromLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyRequestsFromSmartHomesBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyRequestToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyToSmartHomesBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.SendRestoreMessagesToSmartHomesBehaviour;
+import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
 
-import jade.core.Agent;
-import jade.core.behaviours.SequentialBehaviour;
-import jade.lang.acl.ACLMessage;
+public class Grid extends CustomObject {
 
-public class Grid extends CustomObject{
-
-	private double currentEnergy;
-	private double maxCapacity;
-	private List<String> smartHomeNames;
-	private Map<String, Double> smartHomesWithoutPower;
-    private Map<String, Double> smartHomesEnergyRequests;
+    // private double currentEnergy;
+    // private double maxCapacity;
+    private List<String> smartHomeNames;
+    private Map<String, EnergyTransaction> smartHomesWithoutPower;
+    private Map<String, EnergyTransaction> smartHomesEnergyRequests;
+    private List<String> renewablePowerPlantNames;
+    private List<String> nonRenewablePowerPlantNames;
+    private Map<String, Boolean> nonRenewablePowerPlantActiveStatus;
+    private List<DistributionInstruction> distributionInstructions;
+    private List<String> gridNames;
     private double expectedConsumption;
-	private String loadManagerName;
+    private double expectedProduction;
+    private String loadManagerName;
+    private int numberOfMessagesToReceive;
+    private Priority priority;
+    private Battery battery;
 
-	public Grid(){
-        smartHomesWithoutPower = new HashMap<String, Double>();       
-        smartHomesEnergyRequests = new HashMap<String, Double>();
+    public Grid() {
+        smartHomeNames = new ArrayList<String>();
+        smartHomesWithoutPower = new HashMap<String, EnergyTransaction>();
+        smartHomesEnergyRequests = new HashMap<String, EnergyTransaction>();
+        renewablePowerPlantNames = new ArrayList<String>();
+        nonRenewablePowerPlantNames = new ArrayList<String>();
+        nonRenewablePowerPlantActiveStatus = new HashMap<String, Boolean>();
+        distributionInstructions = new ArrayList<DistributionInstruction>();
+        gridNames = new ArrayList<String>();
         expectedConsumption = 0;
+        this.priority = priority.LOW;
     }
 
-	public double addEnergy(double newEnergy) {
-		if(currentEnergy + newEnergy <= maxCapacity){
-			currentEnergy = currentEnergy + newEnergy;
-			return 0;
-		} else {
-			double excess = newEnergy - (maxCapacity - currentEnergy);
-			currentEnergy = maxCapacity;
-			return excess;
-		}
-	}
-	
-	public double getCurrentEnergy() {
-		return currentEnergy;
-	}
+    public void updateNonRenewablePowerPlantActiveStatus(List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos) {
+        for (NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos) {
+            String name = nonRenewablePowerPlantInfo.getName();
+            boolean status = nonRenewablePowerPlantInfo.isOn();
+            if(nonRenewablePowerPlantNames.contains(name)){
+                nonRenewablePowerPlantActiveStatus.put(name, status);
+            }
+        }
+    }
 
-	public void setCurrentEnergy(double currentEnergy) {
-		this.currentEnergy = currentEnergy;
-	}
+    public List<DistributionInstruction> getDistributionInstructions() {
+        return distributionInstructions;
+    }
 
-	public double getMaxCapacity() {
-		return maxCapacity;
-	}
+    public void setDistributionInstructions(List<DistributionInstruction> distributionInstructions) {
+        this.distributionInstructions = distributionInstructions;
+    }
 
-	public void setMaxCapacity(double maxCapacity) {
-		this.maxCapacity = maxCapacity;
-	}
+    public Map<String, Boolean> getNonRenewablePowerPlantActiveStatus() {
+        return nonRenewablePowerPlantActiveStatus;
+    }
 
-	public List<String> getSmartHomeNames() {
-		return smartHomeNames;
-	}
+    public void setNonRenewablePowerPlantActiveStatus(Map<String, Boolean> nonRenewablePowerPlantActiveStatus) {
+        this.nonRenewablePowerPlantActiveStatus = nonRenewablePowerPlantActiveStatus;
+    }
 
-	public void setSmartHomeNames(List<String> smartHomeNames) {
-		this.smartHomeNames = smartHomeNames;
-	}
+    
 
-    public Map<String, Double> getSmartHomesEnergyRequests() {
+    public List<String> getSmartHomeNames() {
+        return smartHomeNames;
+    }
+
+    public void setSmartHomeNames(List<String> smartHomeNames) {
+        this.smartHomeNames = smartHomeNames;
+    }
+
+    public Map<String, EnergyTransaction> getSmartHomesEnergyRequests() {
         return smartHomesEnergyRequests;
     }
 
-    public void setSmartHomesEnergyRequests(Map<String, Double> smartHomesEnergyRequests) {
+    public void setSmartHomesEnergyRequests(Map<String, EnergyTransaction> smartHomesEnergyRequests) {
         this.smartHomesEnergyRequests = smartHomesEnergyRequests;
     }
 
-    public void addEnergyRequest(String smartmeHomeName, double request){
+    public void addEnergyRequest(String smartmeHomeName, EnergyTransaction request) {
         smartHomesEnergyRequests.put(smartmeHomeName, request);
     }
 
-	public void removeEnergyRequest(String smartHomeName){
-		smartHomesEnergyRequests.remove(smartHomeName);
-	}
+    public void removeEnergyRequest(String smartHomeName) {
+        smartHomesEnergyRequests.remove(smartHomeName);
+    }
 
-	public boolean consumeEnergy(double requestedEnergy) {
-		if(currentEnergy >= requestedEnergy) {
-			currentEnergy -= requestedEnergy;
-            return true;
-		}
-        return false;
-	}
+    // public boolean consumeEnergy(double requestedEnergy) {
+    // if(currentEnergy >= requestedEnergy) {
+    // currentEnergy -= requestedEnergy;
+    // return true;
+    // }
+    // return false;
+    // }
 
-	public double getExpectedConsumption() {
+    public double getExpectedConsumption() {
         return expectedConsumption;
     }
 
@@ -101,49 +107,184 @@ public class Grid extends CustomObject{
         this.expectedConsumption = expectedConsumption;
     }
 
-    public boolean containsSmartHomeWithoutPower(String smartHomeName){
-		return smartHomesWithoutPower.containsKey(smartHomeName);
-	}
+    public boolean containsSmartHomeWithoutPower(String smartHomeName) {
+        return smartHomesWithoutPower.containsKey(smartHomeName);
+    }
 
-	public void addSmartHomeWithoutPower(String smartHomeName, double energy){
-		smartHomesWithoutPower.put(smartHomeName, energy);
-	}
+    public void addSmartHomeWithoutPower(String smartHomeName, EnergyTransaction energyTransaction) {
+        smartHomesWithoutPower.put(smartHomeName, energyTransaction);
+    }
 
-	public void removeSmartHomeWithoutPower(String smartHomeName){
-		smartHomesWithoutPower.remove(smartHomeName);
-	}
+    public void removeSmartHomeWithoutPower(String smartHomeName) {
+        smartHomesWithoutPower.remove(smartHomeName);
+    }
 
-    public int getSmartHomeWithoutPowerSize(){
+    public int getSmartHomeWithoutPowerSize() {
         return smartHomesWithoutPower.size();
-    }
-
-    public void removeExpectedConsumption(double energy) {
-        expectedConsumption -= energy;
-    }
-
-    public double getBlackoutEnergyRequest() {
-        double sum = 0;
-        for(String smartHome : smartHomesWithoutPower.keySet()){
-            sum += smartHomesWithoutPower.get(smartHome);
-        }
-        return sum; 
     }
 
     public void addExpectedConsumption(double energy) {
         expectedConsumption += energy;
     }
 
-	public String getLoadManagerName(){
-		return loadManagerName;
-	}
+    public void addExpectedProduction(double energy) {
+        expectedProduction += energy;
+    }
 
-	public void setLoadManagerName(String loadManagerName){
-		this.loadManagerName = loadManagerName;
-	}
-
-    public Map<String, Double> getSmartHomesWithoutPower() {
-        return smartHomesWithoutPower;
+    public double getBlackoutEnergyRequest() {
+        double sum = 0;
+        for (String smartHome : smartHomesWithoutPower.keySet()) {
+            sum += smartHomesWithoutPower.get(smartHome).getEnergyTransactionValue();
+        }
+        return sum;
     }
 
 
+    public String getLoadManagerName() {
+        return loadManagerName;
+    }
+
+    public void setLoadManagerName(String loadManagerName) {
+        this.loadManagerName = loadManagerName;
+    }
+
+    public Map<String, EnergyTransaction> getSmartHomesWithoutPower() {
+        return smartHomesWithoutPower;
+    }
+
+    public boolean canSendEnergy() {
+        return battery.getStateOfCharge() > 0.5;
+    }
+
+    public List<String> getRenewablePowerPlantNames() {
+        return renewablePowerPlantNames;
+    }
+
+    public void setRenewablePowerPlantNames(List<String> renewablePowerPlantNames) {
+        this.renewablePowerPlantNames = renewablePowerPlantNames;
+    }
+
+    public List<String> getNonRenewablePowerPlantNames() {
+        return nonRenewablePowerPlantNames;
+    }
+
+    public void setNonRenewablePowerPlantNames(List<String> nonRenewablePowerPlantNames) {
+        this.nonRenewablePowerPlantNames = nonRenewablePowerPlantNames;
+    }
+
+    public List<Cable> getConnectedGridsCables() {
+        List<Cable> connectedGridsCables = new ArrayList<Cable>();
+        for (String agentName : connectedAgents.keySet()) {
+            Cable cable = connectedAgents.get(agentName);
+            if (cable.getTo().contains("Grid")) {
+                connectedGridsCables.add(cable);
+            }
+        }
+        return connectedGridsCables;
+    }
+
+    public void setNumberOfMessagesToReceive(int numberOfMessagesToReceive) {
+        this.numberOfMessagesToReceive = numberOfMessagesToReceive;
+    }
+
+    public int getNumberOfMessagesToReceive() {
+        return this.numberOfMessagesToReceive;
+    }
+
+    public void updateGridPriority(Priority priority) {
+        if (priority.ordinal() < this.priority.ordinal()) {
+            this.priority = priority;
+        }
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public Battery getBattery() {
+        return battery;
+    }
+
+    public double fillBattery(double extraEnergy) {
+        return battery.fillBattery(extraEnergy);
+    }
+
+    public double getExpectedProduction() {
+        return expectedProduction;
+    }
+
+    public void setExpectedProduction(double expectedProduction) {
+        this.expectedProduction = expectedProduction;
+    }
+
+    public List<EnergyTransaction> getSmartHomesEnergyRequestsByPriority(Priority priority) {
+        List<EnergyTransaction> results = new ArrayList<EnergyTransaction>(); 
+        for(EnergyTransaction energyTransaction : smartHomesEnergyRequests.values()){
+            if(energyTransaction.getPriority() == priority && energyTransaction.getTransactionType() == TransactionType.RECEIVE){
+                results.add(energyTransaction);
+            }
+        }
+        return results;
+    }
+
+    public double getBuildingRequestedEnergy() {
+        double sum = 0;
+        for(EnergyTransaction energyTransaction : smartHomesEnergyRequests.values()){
+            if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
+                sum += energyTransaction.getEnergyTransactionValue();
+            }
+        }
+        return sum;
+    }
+
+    public List<EnergyTransaction> getBlackoutSmartHomesEnergyRequestsByPriority(Priority priority) {
+        List<EnergyTransaction> results = new ArrayList<EnergyTransaction>(); 
+        for(EnergyTransaction energyTransaction : smartHomesWithoutPower.values()){
+            if(energyTransaction.getPriority() == priority){
+                results.add(energyTransaction);
+            }
+        }
+        return results;
+    }
+
+    public void setSmartHomesWithoutPower(Map<String, EnergyTransaction> smartHomesWithoutPower) {
+        this.smartHomesWithoutPower = smartHomesWithoutPower;
+    }
+
+    public List<String> getGridNames() {
+        return gridNames;
+    }
+
+    public void setGridNames(List<String> gridNames) {
+        this.gridNames = gridNames;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public void setBattery(Battery battery) {
+        this.battery = battery;
+    }
+
+    @Override
+    public String toString() {
+        return "Grid [smartHomeNames=" + smartHomeNames + ", smartHomesWithoutPower=" + smartHomesWithoutPower
+                + ", smartHomesEnergyRequests=" + smartHomesEnergyRequests + ", renewablePowerPlantNames="
+                + renewablePowerPlantNames + ", nonRenewablePowerPlantNames=" + nonRenewablePowerPlantNames
+                + ", nonRenewablePowerPlantActiveStatus=" + nonRenewablePowerPlantActiveStatus
+                + ", distributionInstructions=" + distributionInstructions + ", gridNames=" + gridNames
+                + ", expectedConsumption=" + expectedConsumption + ", expectedProduction=" + expectedProduction
+                + ", loadManagerName=" + loadManagerName + ", numberOfMessagesToReceive=" + numberOfMessagesToReceive
+                + ", priority=" + priority + ", battery=" + battery + "]";
+    }
+
+    public void resetValues() {
+        this.expectedConsumption = 0;
+        this.expectedProduction = 0;
+        distributionInstructions.clear();
+    }
+
+    
+    
 }

@@ -17,11 +17,11 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendProducedHydroEnergyToLoadManagerBehaviour extends SendProducedEnergyToLoadManagerBehaviour{
+public class SendProducedHydroEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
-    public SendProducedHydroEnergyToLoadManagerBehaviour(HydroPowerPlantAgent hydroPowerPlantAgent){
+    public SendProducedHydroEnergyToGridBehaviour(HydroPowerPlantAgent hydroPowerPlantAgent){
         super(hydroPowerPlantAgent);
     }
     

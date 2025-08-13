@@ -1,7 +1,8 @@
 {
     "DieselPowerPlant-1": {
+        "gridName" : "Grid-2",
         "loadManagerName" : "LoadManager-1",
-        "enginePower": 2500000,
+        "enginePower": 2500000.0,
         "efficiency": 0.9,
         "coordinates":{
             "latitude": 2.82431943118895,

@@ -2,7 +2,6 @@ package com.ii.smartgrid.smartgrid.model;
 
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class DieselPowerPlant extends NonRenewablePowerPlant{
@@ -38,9 +37,18 @@ public class DieselPowerPlant extends NonRenewablePowerPlant{
 
     @Override
     public double getHourlyProduction(Object... weatherConditions) {
+
         double energyProd = 0.0;
         energyProd = enginePower * efficiency;
         return energyProd;
     }
+
+
+    @Override
+    public String toString() {
+        return "DieselPowerPlant [enginePower=" + enginePower + ", efficiency=" + efficiency + "]";
+    }
+
+    
     
 }

@@ -31,10 +31,10 @@ public class StartNewTurn extends CyclicBehaviour {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
         ACLMessage receivedMsg = myAgent.receive(mt);
 		if (receivedMsg != null) {
-            myAgent.log(this.getBehaviourName() + " RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+            myAgent.log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
 			if(receivedMsg.getPerformative() == ACLMessage.INFORM) {
 				receivedAnswers++;
-                ((SimulationSettings) myAgent).log("STARTED StartNewTurn Behaviour, received answers: " + receivedAnswers + " last sender: " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+                ((SimulationSettings) myAgent).log("Received answers: " + receivedAnswers + " last sender: " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
 				if(receivedAnswers == ((SimulationSettings) myAgent).getAgentNames().size()) {
 					receivedAnswers = 0;
 					if(((SimulationSettings) myAgent).getSimulationStatus() == SimulationStatus.ON){

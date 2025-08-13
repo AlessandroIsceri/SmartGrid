@@ -1,15 +1,6 @@
 {
     "LoadManager-1": {
-        "gridNames": ["Grid-1"],
-        "coordinates":{
-            "latitude" : 2.8362812316484645,
-            "longitude" : 104.1609670216778
-        },
-        "renewablePowerPlantNames": ["WindPowerPlant-1", "HydroPowerPlant-1", "SolarPowerPlant-1"],
-        "nonRenewablePowerPlantNames": ["DieselPowerPlant-1"],
-        "battery": {
-            "maxCapacity": 4320000,
-	        "storedEnergy": 3456000
-        }
+        "gridNames": ["Grid-1", "Grid-2", "Grid-3"],
+        "nonRenewablePowerPlantNames": ["DieselPowerPlant-1"]
     }
 }

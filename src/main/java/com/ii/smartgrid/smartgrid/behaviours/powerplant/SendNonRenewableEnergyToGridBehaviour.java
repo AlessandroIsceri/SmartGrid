@@ -21,34 +21,27 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class SendNonRenewableEnergyToLoadManagerBehaviour extends OneShotBehaviour{
+public class SendNonRenewableEnergyToGridBehaviour extends OneShotBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
-	public SendNonRenewableEnergyToLoadManagerBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
+	public SendNonRenewableEnergyToGridBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
 		super(nonRenewablePowerPlantAgent);
 	}
 	
 	@Override
 	public void action() {
-        
-        NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
+        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
 
-        double requestedEnergy = nonRenewablePowerPlant.getRequestedEnergy();
-        double hourlyProduction = nonRenewablePowerPlant.getHourlyProduction();
-        double turnProduction = hourlyProduction * TimeUtils.getTurnDurationHours();
+        NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
         
-        double givenEnergy = 0;
-        if(requestedEnergy < turnProduction){
-            givenEnergy = requestedEnergy;
-        } else {
-            givenEnergy = turnProduction;
-        }
-        
+        double givenEnergy = nonRenewablePowerPlant.getHourlyProduction() * TimeUtils.getTurnDurationHours();;
+
         Map<String, Object> content = new HashMap<String, Object>();
-        content.put(MessageUtil.GIVEN_ENERGY, givenEnergy);
-        String loadManagerName = nonRenewablePowerPlant.getLoadManagerName();
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.AGREE, loadManagerName, content);
+        String gridName = nonRenewablePowerPlant.getGridName();
+        content.put(MessageUtil.GIVEN_ENERGY, ((CustomAgent) myAgent).updateEnergyValue(gridName, givenEnergy));
+        ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
+        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
 	}
 
 }

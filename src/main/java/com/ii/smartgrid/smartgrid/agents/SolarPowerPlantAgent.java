@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlantAgent.RenewablePowerPlantBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedSolarEnergyToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedSolarEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.model.SolarPowerPlant;
 import com.ii.smartgrid.smartgrid.model.WindPowerPlant;
@@ -21,7 +20,7 @@ public class SolarPowerPlantAgent extends RenewablePowerPlantAgent{
 
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.SOLAR_POWERPLANTS_PATH, solarPowerPlantName, SolarPowerPlant.class);
         
-        this.referencedObject.addConnectedAgentName(this.getRenewablePowerPlant().getLoadManagerName());
+        this.referencedObject.addConnectedAgentName(this.getRenewablePowerPlant().getGridName());
         
         this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
 
@@ -29,8 +28,8 @@ public class SolarPowerPlantAgent extends RenewablePowerPlantAgent{
         this.log("Setup completed");
     }
 
-    protected SendProducedEnergyToLoadManagerBehaviour createSendEnergyBehaviourBehaviour(){
-        return new SendProducedSolarEnergyToLoadManagerBehaviour(this);
+    protected SendProducedEnergyToGridBehaviour createSendEnergyBehaviourBehaviour(){
+        return new SendProducedSolarEnergyToGridBehaviour(this);
     }
 
 }

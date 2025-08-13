@@ -16,12 +16,12 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendProducedWindEnergyToLoadManagerBehaviour extends SendProducedEnergyToLoadManagerBehaviour{
+public class SendProducedWindEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
 
-    public SendProducedWindEnergyToLoadManagerBehaviour(WindPowerPlantAgent windPowerPlantAgent){
+    public SendProducedWindEnergyToGridBehaviour(WindPowerPlantAgent windPowerPlantAgent){
         super(windPowerPlantAgent);
     }
     

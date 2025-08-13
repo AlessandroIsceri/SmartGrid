@@ -3,8 +3,7 @@ package com.ii.smartgrid.smartgrid.agents;
 import java.util.ArrayList;
 
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 
 import jade.core.behaviours.SequentialBehaviour;
@@ -25,11 +24,11 @@ public abstract class RenewablePowerPlantAgent extends PowerPlantAgent{
 
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
-            SendProducedEnergyToLoadManagerBehaviour sendEnergyBehaviour = createSendEnergyBehaviourBehaviour();
+            SendProducedEnergyToGridBehaviour sendEnergyBehaviour = createSendEnergyBehaviourBehaviour();
             sequentialTurnBehaviour.addSubBehaviour(sendEnergyBehaviour);    
         }
     }
 
-    protected abstract SendProducedEnergyToLoadManagerBehaviour createSendEnergyBehaviourBehaviour();
+    protected abstract SendProducedEnergyToGridBehaviour createSendEnergyBehaviourBehaviour();
 
 }

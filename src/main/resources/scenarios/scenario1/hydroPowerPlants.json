@@ -1,9 +1,9 @@
 {
     "HydroPowerPlant-1": {
-        "loadManagerName" : "LoadManager-1",
+        "gridName": "Grid-1",
         "efficiency": 0.7,
         "flowRate": 0.25,
-        "headHeight": 141,
+        "headHeight": 141.0,
         "coordinates": {
             "latitude": 2.777288542973285, 
             "longitude": 104.20477531556426
