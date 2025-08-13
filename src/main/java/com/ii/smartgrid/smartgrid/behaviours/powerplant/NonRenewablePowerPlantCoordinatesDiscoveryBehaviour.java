@@ -12,6 +12,7 @@ import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import jade.lang.acl.ACLMessage;
 
@@ -29,7 +30,7 @@ public class NonRenewablePowerPlantCoordinatesDiscoveryBehaviour extends Coordin
         NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
         Map<String, Object> content = new HashMap<String, Object>();
         content.put(MessageUtil.ON, nonRenewablePowerPlant.isOn());
-        content.put(MessageUtil.MAX_TURN_PRODUCTION, nonRenewablePowerPlant.getCurTurnExpectedProduction());
+        content.put(MessageUtil.MAX_TURN_PRODUCTION, nonRenewablePowerPlant.getHourlyProduction() * TimeUtils.getTurnDurationHours());
         String loadManagerName = nonRenewablePowerPlant.getLoadManagerName();
         ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, loadManagerName, content, "nonRenewablePowerPlantInfo");
     }

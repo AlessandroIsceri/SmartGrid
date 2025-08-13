@@ -18,9 +18,7 @@ import com.ii.smartgrid.smartgrid.model.CustomObject;
 
 
 public class JsonUtil {
-    
-    private static String BASE_PATH = "src/main/resources/scenarios/";
-    
+        
     public static String CABLES_PATH;
     public static String GRIDS_PATH;
     public static String LOAD_MANAGERS_PATH;
@@ -31,6 +29,7 @@ public class JsonUtil {
     public static String WIND_POWERPLANTS_PATH;
     public static String OWNERS_PATH;
 
+    private static String BASE_PATH = "src/main/resources/scenarios/";
     private static final String PACKAGE_PATH = CustomObject.class.getPackage().getName();
 
 

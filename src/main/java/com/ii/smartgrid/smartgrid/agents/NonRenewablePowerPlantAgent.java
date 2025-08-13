@@ -9,8 +9,6 @@ import jade.core.behaviours.SequentialBehaviour;
 
 public abstract class NonRenewablePowerPlantAgent extends PowerPlantAgent{
 
-    // protected NonRenewablePowerPlant nonRenewablePowerPlant;
-
     public NonRenewablePowerPlant getNonRenewablePowerPlant() {
         return (NonRenewablePowerPlant) referencedObject;
     }

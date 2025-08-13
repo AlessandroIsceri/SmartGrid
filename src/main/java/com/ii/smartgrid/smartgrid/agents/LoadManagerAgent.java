@@ -16,8 +16,6 @@ import jade.core.behaviours.SequentialBehaviour;
 
 public class LoadManagerAgent extends CustomAgent{
 
-	// private LoadManager loadManager;
-
     @Override
     public void setup() {
         String loadManagerName = this.getLocalName();

@@ -8,8 +8,8 @@ import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 public class EnergyTransactionWithBattery extends EnergyTransaction{
 
     public static final double FULL_BATTERY = 1.0;
-    public static final double EMPTY_BATTERY = 0.0;
-    public static final double END_CHARGE_THRESHOLD = 0.95;
+    // public static final double EMPTY_BATTERY = 0.0;
+    // public static final double END_CHARGE_THRESHOLD = 0.95;
 
     private double curTurnReceivedEnergy;
 

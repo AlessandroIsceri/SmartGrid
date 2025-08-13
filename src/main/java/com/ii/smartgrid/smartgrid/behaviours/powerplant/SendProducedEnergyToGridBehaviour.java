@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlantAgent;
+import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.model.SolarPowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
@@ -31,7 +32,8 @@ public abstract class SendProducedEnergyToGridBehaviour extends OneShotBehaviour
         String gridName = renewablePowerPlant.getGridName();
         Map<String, Object> content = new HashMap<String, Object>();
         // content.put(MessageUtil.GIVEN_ENERGY, expectedProduction);
-        content.put(MessageUtil.GIVEN_ENERGY, ((CustomAgent) myAgent).updateEnergyValue(gridName, expectedProduction));
+        Cable cable = renewablePowerPlant.getCable(gridName);
+        content.put(MessageUtil.GIVEN_ENERGY, cable.computeTransmittedPower(expectedProduction));
 
         ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
         ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);

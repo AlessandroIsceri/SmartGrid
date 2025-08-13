@@ -20,15 +20,15 @@ import us.dustinj.timezonemap.TimeZoneMap;
 
 public class SimulationSettings extends CustomAgent{
 	
+    public enum SimulationStatus {ON, OFF};
+    
     private final String CONFIG_PATH = "src/main/resources/app.config";
-    // private final String PACKAGE_PATH = "com.ii.smartgrid.smartgrid.agents.";
     private final String PACKAGE_PATH = CustomAgent.class.getPackage().getName();
 
 
 	private List<String> agentNames;
     private double[][] weatherTransitionProbabilities;
     private double[][] windSpeedTransitionProbabilities;
-    enum SimulationStatus {ON, OFF};
     private SimulationStatus simulationStatus;
     private Random generator;
 	
@@ -124,15 +124,14 @@ public class SimulationSettings extends CustomAgent{
         EnergyUtil.setPriceVolatility(priceVolatility);
         EnergyUtil.setPriceTrend(priceTrend);
         
-        String countryCode = EnergyUtil.getCountryFromCoordinates(latitude, longitude);
-        curElectricityPrice = EnergyUtil.getMeanElectricityPrice(countryCode);
+        curElectricityPrice = EnergyUtil.getMeanElectricityPriceFromCoordinates(latitude, longitude);
 
         this.log("Setup completed");
         addBehaviour(new StartNewTurn(this));  
         addBehaviour(new CheckSimulationSettingsMessages(this));  
 	}
 
-    void sendMessages() {
+    public void sendMessages() {
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e) {

@@ -40,11 +40,11 @@ public class TimeUtils {
     private static long simulationStartDateInMillis;
     private static String timeZone;
 
-	static void computeAndSetTurnDuration(String newTurnDuration){
+	public static void computeAndSetTurnDuration(String newTurnDuration){
         turnDuration = convertDurationInMinutes(newTurnDuration);
     }
 
-	static void computeAndSetWeatherTurnDuration(String newWeatherTurnDuration){
+	public static void computeAndSetWeatherTurnDuration(String newWeatherTurnDuration){
         weatherTurnDuration = convertDurationInMinutes(newWeatherTurnDuration);
     }
 

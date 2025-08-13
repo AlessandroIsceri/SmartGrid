@@ -5,9 +5,7 @@ import com.ii.smartgrid.smartgrid.model.Owner;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class OwnerAgent extends CustomAgent{
-	
-	// private Owner owner;
-	
+		
     public Owner getOwner(){
         return (Owner) this.referencedObject;
     }

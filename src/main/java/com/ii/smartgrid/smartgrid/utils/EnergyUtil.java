@@ -29,12 +29,12 @@ public class EnergyUtil {
 
     private static String CSV_PATH = "src/main/resources/meanElectricityPrice.csv";
 
-
     private static Map<String, Cable> cableTypes;
     private static List<Cable> links;
     private static double priceVolatility;
     private static double priceTrend; 
     
+    // Initialize cables on first class call
     static {
         loadCables();
     }
@@ -53,18 +53,15 @@ public class EnergyUtil {
             links = objectMapper.convertValue(fileContent.get("links"), typeRefArrayList);
 
         } catch (StreamReadException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (DatabindException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    public static String getCountryFromCoordinates(double lat, double lon) {
+    private static String getCountryFromCoordinates(double lat, double lon) {
         try {
             String url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" 
                         + lat + "&lon=" + lon + "&zoom=3&addressdetails=1";
@@ -111,7 +108,8 @@ public class EnergyUtil {
     }
 
 
-    public static double getMeanElectricityPrice(String country){
+    public static double getMeanElectricityPriceFromCoordinates(double latitude, double longitude){
+        String country = getCountryFromCoordinates(latitude, longitude);
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_PATH))) {
             while ((line = br.readLine()) != null) {
@@ -153,43 +151,5 @@ public class EnergyUtil {
     public static void setPriceTrend(double priceTrend) {
         EnergyUtil.priceTrend = priceTrend;
     }
-
-
-    
-
-    // public static class CableEdge{
-    //     private String from;
-    //     private String to;
-    //     private String cableType;
-
-    //     public CableEdge(){
-
-    //     }
-
-    //     public String getFrom(){
-    //         return from;
-    //     }
-
-    //     public void setFrom(String from) {
-    //         this.from = from;
-    //     }
-
-    //     public String getTo() {
-    //         return to;
-    //     }
-
-    //     public void setTo(String to) {
-    //         this.to = to;
-    //     }
-
-    //     public String getCableType() {
-    //         return cableType;
-    //     }
-
-    //     public void setCableType(String cableType) {
-    //         this.cableType = cableType;
-    //     }
-
-    // }
 
 }

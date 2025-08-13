@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class WeightedGraphPath{
-    // private double cost;
     private List<Double> edgeCosts;
     private List<String> graphPath;
 
@@ -19,9 +18,6 @@ public class WeightedGraphPath{
         this();
         this.graphPath.addAll(weightedGraphPath.graphPath);
         this.edgeCosts.addAll(weightedGraphPath.edgeCosts);
-        
-        // this.edgeCosts = weightedGraphPath.edgeCosts;
-        //this.graphPath = weightedGraphPath.graphPath;
     }
 
     public void addSource(String source){
@@ -31,14 +27,6 @@ public class WeightedGraphPath{
     public void addVertex(String vertex){
         graphPath.add(vertex);
     }
-
-    // public void setCost(double cost){
-    //     this.cost = cost;
-    // }
-
-    // public double getCost() {
-    //     return cost;
-    // }
 
     public double getTotalCost(){
         double sum = 0;

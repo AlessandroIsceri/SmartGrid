@@ -6,23 +6,9 @@ public abstract class PowerPlant extends CustomObject{
 	
 	protected boolean on;
     protected String gridName;
-    // protected double curTurnExpectedProduction;
-
 
     public abstract double getHourlyProduction(Object... weatherConditions);
 
-
-	
-
-    public double getCurTurnExpectedProduction() {
-        return getHourlyProduction() * TimeUtils.getTurnDurationHours();
-    }
-
-    // public void setCurTurnExpectedProduction(double curTurnExpectedProduction) {
-    //     this.curTurnExpectedProduction = curTurnExpectedProduction;
-    // }
-
-    
     public String getGridName(){
         return gridName;
     }

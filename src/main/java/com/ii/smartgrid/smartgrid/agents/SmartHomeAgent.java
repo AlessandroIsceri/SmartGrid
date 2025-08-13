@@ -13,7 +13,6 @@ import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 import jade.core.behaviours.SequentialBehaviour;
 
 public class SmartHomeAgent extends CustomAgent{
-	// private SmartHome smartHome;
 	
     public enum SmartHomeStatus {GAINING_ENERGY, LOSING_ENERGY, BLACKOUT};
 	private SmartHomeStatus homeStatus = SmartHomeStatus.LOSING_ENERGY;

@@ -24,8 +24,6 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends Behaviour
 
     public ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(GridAgent gridAgent){
         super(gridAgent);
-
-        //TODO: IL CONTATORE POTREBBE DARE ERRORE.. ma in teoria le nonrenewable vengono aggiornate turno x turno quindi forse no
         Map<String, Boolean> nonRenewablePowerPlantActiveStatus = gridAgent.getGrid().getNonRenewablePowerPlantActiveStatus();
         nonRenewableActivePowerPlantCount = 0;
         for(String nonRenewablePowerPlantName : nonRenewablePowerPlantActiveStatus.keySet()){

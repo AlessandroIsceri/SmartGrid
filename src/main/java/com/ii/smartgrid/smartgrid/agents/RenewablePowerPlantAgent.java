@@ -10,7 +10,6 @@ import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public abstract class RenewablePowerPlantAgent extends PowerPlantAgent{
-    // protected RenewablePowerPlant renewablePowerPlant;
 
     public RenewablePowerPlant getRenewablePowerPlant() {
         return (RenewablePowerPlant) referencedObject;

@@ -9,6 +9,7 @@ import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
 import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
@@ -81,7 +82,8 @@ public class WaitForRestoreBehaviour extends Behaviour{
 
             // content.put(MessageUtil.RELEASED_ENERGY, expectedProduction);
             // content.put(MessageUtil.RELEASED_ENERGY, ((CustomAgent) myAgent).updateEnergyValue(gridName, expectedProduction));
-            double sendedEnergy = ((CustomAgent) myAgent).updateEnergyValue(gridName, expectedProduction);
+            Cable cable = smartHome.getCable(gridName);
+            double sendedEnergy = cable.computeTransmittedPower(expectedProduction);
             EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHome.getPriority(), sendedEnergy, myAgent.getLocalName(), TransactionType.SEND);
             
             ObjectMapper objectMapper = ((CustomAgent) myAgent).getObjectMapper();

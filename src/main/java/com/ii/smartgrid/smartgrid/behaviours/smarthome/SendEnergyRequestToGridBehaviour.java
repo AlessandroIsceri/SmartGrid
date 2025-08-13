@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
+import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
@@ -38,14 +39,18 @@ public class SendEnergyRequestToGridBehaviour extends OneShotBehaviour{
         TransactionType transactionType;
         // Request energy from the grid
         // String conversationId = null;
+        String gridName = smartHome.getGridName();
+        double energy = Math.abs(expectedConsumption - availableEnergy);
         if(availableEnergy >= expectedConsumption){
             transactionType = TransactionType.SEND;
+            Cable cable = smartHome.getCable(gridName);
+            energy = cable.computeTransmittedPower(energy);
             // conversationId = "release-"+myAgent.getLocalName();
         } else {
             transactionType = TransactionType.RECEIVE; 
             // conversationId = "request-"+myAgent.getLocalName();
         }
-        EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHome.getPriority(), Math.abs(expectedConsumption - availableEnergy), myAgent.getLocalName(), transactionType);
+        EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHome.getPriority(), energy, myAgent.getLocalName(), transactionType);
         Map<String, Object> content = new HashMap<String, Object>();
 
         ObjectMapper objectMapper = ((CustomAgent) myAgent).getObjectMapper();
@@ -55,7 +60,6 @@ public class SendEnergyRequestToGridBehaviour extends OneShotBehaviour{
         // content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
         content.put(MessageUtil.BLACKOUT, false);
 
-        String gridName = smartHome.getGridName();
         ((CustomAgent) myAgent).createAndSend(ACLMessage.REQUEST, gridName, content); //conversationId);
         ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
         //TODO REMOVE

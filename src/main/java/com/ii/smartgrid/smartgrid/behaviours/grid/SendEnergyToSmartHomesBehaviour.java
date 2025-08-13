@@ -39,7 +39,6 @@ public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
         double energySentToGrids = grid.getExpectedConsumption() - buildingRequestedEnergy;
         double availableEnergy = grid.getExpectedProduction() - energySentToGrids;
         for(Priority priority : Priority.values()){
-
             //blackout buildings before
             List<EnergyTransaction> blackoutSmartHomes = grid.getBlackoutSmartHomesEnergyRequestsByPriority(priority);
             for(EnergyTransaction blackoutSmartHomeEnergyRequest : blackoutSmartHomes){

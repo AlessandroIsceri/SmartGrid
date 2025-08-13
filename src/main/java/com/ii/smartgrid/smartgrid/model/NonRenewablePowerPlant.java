@@ -4,8 +4,6 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 public abstract class NonRenewablePowerPlant extends PowerPlant{
 
-    // protected double hourlyProduction;
-    // protected double requestedEnergy;
     protected String loadManagerName;
 
     public NonRenewablePowerPlant() {

@@ -9,9 +9,7 @@ import com.ii.smartgrid.smartgrid.model.DieselPowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
-    
-    // private DieselPowerPlant dieselPowerPlant;
-    
+        
     public void setup(){
         
         String dieselPowerPlantName = this.getLocalName();

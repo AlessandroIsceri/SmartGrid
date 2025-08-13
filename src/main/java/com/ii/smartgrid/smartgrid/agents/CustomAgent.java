@@ -33,7 +33,6 @@ public abstract class CustomAgent extends Agent{
 	protected WeatherStatus curWeather;
 	protected WindSpeedStatus curWindSpeed;
     protected Logger logger = LoggerFactory.getLogger(CustomAgent.class);
-    // protected Map<String, Cable> connectedAgents;
     protected CustomObject referencedObject;
     protected double curElectricityPrice;
     private ObjectMapper objectMapper;
@@ -109,12 +108,6 @@ public abstract class CustomAgent extends Agent{
         msg.setContent(convertContentToJSON(content));
         return msg;
 	}
-
-    public double updateEnergyValue(String receiverName, double producedEnergy){
-        Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
-        Cable cable = connectedAgents.get(receiverName);
-        return cable.computeTransmittedPower(producedEnergy);
-    }
 
     public Map<String, Object> convertAndReturnContent(ACLMessage receivedMessage){
         String receivedContent = receivedMessage.getContent();

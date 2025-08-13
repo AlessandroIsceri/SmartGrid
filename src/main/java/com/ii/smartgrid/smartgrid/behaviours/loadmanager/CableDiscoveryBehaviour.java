@@ -20,7 +20,6 @@ public class CableDiscoveryBehaviour extends Behaviour{
 
     private int numberOfNodes;
     private int requestCont;
-    // private double[][] adjacencyMatrix;
     
     private boolean finished;
 
@@ -28,7 +27,6 @@ public class CableDiscoveryBehaviour extends Behaviour{
         super(loadManagerAgent);
         this.numberOfNodes = loadManagerAgent.getLoadManager().getGridNames().size();
         loadManagerAgent.log("waiting for " + numberOfNodes + " messages", BEHAVIOUR_NAME);
-        // this.adjacencyMatrix = new double[numberOfNodes][numberOfNodes];
         this.requestCont = 0;
         this.finished = false;
     }

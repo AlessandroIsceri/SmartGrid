@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlantAgent;
+import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
@@ -39,7 +40,9 @@ public class SendNonRenewableEnergyToGridBehaviour extends OneShotBehaviour{
 
         Map<String, Object> content = new HashMap<String, Object>();
         String gridName = nonRenewablePowerPlant.getGridName();
-        content.put(MessageUtil.GIVEN_ENERGY, ((CustomAgent) myAgent).updateEnergyValue(gridName, givenEnergy));
+        
+        Cable cable = nonRenewablePowerPlant.getCable(gridName);
+        content.put(MessageUtil.GIVEN_ENERGY, cable.computeTransmittedPower(givenEnergy));
         ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
         ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
 	}
