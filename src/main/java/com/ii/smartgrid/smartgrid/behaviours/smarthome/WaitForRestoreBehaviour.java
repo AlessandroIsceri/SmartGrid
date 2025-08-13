@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
@@ -21,9 +22,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class WaitForRestoreBehaviour extends Behaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class WaitForRestoreBehaviour extends CustomBehaviour{
 
     private enum Status {UPDATING_INTERNAL_ENERGY, RECEIVING_MSGS, FINISHED}
     private Status state = Status.UPDATING_INTERNAL_ENERGY;
@@ -121,7 +120,6 @@ public class WaitForRestoreBehaviour extends Behaviour{
             }else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
                 ((CustomAgent) myAgent).log("Energy not consumed", BEHAVIOUR_NAME);
             }
-            ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             //TODO REMOVE
             // SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
             ((CustomAgent) myAgent).log("*****" + smartHome.toString(), BEHAVIOUR_NAME);

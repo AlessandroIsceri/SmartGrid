@@ -6,6 +6,7 @@ import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlantAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
@@ -13,7 +14,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class UpdateNonRenewableStatus extends Behaviour{
+public class UpdateNonRenewableStatus extends CustomBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
@@ -34,7 +35,6 @@ public class UpdateNonRenewableStatus extends Behaviour{
             boolean on = (boolean) jsonObject.get(MessageUtil.ON);
             NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
             nonRenewablePowerPlant.setOn(on);
-            ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             finished = true;
 		} else {
 			block();

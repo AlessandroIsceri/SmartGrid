@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
@@ -13,10 +14,7 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendInstructionToGridsBehaviour extends OneShotBehaviour{
-    
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
+public class SendInstructionToGridsBehaviour extends CustomOneShotBehaviour{
 
     public SendInstructionToGridsBehaviour(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
@@ -24,7 +22,6 @@ public class SendInstructionToGridsBehaviour extends OneShotBehaviour{
 
     @Override
     public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
         List<String> gridNames = loadManager.getGridNames();
         for(String gridName : gridNames){
@@ -37,6 +34,5 @@ public class SendInstructionToGridsBehaviour extends OneShotBehaviour{
         }
         // LoadManager loadManager = loadManagerAgent.getLoadManager();
         loadManager.removeAllDistributionInstructions();
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 }

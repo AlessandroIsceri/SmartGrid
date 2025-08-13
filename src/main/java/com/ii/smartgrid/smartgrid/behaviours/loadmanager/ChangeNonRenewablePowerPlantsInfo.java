@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
@@ -15,17 +16,14 @@ import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class ChangeNonRenewablePowerPlantsInfo extends OneShotBehaviour{
+public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
     
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
     public ChangeNonRenewablePowerPlantsInfo(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
     }
 
     @Override
     public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
         double requestedEnergySum = loadManager.getAllRequestedEnergySum();
     
@@ -81,7 +79,6 @@ public class ChangeNonRenewablePowerPlantsInfo extends OneShotBehaviour{
             ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, nonRenewablePowerPlantInfo.getName(), content);
         }
         
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
@@ -20,8 +21,7 @@ import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendEnergyRequestToLoadManagerBehaviour extends OneShotBehaviour{
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehaviour{
 
     public SendEnergyRequestToLoadManagerBehaviour(GridAgent gridAgent) {
         super(gridAgent);
@@ -29,7 +29,6 @@ public class SendEnergyRequestToLoadManagerBehaviour extends OneShotBehaviour{
 
     @Override
     public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         Grid grid= ((GridAgent) myAgent).getGrid();
         String loadManagerName = grid.getLoadManagerName();
         Map<String, Object> content = new HashMap<String, Object>();
@@ -57,7 +56,6 @@ public class SendEnergyRequestToLoadManagerBehaviour extends OneShotBehaviour{
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
         
         ((CustomAgent) myAgent).createAndSend(ACLMessage.REQUEST, loadManagerName, content);
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 
 }

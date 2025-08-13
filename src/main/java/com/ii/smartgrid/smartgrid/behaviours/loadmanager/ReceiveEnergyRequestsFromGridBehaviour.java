@@ -6,6 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
@@ -16,7 +17,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveEnergyRequestsFromGridBehaviour extends Behaviour{
+public class ReceiveEnergyRequestsFromGridBehaviour extends CustomBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
@@ -61,7 +62,6 @@ public class ReceiveEnergyRequestsFromGridBehaviour extends Behaviour{
             if(requestCont < gridCount){
                 ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
             }else{
-                ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
                 finished = true;
             }
 		} else {

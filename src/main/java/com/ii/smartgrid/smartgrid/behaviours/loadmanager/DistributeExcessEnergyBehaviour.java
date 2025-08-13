@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
@@ -17,9 +18,7 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import jade.core.behaviours.OneShotBehaviour;
 
-public class DistributeExcessEnergyBehaviour extends OneShotBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
     public DistributeExcessEnergyBehaviour(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
@@ -29,7 +28,6 @@ public class DistributeExcessEnergyBehaviour extends OneShotBehaviour{
     @Override
     public void action() {
         LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
 
         List<EnergyTransaction> producerNodes = loadManager.getProducerNodes();
         if(!producerNodes.isEmpty()){
@@ -137,7 +135,6 @@ public class DistributeExcessEnergyBehaviour extends OneShotBehaviour{
             }
         }
         ((CustomAgent) myAgent).log("DistributionInstructions: " + loadManager.getDistributionInstructions(), BEHAVIOUR_NAME);
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 
 }

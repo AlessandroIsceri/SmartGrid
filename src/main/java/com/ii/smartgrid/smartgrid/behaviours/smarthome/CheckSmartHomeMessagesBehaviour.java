@@ -8,6 +8,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.model.SmartHome;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
 import com.ii.smartgrid.smartgrid.model.Routine;
 import com.ii.smartgrid.smartgrid.model.Task;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
@@ -18,9 +19,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class CheckSmartHomeMessagesBehaviour extends CyclicBehaviour{
-
-	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class CheckSmartHomeMessagesBehaviour extends CustomCyclicBehaviour{
 	
 	public CheckSmartHomeMessagesBehaviour(SmartHomeAgent smartHomeAgent) {
 		super(smartHomeAgent);

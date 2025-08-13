@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlantAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
@@ -22,9 +23,7 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class SendNonRenewableEnergyToGridBehaviour extends OneShotBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class SendNonRenewableEnergyToGridBehaviour extends CustomOneShotBehaviour{
 
 	public SendNonRenewableEnergyToGridBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
 		super(nonRenewablePowerPlantAgent);
@@ -32,7 +31,6 @@ public class SendNonRenewableEnergyToGridBehaviour extends OneShotBehaviour{
 	
 	@Override
 	public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
 
         NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
         
@@ -44,7 +42,6 @@ public class SendNonRenewableEnergyToGridBehaviour extends OneShotBehaviour{
         Cable cable = nonRenewablePowerPlant.getCable(gridName);
         content.put(MessageUtil.GIVEN_ENERGY, cable.computeTransmittedPower(givenEnergy));
         ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
 	}
 
 }

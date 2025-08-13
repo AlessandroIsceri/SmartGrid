@@ -16,9 +16,7 @@ import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public abstract class GenericTurnBehaviour extends CyclicBehaviour{
-
-	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 
 	
 	public GenericTurnBehaviour(CustomAgent agent) {
@@ -46,7 +44,6 @@ public abstract class GenericTurnBehaviour extends CyclicBehaviour{
              	@Override
              	public int onEnd(){
 					((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg);
-                    ((CustomAgent) myAgent).log("Turn finished", BEHAVIOUR_NAME);
                     return 0;
                 }
             };

@@ -18,9 +18,6 @@ import jade.lang.acl.ACLMessage;
 
 public class SendProducedWindEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
-
     public SendProducedWindEnergyToGridBehaviour(WindPowerPlantAgent windPowerPlantAgent){
         super(windPowerPlantAgent);
     }

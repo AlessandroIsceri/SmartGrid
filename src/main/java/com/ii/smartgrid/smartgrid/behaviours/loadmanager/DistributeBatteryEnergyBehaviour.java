@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
@@ -19,9 +20,7 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import jade.core.behaviours.OneShotBehaviour;
 
-public class DistributeBatteryEnergyBehaviour extends OneShotBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class DistributeBatteryEnergyBehaviour extends CustomOneShotBehaviour{
 
     //l'energia delle pp non è bastata per soddisfare tutte le richieste, quindi vengono usate le batterie fino a esaurimento
 
@@ -33,10 +32,8 @@ public class DistributeBatteryEnergyBehaviour extends OneShotBehaviour{
     public void action() {
         LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
         double requestedEnergySum = loadManager.getAllRequestedEnergySum();
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         if(requestedEnergySum > 0){
             //No requests to be satisfied
-            ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             return;
         }
 
@@ -127,13 +124,11 @@ public class DistributeBatteryEnergyBehaviour extends OneShotBehaviour{
                     
                     //If there are not energy producers, terminate the behaviour
                     if(smartGridsWithBattery.isEmpty()){
-                        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
                         return;
                     }
                 }
             }
         }
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 
 }

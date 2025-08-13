@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettings.SimulationStatus;
 
 import jade.core.AID;
@@ -13,7 +14,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class StartNewTurn extends CyclicBehaviour {
+public class StartNewTurn extends CustomCyclicBehaviour {
 
 	private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 

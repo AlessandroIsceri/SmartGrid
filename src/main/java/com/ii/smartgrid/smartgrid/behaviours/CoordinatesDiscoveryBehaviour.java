@@ -19,9 +19,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class CoordinatesDiscoveryBehaviour extends Behaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
 
     private enum Status {SENDING_MSGS, RECEIVING_MSGS, FINISHED}
     private Status state = Status.SENDING_MSGS;
@@ -110,7 +108,6 @@ public class CoordinatesDiscoveryBehaviour extends Behaviour{
                 sendInformationToLoadManager();
                 
                 state = Status.FINISHED;
-                ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             }
 		} else {
 			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);

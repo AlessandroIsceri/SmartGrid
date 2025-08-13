@@ -5,6 +5,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.SmartHome;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
@@ -12,10 +13,8 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveEnergyFromGridBehaviour extends Behaviour{
+public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
     
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
     private boolean finished = false;
 
 	public ReceiveEnergyFromGridBehaviour(SmartHomeAgent smartHomeAgent) {
@@ -51,7 +50,6 @@ public class ReceiveEnergyFromGridBehaviour extends Behaviour{
             //TODO REMOVE
             SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
             ((CustomAgent) myAgent).log("*****" + smartHome.toString(), BEHAVIOUR_NAME);
-             ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             finished = true;
 		} else {
 			block();

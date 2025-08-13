@@ -1,31 +1,25 @@
 package com.ii.smartgrid.smartgrid.behaviours.grid;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends Behaviour{
+public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBehaviour{
 
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
     private boolean finished;
-
 
     public ReceiveRoutingInstructionsFromLoadManagerBehaviour(GridAgent gridAgent){
         super(gridAgent);
@@ -58,7 +52,6 @@ public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends Behaviou
             ((CustomAgent) myAgent).log("Number of msgs to receive: " + numberOfMessagesToReceive, BEHAVIOUR_NAME);
             grid.setNumberOfMessagesToReceive(numberOfMessagesToReceive);
             finished = true;
-            ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
 		} else {
 			block();
 		}

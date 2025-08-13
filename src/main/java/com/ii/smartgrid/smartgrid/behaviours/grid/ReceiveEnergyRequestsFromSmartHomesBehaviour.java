@@ -3,26 +3,19 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
-import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends Behaviour{
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
+public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviour{
     private int requestCont = 0;
     private boolean finished = false;
     private int smartHomesCount = 0;
@@ -112,7 +105,6 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends Behaviour{
             if(requestCont < this.smartHomesCount){
                 ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
             }else{
-                ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
                 finished = true;
             }
 		} else {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
@@ -13,11 +14,8 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends Behaviour{
+public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehaviour{
     
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
-
     private int requestCont = 0;
     private boolean finished = false;
     private int renewablePowerPlantCount; 
@@ -72,7 +70,6 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends Behaviour{
             if(requestCont < renewablePowerPlantCount){
                 ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
             }else{
-                ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
                 finished = true;
             }
 		} else {

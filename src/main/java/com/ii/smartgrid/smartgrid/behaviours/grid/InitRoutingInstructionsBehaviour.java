@@ -1,23 +1,21 @@
 package com.ii.smartgrid.smartgrid.behaviours.grid;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
-import com.ii.smartgrid.smartgrid.model.Grid;
-import com.ii.smartgrid.smartgrid.utils.MessageUtil;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
+import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class InitRoutingInstructionsBehaviour extends OneShotBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour{
 
     public InitRoutingInstructionsBehaviour(GridAgent gridAgent){
         super(gridAgent);
@@ -26,11 +24,9 @@ public class InitRoutingInstructionsBehaviour extends OneShotBehaviour{
 
     @Override
     public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         Grid grid = ((GridAgent) myAgent).getGrid();
 
         if(((GridAgent) myAgent).getGridStatus() == GridStatus.RECEIVE){
-            ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
             return;
         }
         
@@ -56,6 +52,5 @@ public class InitRoutingInstructionsBehaviour extends OneShotBehaviour{
                 ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content);
             }
         }
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 }

@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
@@ -18,7 +19,7 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 import jade.core.behaviours.OneShotBehaviour;
 
-public class FindOptimalDistributionStrategyBehaviour extends OneShotBehaviour{
+public class FindOptimalDistributionStrategyBehaviour extends CustomOneShotBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
@@ -40,7 +41,6 @@ public class FindOptimalDistributionStrategyBehaviour extends OneShotBehaviour{
         // ordino tutti i nodi in base alla priorità crescente (1 è massima)
         // cerco il percorso minimo da un nodo fornitore ad uno richiedente (dijkstra) in ordine di priorità e continuo cosi finche il nodo richiedente non ha più bisogno
         // appena la somma di richieste di una priorità è troppo alta per essere soddisfatta, soddisfo il maggior numero di nodi in ordine, finche i produttori non sono 0
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
         
         // Get producers 
@@ -133,7 +133,6 @@ public class FindOptimalDistributionStrategyBehaviour extends OneShotBehaviour{
             }
         }
         ((CustomAgent) myAgent).log("DistributionInfos : " + loadManager.getDistributionInstructions(), BEHAVIOUR_NAME);
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 
 }

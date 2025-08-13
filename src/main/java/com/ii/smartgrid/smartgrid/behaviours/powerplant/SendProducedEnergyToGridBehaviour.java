@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlantAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.model.SolarPowerPlant;
@@ -16,7 +17,7 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public abstract class SendProducedEnergyToGridBehaviour extends OneShotBehaviour{
+public abstract class SendProducedEnergyToGridBehaviour extends CustomOneShotBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
@@ -26,7 +27,6 @@ public abstract class SendProducedEnergyToGridBehaviour extends OneShotBehaviour
 
     @Override
     public void action() {     
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);   
         RenewablePowerPlant renewablePowerPlant = ((RenewablePowerPlantAgent) myAgent).getRenewablePowerPlant();
         double expectedProduction = this.getHourlyProduction(renewablePowerPlant) * TimeUtils.getTurnDurationHours();
         String gridName = renewablePowerPlant.getGridName();
@@ -36,7 +36,6 @@ public abstract class SendProducedEnergyToGridBehaviour extends OneShotBehaviour
         content.put(MessageUtil.GIVEN_ENERGY, cable.computeTransmittedPower(expectedProduction));
 
         ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 
     protected abstract double getHourlyProduction(RenewablePowerPlant renewablePowerPlant);

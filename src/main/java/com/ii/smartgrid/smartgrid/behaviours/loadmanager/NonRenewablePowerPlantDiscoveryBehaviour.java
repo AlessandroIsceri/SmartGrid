@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
@@ -17,7 +18,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class NonRenewablePowerPlantDiscoveryBehaviour extends Behaviour{
+public class NonRenewablePowerPlantDiscoveryBehaviour extends CustomBehaviour{
 
     private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 

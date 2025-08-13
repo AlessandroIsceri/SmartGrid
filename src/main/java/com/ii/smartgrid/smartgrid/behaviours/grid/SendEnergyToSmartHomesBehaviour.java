@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
@@ -19,9 +20,7 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
 
     public SendEnergyToSmartHomesBehaviour(GridAgent gridAgent){
         super(gridAgent);
@@ -29,7 +28,6 @@ public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
 
     @Override
     public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         Grid grid = ((GridAgent) myAgent).getGrid();
 
         //consumption: richieste da case in blackput 200 + richieste case 400 + energia inviata alle grid 300
@@ -92,6 +90,5 @@ public class SendEnergyToSmartHomesBehaviour extends OneShotBehaviour{
                 grid.removeEnergyRequest(smartHomeName);
             }
         }
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
     }
 }

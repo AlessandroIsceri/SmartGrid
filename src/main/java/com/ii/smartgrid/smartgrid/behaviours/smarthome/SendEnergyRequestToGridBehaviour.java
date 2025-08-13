@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
+import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
@@ -20,9 +21,7 @@ import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendEnergyRequestToGridBehaviour extends OneShotBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
 
     public SendEnergyRequestToGridBehaviour(SmartHomeAgent smartHomeAgent){
         super(smartHomeAgent);
@@ -30,7 +29,6 @@ public class SendEnergyRequestToGridBehaviour extends OneShotBehaviour{
 
     @Override
     public void action() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
         SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome(); 
         //richiede energia se serve (non ne ha abbastanza, attaccandosi alla rete)
         //può rilasciare energia se ne ha troppa e non gli serve
@@ -61,7 +59,6 @@ public class SendEnergyRequestToGridBehaviour extends OneShotBehaviour{
         content.put(MessageUtil.BLACKOUT, false);
 
         ((CustomAgent) myAgent).createAndSend(ACLMessage.REQUEST, gridName, content); //conversationId);
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
         //TODO REMOVE
         // SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
         ((CustomAgent) myAgent).log("*****" + smartHome.toString(), BEHAVIOUR_NAME);
