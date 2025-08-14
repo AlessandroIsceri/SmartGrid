@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
+import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
 
-public class SmartHome extends CustomObject{
+public class SmartBuilding extends CustomObject{
 	private List<Appliance> appliances;
-	private HomePhotovoltaicSystem homePhotovoltaicSystem;
+	private BuildingPhotovoltaicSystem buildingPhotovoltaicSystem;
 	private Battery battery;
 	private Routine routine;
 	private double expectedConsumption;
@@ -20,7 +20,7 @@ public class SmartHome extends CustomObject{
 	private String gridName;
     private Priority priority;
 
-    public SmartHome(){
+    public SmartBuilding(){
         super();
         appliances = new ArrayList<Appliance>();
     }
@@ -67,7 +67,7 @@ public class SmartHome extends CustomObject{
 
 	@Override
     public String toString() {
-        return "SmartHome [appliances=" + appliances + ", homePhotovoltaicSystem=" + homePhotovoltaicSystem + ", battery=" + battery
+        return "SmartBuilding [appliances=" + appliances + ", buildingPhotovoltaicSystem=" + buildingPhotovoltaicSystem + ", battery=" + battery
                 + ", routine=" + routine + ", expectedConsumption=" + expectedConsumption
                 + ", expectedProduction=" + expectedProduction + ", gridName=" + gridName + "]";
     }
@@ -107,10 +107,10 @@ public class SmartHome extends CustomObject{
 		}
 	}
 
-    public void followRoutine(int curTurn, WeatherStatus curWeather, SmartHomeStatus smartHomeStatus){
+    public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus){
         // expectedConsumption = 0;
 
-        if(smartHomeStatus != SmartHomeStatus.BLACKOUT){
+        if(smartBuildingStatus != SmartBuildingStatus.BLACKOUT){
             double turnDurationHours = TimeUtils.getTurnDurationHours();
             for(Task curTask : routine.getTasks()) {
                 int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
@@ -130,20 +130,20 @@ public class SmartHome extends CustomObject{
             }
         }
         expectedProduction = 0;
-        if(homePhotovoltaicSystem != null){
-		    expectedProduction = homePhotovoltaicSystem.getHourlyProduction(curWeather, curTurn) * TimeUtils.getTurnDurationHours();
+        if(buildingPhotovoltaicSystem != null){
+		    expectedProduction = buildingPhotovoltaicSystem.getHourlyProduction(curWeather, curTurn) * TimeUtils.getTurnDurationHours();
         }
         if(battery != null){
             expectedProduction = expectedProduction + battery.getAvailableEnergy();
         }
     }
 
-    public HomePhotovoltaicSystem getHomePhotovoltaicSystem() {
-        return homePhotovoltaicSystem;
+    public BuildingPhotovoltaicSystem getBuildingPhotovoltaicSystem() {
+        return buildingPhotovoltaicSystem;
     }
 
-    public void setHomePhotovoltaicSystem(HomePhotovoltaicSystem homePhotovoltaicSystem) {
-        this.homePhotovoltaicSystem = homePhotovoltaicSystem;
+    public void setBuildingPhotovoltaicSystem(BuildingPhotovoltaicSystem buildingPhotovoltaicSystem) {
+        this.buildingPhotovoltaicSystem = buildingPhotovoltaicSystem;
     }
 
     public boolean canBeRestored(int curTurn, WeatherStatus curWeather) {

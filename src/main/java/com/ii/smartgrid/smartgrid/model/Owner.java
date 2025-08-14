@@ -5,23 +5,23 @@ import java.util.List;
 
 public class Owner extends CustomObject{
 	
-	private List<String> smartHomeNames;
+	private List<String> smartBuildingNames;
 	
     public Owner(){
         super();
-        smartHomeNames = new ArrayList<String>();
+        smartBuildingNames = new ArrayList<String>();
     }
 
-	public void setSmartHomeNames(List<String> smartHomeNames) {
-        this.smartHomeNames = smartHomeNames;
+	public void setSmartBuildingNames(List<String> smartBuildingNames) {
+        this.smartBuildingNames = smartBuildingNames;
     }
 
-    public List<String> getSmartHomeNames() {
-		return smartHomeNames;
+    public List<String> getSmartBuildingNames() {
+		return smartBuildingNames;
 	}
 
 	@Override
 	public String toString() {
-		return "Owner [smartHomeNames=" + smartHomeNames + "]";
+		return "Owner [smartBuildingNames=" + smartBuildingNames + "]";
 	}
 }

@@ -13,7 +13,7 @@
     },
     "links": [
         {
-            "from" : "SmartHome-1",
+            "from" : "SmartBuilding-1",
             "to" : "Grid-1",
             "cableType" : "copperLow2.5"
         },
@@ -44,7 +44,7 @@
         },
         {
             "from" : "Grid-2",
-            "to" : "SmartHome-2",
+            "to" : "SmartBuilding-2",
             "cableType" : "copperLow2.5"
         },
         {
@@ -54,7 +54,7 @@
         },
         {
             "from" : "Grid-3",
-            "to" : "SmartHome-3",
+            "to" : "SmartBuilding-3",
             "cableType" : "copperLow2.5"
         }
     ]

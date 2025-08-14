@@ -46,8 +46,8 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
         }else{
             MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(renewablePowerPlantNames.get(0), AID.ISLOCALNAME));
             for(int i = 1; i < renewablePowerPlantNames.size(); i++){
-                String smartHomeName = renewablePowerPlantNames.get(i);
-                mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartHomeName, AID.ISLOCALNAME)));
+                String smartBuildingName = renewablePowerPlantNames.get(i);
+                mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartBuildingName, AID.ISLOCALNAME)));
             }
             mt = MessageTemplate.and(mt1, mt2); 
         }

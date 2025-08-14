@@ -1,13 +1,13 @@
-package com.ii.smartgrid.smartgrid.behaviours.smarthome;
+package com.ii.smartgrid.smartgrid.behaviours.smartbuilding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.model.SmartHome;
+import com.ii.smartgrid.smartgrid.model.SmartBuilding;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
+import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
 import com.ii.smartgrid.smartgrid.model.Routine;
 import com.ii.smartgrid.smartgrid.model.Task;
@@ -19,20 +19,20 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class CheckSmartHomeMessagesBehaviour extends CustomCyclicBehaviour{
+public class CheckSmartBuildingMessagesBehaviour extends CustomCyclicBehaviour{
 	
-    private SmartHomeAgent smartHomeAgent;
+    private SmartBuildingAgent smartBuildingAgent;
 
-	public CheckSmartHomeMessagesBehaviour(SmartHomeAgent smartHomeAgent) {
-		super(smartHomeAgent);
-        this.smartHomeAgent = smartHomeAgent;
+	public CheckSmartBuildingMessagesBehaviour(SmartBuildingAgent smartBuildingAgent) {
+		super(smartBuildingAgent);
+        this.smartBuildingAgent = smartBuildingAgent;
 	}
 
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 		ACLMessage receivedMsg = customAgent.receive(mt);
-		//owner -> manda msg request -> smartHome riceve, manda agree ed esegue -> inform è andata bene
+		//owner -> manda msg request -> smartBuilding riceve, manda agree ed esegue -> inform è andata bene
 		if (receivedMsg != null) {
 			/**
 			 * {
@@ -40,19 +40,19 @@ public class CheckSmartHomeMessagesBehaviour extends CustomCyclicBehaviour{
 			 * 		"tasks": task[] sempre JSON 
 			 * }
 			 */
-            SmartHome smartHome = smartHomeAgent.getSmartHome();
+            SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
 			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
             List<Task> tasks = (List<Task>) customAgent.readValueFromJson(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
             
-            Routine routine = smartHome.getRoutine();
+            Routine routine = smartBuilding.getRoutine();
             
             //rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
             customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
             
             boolean result = true;
             if(operation.equals(MessageUtil.ADD)) {
-                result = routine.addTasks(tasks, smartHome.getAppliances());
+                result = routine.addTasks(tasks, smartBuilding.getAppliances());
             } else if (operation.equals(MessageUtil.REMOVE)){
                 result = routine.removeTasks(tasks);
             } else {

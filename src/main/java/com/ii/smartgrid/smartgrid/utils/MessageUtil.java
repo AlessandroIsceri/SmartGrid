@@ -34,7 +34,7 @@ public class MessageUtil {
     public static final String DISTRIBUTION_INSTRUCTIONS = "distributionInstructions";
     public static final String ACTIVE_NON_RENEWABLE_POWERPLANTS = "activeNonRenewablePowerPlantss";
 
-    public static final String SMART_HOME = "smartHome";
+    public static final String SMART_BUILDING = "smartBuilding";
     public static final String TASKS = "tasks";
 
     public static final String RESULT = "result";

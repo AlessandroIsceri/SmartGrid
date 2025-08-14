@@ -29,27 +29,27 @@ public class CheckOwnerMessagesBehaviour extends CustomCyclicBehaviour {
 				/**
 				 * {
 				 * 		"operation": "add"/"remove"
-				 * 		"smartHome": smartHomeAID.getName()
+				 * 		"smartBuilding": smartBuildingAID.getName()
 				 * 		"tasks": task[] sempre JSON 
 				 * }
 				 */
 				Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-				String homeName = (String) jsonObject.get(MessageUtil.SMART_HOME);
+				String buildingName = (String) jsonObject.get(MessageUtil.SMART_BUILDING);
                 customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
                 
                 Owner owner = ownerAgent.getOwner();
-                List<String> smartHomesNames = owner.getSmartHomeNames();
-                for(int i = 0; i < smartHomesNames.size(); i++) {
-                    String curName = smartHomesNames.get(i);
-                    if(curName.equals(homeName)) {
-                        jsonObject.remove(MessageUtil.SMART_HOME);
+                List<String> smartBuildingsNames = owner.getSmartBuildingNames();
+                for(int i = 0; i < smartBuildingsNames.size(); i++) {
+                    String curName = smartBuildingsNames.get(i);
+                    if(curName.equals(buildingName)) {
+                        jsonObject.remove(MessageUtil.SMART_BUILDING);
                         customAgent.createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
                     }
                 }
                 log("Sent Update Routine Request");
 				
 			}else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
-				//owner -> manda msg request -> smartHome riceve, manda agree ed esegue -> inform è andata bene
+				//owner -> manda msg request -> smartBuilding riceve, manda agree ed esegue -> inform è andata bene
 				log("RECEIVED AGREE FOR " + receivedMsg.getConversationId());
 			}else if(receivedMsg.getPerformative() == ACLMessage.INFORM){
 				//msg fatto da noi avrà un conversationId -> che viene mantenuto tra i msg

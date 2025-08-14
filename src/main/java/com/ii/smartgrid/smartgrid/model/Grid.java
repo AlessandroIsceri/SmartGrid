@@ -11,9 +11,9 @@ public class Grid extends CustomObject {
 
     // private double currentEnergy;
     // private double maxCapacity;
-    private List<String> smartHomeNames;
-    private Map<String, EnergyTransaction> smartHomesWithoutPower;
-    private Map<String, EnergyTransaction> smartHomesEnergyRequests;
+    private List<String> smartBuildingNames;
+    private Map<String, EnergyTransaction> smartBuildingsWithoutPower;
+    private Map<String, EnergyTransaction> smartBuildingsEnergyRequests;
     private List<String> renewablePowerPlantNames;
     //private List<String> nonRenewablePowerPlantNames;
     private Map<String, Boolean> nonRenewablePowerPlantActiveStatus;
@@ -27,9 +27,9 @@ public class Grid extends CustomObject {
     private Battery battery;
 
     public Grid() {
-        smartHomeNames = new ArrayList<String>();
-        smartHomesWithoutPower = new HashMap<String, EnergyTransaction>();
-        smartHomesEnergyRequests = new HashMap<String, EnergyTransaction>();
+        smartBuildingNames = new ArrayList<String>();
+        smartBuildingsWithoutPower = new HashMap<String, EnergyTransaction>();
+        smartBuildingsEnergyRequests = new HashMap<String, EnergyTransaction>();
         renewablePowerPlantNames = new ArrayList<String>();
         // nonRenewablePowerPlantNames = new ArrayList<String>();
         nonRenewablePowerPlantActiveStatus = new HashMap<String, Boolean>();
@@ -70,28 +70,28 @@ public class Grid extends CustomObject {
 
     
 
-    public List<String> getSmartHomeNames() {
-        return smartHomeNames;
+    public List<String> getSmartBuildingNames() {
+        return smartBuildingNames;
     }
 
-    public void setSmartHomeNames(List<String> smartHomeNames) {
-        this.smartHomeNames = smartHomeNames;
+    public void setSmartBuildingNames(List<String> smartBuildingNames) {
+        this.smartBuildingNames = smartBuildingNames;
     }
 
-    public Map<String, EnergyTransaction> getSmartHomesEnergyRequests() {
-        return smartHomesEnergyRequests;
+    public Map<String, EnergyTransaction> getSmartBuildingsEnergyRequests() {
+        return smartBuildingsEnergyRequests;
     }
 
-    public void setSmartHomesEnergyRequests(Map<String, EnergyTransaction> smartHomesEnergyRequests) {
-        this.smartHomesEnergyRequests = smartHomesEnergyRequests;
+    public void setSmartBuildingsEnergyRequests(Map<String, EnergyTransaction> smartBuildingsEnergyRequests) {
+        this.smartBuildingsEnergyRequests = smartBuildingsEnergyRequests;
     }
 
-    public void addEnergyRequest(String smartmeHomeName, EnergyTransaction request) {
-        smartHomesEnergyRequests.put(smartmeHomeName, request);
+    public void addEnergyRequest(String smartmeBuildingName, EnergyTransaction request) {
+        smartBuildingsEnergyRequests.put(smartmeBuildingName, request);
     }
 
-    public void removeEnergyRequest(String smartHomeName) {
-        smartHomesEnergyRequests.remove(smartHomeName);
+    public void removeEnergyRequest(String smartBuildingName) {
+        smartBuildingsEnergyRequests.remove(smartBuildingName);
     }
 
     // public boolean consumeEnergy(double requestedEnergy) {
@@ -110,20 +110,20 @@ public class Grid extends CustomObject {
         this.expectedConsumption = expectedConsumption;
     }
 
-    public boolean containsSmartHomeWithoutPower(String smartHomeName) {
-        return smartHomesWithoutPower.containsKey(smartHomeName);
+    public boolean containsSmartBuildingWithoutPower(String smartBuildingName) {
+        return smartBuildingsWithoutPower.containsKey(smartBuildingName);
     }
 
-    public void addSmartHomeWithoutPower(String smartHomeName, EnergyTransaction energyTransaction) {
-        smartHomesWithoutPower.put(smartHomeName, energyTransaction);
+    public void addSmartBuildingWithoutPower(String smartBuildingName, EnergyTransaction energyTransaction) {
+        smartBuildingsWithoutPower.put(smartBuildingName, energyTransaction);
     }
 
-    public void removeSmartHomeWithoutPower(String smartHomeName) {
-        smartHomesWithoutPower.remove(smartHomeName);
+    public void removeSmartBuildingWithoutPower(String smartBuildingName) {
+        smartBuildingsWithoutPower.remove(smartBuildingName);
     }
 
-    public int getSmartHomeWithoutPowerSize() {
-        return smartHomesWithoutPower.size();
+    public int getSmartBuildingWithoutPowerSize() {
+        return smartBuildingsWithoutPower.size();
     }
 
     public void addExpectedConsumption(double energy) {
@@ -136,8 +136,8 @@ public class Grid extends CustomObject {
 
     public double getBlackoutEnergyRequest() {
         double sum = 0;
-        for (String smartHome : smartHomesWithoutPower.keySet()) {
-            sum += smartHomesWithoutPower.get(smartHome).getEnergyTransactionValue();
+        for (String smartBuilding : smartBuildingsWithoutPower.keySet()) {
+            sum += smartBuildingsWithoutPower.get(smartBuilding).getEnergyTransactionValue();
         }
         return sum;
     }
@@ -151,8 +151,8 @@ public class Grid extends CustomObject {
         this.loadManagerName = loadManagerName;
     }
 
-    public Map<String, EnergyTransaction> getSmartHomesWithoutPower() {
-        return smartHomesWithoutPower;
+    public Map<String, EnergyTransaction> getSmartBuildingsWithoutPower() {
+        return smartBuildingsWithoutPower;
     }
 
     public boolean canSendEnergy() {
@@ -223,9 +223,9 @@ public class Grid extends CustomObject {
         this.expectedProduction = expectedProduction;
     }
 
-    public List<EnergyTransaction> getSmartHomesEnergyRequestsByPriority(Priority priority) {
+    public List<EnergyTransaction> getSmartBuildingsEnergyRequestsByPriority(Priority priority) {
         List<EnergyTransaction> results = new ArrayList<EnergyTransaction>(); 
-        for(EnergyTransaction energyTransaction : smartHomesEnergyRequests.values()){
+        for(EnergyTransaction energyTransaction : smartBuildingsEnergyRequests.values()){
             if(energyTransaction.getPriority() == priority && energyTransaction.getTransactionType() == TransactionType.RECEIVE){
                 results.add(energyTransaction);
             }
@@ -235,7 +235,7 @@ public class Grid extends CustomObject {
 
     public double getBuildingRequestedEnergy() {
         double sum = 0;
-        for(EnergyTransaction energyTransaction : smartHomesEnergyRequests.values()){
+        for(EnergyTransaction energyTransaction : smartBuildingsEnergyRequests.values()){
             if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
                 sum += energyTransaction.getEnergyTransactionValue();
             }
@@ -243,9 +243,9 @@ public class Grid extends CustomObject {
         return sum;
     }
 
-    public List<EnergyTransaction> getBlackoutSmartHomesEnergyRequestsByPriority(Priority priority) {
+    public List<EnergyTransaction> getBlackoutSmartBuildingsEnergyRequestsByPriority(Priority priority) {
         List<EnergyTransaction> results = new ArrayList<EnergyTransaction>(); 
-        for(EnergyTransaction energyTransaction : smartHomesWithoutPower.values()){
+        for(EnergyTransaction energyTransaction : smartBuildingsWithoutPower.values()){
             if(energyTransaction.getPriority() == priority){
                 results.add(energyTransaction);
             }
@@ -253,8 +253,8 @@ public class Grid extends CustomObject {
         return results;
     }
 
-    public void setSmartHomesWithoutPower(Map<String, EnergyTransaction> smartHomesWithoutPower) {
-        this.smartHomesWithoutPower = smartHomesWithoutPower;
+    public void setSmartBuildingsWithoutPower(Map<String, EnergyTransaction> smartBuildingsWithoutPower) {
+        this.smartBuildingsWithoutPower = smartBuildingsWithoutPower;
     }
 
     public List<String> getGridNames() {
@@ -275,8 +275,8 @@ public class Grid extends CustomObject {
 
     @Override
     public String toString() {
-        return "Grid [smartHomeNames=" + smartHomeNames + ", smartHomesWithoutPower=" + smartHomesWithoutPower
-                + ", smartHomesEnergyRequests=" + smartHomesEnergyRequests + ", renewablePowerPlantNames="
+        return "Grid [smartBuildingNames=" + smartBuildingNames + ", smartBuildingsWithoutPower=" + smartBuildingsWithoutPower
+                + ", smartBuildingsEnergyRequests=" + smartBuildingsEnergyRequests + ", renewablePowerPlantNames="
                 + renewablePowerPlantNames
                 + ", nonRenewablePowerPlantActiveStatus=" + nonRenewablePowerPlantActiveStatus
                 + ", distributionInstructions=" + distributionInstructions + ", gridNames=" + gridNames

@@ -8,10 +8,10 @@ import com.ii.smartgrid.smartgrid.behaviours.grid.HandleExtraEnergyBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.InitRoutingInstructionsBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyFromNonRenewablePowerPlantsBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyFromRenewablePowerPlantsBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyRequestsFromSmartHomesBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyRequestsFromSmartBuildingsBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveRoutingInstructionsFromLoadManagerBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyRequestToLoadManagerBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyToSmartHomesBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyToSmartBuildingsBehaviour;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
@@ -29,7 +29,7 @@ public class GridAgent extends CustomAgent{
 
         Grid grid = this.getGrid();
 
-        grid.addConnectedAgentNames(grid.getSmartHomeNames());
+        grid.addConnectedAgentNames(grid.getSmartBuildingNames());
         grid.addConnectedAgentNames(grid.getNonRenewablePowerPlantNames());
         grid.addConnectedAgentNames(grid.getRenewablePowerPlantNames());
         grid.addConnectedAgentNames(grid.getGridNames());
@@ -66,7 +66,7 @@ public class GridAgent extends CustomAgent{
 			//SendXYZ -> inviare messaggi 
 			//ReceiveXYZ -> ricevere risposte ai messaggi
 
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartHomesBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartBuildingsBehaviour(gridAgent));
             sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromRenewablePowerPlantsBehaviour(gridAgent));
             sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(gridAgent));
             sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToLoadManagerBehaviour(gridAgent));
@@ -74,7 +74,7 @@ public class GridAgent extends CustomAgent{
             sequentialTurnBehaviour.addSubBehaviour(new ReceiveRoutingInstructionsFromLoadManagerBehaviour(gridAgent));
             sequentialTurnBehaviour.addSubBehaviour(new InitRoutingInstructionsBehaviour(gridAgent));
             sequentialTurnBehaviour.addSubBehaviour(new FollowRoutingInstructionsBehaviour(gridAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToSmartHomesBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToSmartBuildingsBehaviour(gridAgent));
             
             sequentialTurnBehaviour.addSubBehaviour(new HandleExtraEnergyBehaviour(gridAgent));
         }

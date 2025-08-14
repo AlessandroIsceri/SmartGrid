@@ -20,11 +20,11 @@ import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
+public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
 
     private GridAgent gridAgent;
 
-    public SendEnergyToSmartHomesBehaviour(GridAgent gridAgent){
+    public SendEnergyToSmartBuildingsBehaviour(GridAgent gridAgent){
         super(gridAgent);
         this.gridAgent = gridAgent;
     }
@@ -41,35 +41,35 @@ public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
         double availableEnergy = grid.getExpectedProduction() - energySentToGrids;
         for(Priority priority : Priority.values()){
             //blackout buildings before
-            List<EnergyTransaction> blackoutSmartHomes = grid.getBlackoutSmartHomesEnergyRequestsByPriority(priority);
-            for(EnergyTransaction blackoutSmartHomeEnergyRequest : blackoutSmartHomes){
-                double requestedEnergy = blackoutSmartHomeEnergyRequest.getEnergyTransactionValue();
-                String smartHomeName = blackoutSmartHomeEnergyRequest.getNodeName();
+            List<EnergyTransaction> blackoutSmartBuildings = grid.getBlackoutSmartBuildingsEnergyRequestsByPriority(priority);
+            for(EnergyTransaction blackoutSmartBuildingEnergyRequest : blackoutSmartBuildings){
+                double requestedEnergy = blackoutSmartBuildingEnergyRequest.getEnergyTransactionValue();
+                String smartBuildingName = blackoutSmartBuildingEnergyRequest.getNodeName();
 
-                Cable cable = grid.getCable(smartHomeName);
+                Cable cable = grid.getCable(smartBuildingName);
                 double neededEnergy = cable.getEnergyToSatifyRequest(requestedEnergy);
                 Map<String, Object> content = new HashMap<String, Object>();
                 if(neededEnergy < availableEnergy){
                     content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
                     availableEnergy -= neededEnergy;
-                    customAgent.createAndSend(ACLMessage.INFORM, smartHomeName, content, "restore-" + smartHomeName);
-                    grid.removeSmartHomeWithoutPower(smartHomeName);
+                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, "restore-" + smartBuildingName);
+                    grid.removeSmartBuildingWithoutPower(smartBuildingName);
                 }else{
                     content.put(MessageUtil.GIVEN_ENERGY, -1.0);
-                    customAgent.createAndSend(ACLMessage.INFORM, smartHomeName, content, "restore-" + smartHomeName);
-                    // grid.removeSmartHomeWithoutPower(smartHomeName); TODO: check
+                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, "restore-" + smartBuildingName);
+                    // grid.removeSmartBuildingWithoutPower(smartBuildingName); TODO: check
                 }
             }
 
 
 
 
-            List<EnergyTransaction> smartHomesEnergyRequests = grid.getSmartHomesEnergyRequestsByPriority(priority);
-            for(EnergyTransaction smartHomesEnergyRequest : smartHomesEnergyRequests){
-                double requestedEnergy = smartHomesEnergyRequest.getEnergyTransactionValue();
-                String smartHomeName = smartHomesEnergyRequest.getNodeName();
+            List<EnergyTransaction> smartBuildingsEnergyRequests = grid.getSmartBuildingsEnergyRequestsByPriority(priority);
+            for(EnergyTransaction smartBuildingsEnergyRequest : smartBuildingsEnergyRequests){
+                double requestedEnergy = smartBuildingsEnergyRequest.getEnergyTransactionValue();
+                String smartBuildingName = smartBuildingsEnergyRequest.getNodeName();
                 
-                Cable cable = grid.getCable(smartHomeName);
+                Cable cable = grid.getCable(smartBuildingName);
 
                 //loss:  x - cableResistance *  Math.pow(x / voltage, 2)) = requestedEnergy; 
                 // x = requestedEnergy + cableResistanze * x^2/voltage^2
@@ -84,13 +84,13 @@ public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
                 
                 if(availableEnergy >= neededEnergy){
                     availableEnergy -= neededEnergy;
-                    customAgent.createAndSend(ACLMessage.AGREE, smartHomeName, content);
+                    customAgent.createAndSend(ACLMessage.AGREE, smartBuildingName, content);
                 }else{
-                    customAgent.createAndSend(ACLMessage.REFUSE, smartHomeName, content);
-                    EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHomesEnergyRequest.getPriority(), neededEnergy, smartHomeName, TransactionType.RECEIVE);
-                    grid.addSmartHomeWithoutPower(smartHomeName, energyTransaction);
+                    customAgent.createAndSend(ACLMessage.REFUSE, smartBuildingName, content);
+                    EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuildingsEnergyRequest.getPriority(), neededEnergy, smartBuildingName, TransactionType.RECEIVE);
+                    grid.addSmartBuildingWithoutPower(smartBuildingName, energyTransaction);
                 }
-                grid.removeEnergyRequest(smartHomeName);
+                grid.removeEnergyRequest(smartBuildingName);
             }
         }
     }

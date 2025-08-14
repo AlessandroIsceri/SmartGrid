@@ -8,9 +8,9 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
-public class HomePhotovoltaicSystem{
+public class BuildingPhotovoltaicSystem{
 	
-	public HomePhotovoltaicSystem(){
+	public BuildingPhotovoltaicSystem(){
 		super();
 	}
 
@@ -84,7 +84,7 @@ public class HomePhotovoltaicSystem{
         } else if(kT >= 0){
             DHI = (1.0 - 0.09 * kT) * GHI;
         } else {
-            System.out.println("An error occurred while calculating kT in HomePhotovoltaic. " + kT);
+            System.out.println("An error occurred while calculating kT in BuildingPhotovoltaic. " + kT);
             return 0; 
         }
 

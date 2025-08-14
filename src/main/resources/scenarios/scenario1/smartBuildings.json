@@ -1,5 +1,5 @@
 {
-    "SmartHome-1": {
+    "SmartBuilding-1": {
         "coordinates":{
             "latitude": 2.8250926770207165,
             "longitude": 104.16364967701783
@@ -25,7 +25,7 @@
 				"hourlyConsumption":250.0
             }
         ],
-        "homePhotovoltaicSystem":{
+        "buildingPhotovoltaicSystem":{
             "efficiency": 0.1,
             "area": 40.0,
             "latitude": 2.8250926770202165,
@@ -61,7 +61,7 @@
             ]
         }
     },
-    "SmartHome-2": {
+    "SmartBuilding-2": {
         "coordinates": {
             "latitude": 2.7977118626651656,
             "longitude": 104.20501610019711
@@ -87,7 +87,7 @@
                 "hourlyConsumption": 300.0
             }
         ],
-        "homePhotovoltaicSystem":{
+        "buildingPhotovoltaicSystem":{
             "efficiency": 0.1,
             "area": 40.0,
             "latitude": 2.8250926770207165,
@@ -123,7 +123,7 @@
             ]
         }
     },
-    "SmartHome-3": {
+    "SmartBuilding-3": {
         "coordinates": {
             "latitude": 2.8768855601061474,
             "longitude": 104.15517868982923

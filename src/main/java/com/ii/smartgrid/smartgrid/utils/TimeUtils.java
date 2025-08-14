@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
+import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 
 public class TimeUtils {
 

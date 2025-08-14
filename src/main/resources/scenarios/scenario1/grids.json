@@ -1,6 +1,6 @@
 {
     "Grid-1":{
-        "smartHomeNames": ["SmartHome-1"],
+        "smartBuildingNames": ["SmartBuilding-1"],
         "loadManagerName" : "LoadManager-1",
         "gridNames": ["Grid-2"],
         "nonRenewablePowerPlantNames": [],
@@ -11,7 +11,7 @@
         }
     },
     "Grid-2":{
-        "smartHomeNames": ["SmartHome-2"],
+        "smartBuildingNames": ["SmartBuilding-2"],
         "loadManagerName" : "LoadManager-1",
         "gridNames": ["Grid-1", "Grid-3"],
         "nonRenewablePowerPlantNames": ["DieselPowerPlant-1"],
@@ -22,7 +22,7 @@
         }
     },
     "Grid-3":{
-        "smartHomeNames": ["SmartHome-3"],
+        "smartBuildingNames": ["SmartBuilding-3"],
         "loadManagerName" : "LoadManager-1",
         "gridNames": ["Grid-2"],
         "nonRenewablePowerPlantNames": [],

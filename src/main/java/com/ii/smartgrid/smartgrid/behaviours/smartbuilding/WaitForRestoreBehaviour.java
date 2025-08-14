@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.behaviours.smarthome;
+package com.ii.smartgrid.smartgrid.behaviours.smartbuilding;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,15 +6,15 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartHomeAgent.SmartHomeStatus;
+import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
+import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.SmartHome;
+import com.ii.smartgrid.smartgrid.model.SmartBuilding;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
@@ -26,11 +26,11 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
 
     private enum Status {UPDATING_INTERNAL_ENERGY, RECEIVING_MSGS, FINISHED}
     private Status state = Status.UPDATING_INTERNAL_ENERGY;
-    private SmartHomeAgent smartHomeAgent;
+    private SmartBuildingAgent smartBuildingAgent;
     
-    public WaitForRestoreBehaviour(SmartHomeAgent smartHomeAgent){
-        super(smartHomeAgent);
-        this.smartHomeAgent = smartHomeAgent;
+    public WaitForRestoreBehaviour(SmartBuildingAgent smartBuildingAgent){
+        super(smartBuildingAgent);
+        this.smartBuildingAgent = smartBuildingAgent;
     }
 
     @Override
@@ -49,23 +49,23 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
     }
 
     private void updateInternalEnergy(){
-        SmartHome smartHome = smartHomeAgent.getSmartHome();
+        SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
 		
-		WeatherStatus curWeatherStatus = smartHomeAgent.getCurWeather();
-        int curTurn = smartHomeAgent.getCurTurn();
-		double expectedProduction = smartHome.getExpectedProduction();
+		WeatherStatus curWeatherStatus = smartBuildingAgent.getCurWeather();
+        int curTurn = smartBuildingAgent.getCurTurn();
+		double expectedProduction = smartBuilding.getExpectedProduction();
         log("PV: expectedProduction: " + expectedProduction);
 		        
-		Battery battery = smartHome.getBattery();
+		Battery battery = smartBuilding.getBattery();
 
 		if(battery != null){
             Map<String, Object> content = new HashMap<String, Object>();
-            String gridName = smartHome.getGridName();
+            String gridName = smartBuilding.getGridName();
             // String conversationId = "blackout-" + customAgent.getLocalName();
-            if(smartHome.canBeRestored(curTurn, curWeatherStatus)){
+            if(smartBuilding.canBeRestored(curTurn, curWeatherStatus)){
                 log("Ho almeno metà batteria piena, provo a ripartire");
-                smartHome.restorePower(expectedProduction);
-                smartHomeAgent.setHomeStatus(SmartHomeStatus.LOSING_ENERGY);
+                smartBuilding.restorePower(expectedProduction);
+                smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
                 content.put(MessageUtil.BLACKOUT, false);
             }else{
                 battery.fillBattery(expectedProduction);
@@ -76,15 +76,15 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             log("Non ho una batteria, ma ho dei pannelli, rilascio l'energia in rete");
             
             Map<String, Object> content = new HashMap<String, Object>();
-            String gridName = smartHome.getGridName();
+            String gridName = smartBuilding.getGridName();
             // String conversationId = "release-"+customAgent.getLocalName();
             // content.put(MessageUtil.OPERATION, MessageUtil.RELEASE);
 
             // content.put(MessageUtil.RELEASED_ENERGY, expectedProduction);
             // content.put(MessageUtil.RELEASED_ENERGY, customAgent.updateEnergyValue(gridName, expectedProduction));
-            Cable cable = smartHome.getCable(gridName);
+            Cable cable = smartBuilding.getCable(gridName);
             double sendedEnergy = cable.computeTransmittedPower(expectedProduction);
-            EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHome.getPriority(), sendedEnergy, customAgent.getLocalName(), TransactionType.SEND);
+            EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sendedEnergy, customAgent.getLocalName(), TransactionType.SEND);
             
             ObjectMapper objectMapper = customAgent.getObjectMapper();
             JsonNode node = objectMapper.valueToTree(energyTransaction); // include @JsonTypeInfo
@@ -104,7 +104,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
         MessageTemplate mt = MessageTemplate.or(mtOR, mtAND);
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            SmartHome smartHome = smartHomeAgent.getSmartHome();
+            SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
             log("WAIT FOR RESTORE: HO RICEVUTO QUALCOSA: " + receivedMsg);
            
             if(receivedMsg.getPerformative() == ACLMessage.INFORM && receivedMsg.getConversationId().equals("restore-" + customAgent.getLocalName())){
@@ -113,8 +113,8 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 log("Restore MSG received");
                 double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
                 if(receivedEnergy >= 0){
-                    smartHome.restorePower(receivedEnergy);
-                    smartHomeAgent.setHomeStatus(SmartHomeStatus.LOSING_ENERGY);
+                    smartBuilding.restorePower(receivedEnergy);
+                    smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
                 }
             }else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
                 log("Energy consumed");
@@ -122,7 +122,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 log("Energy not consumed");
             }
             //TODO REMOVE
-            log("*****" + smartHome.toString());
+            log("*****" + smartBuilding.toString());
             state = Status.FINISHED;
 		} else {
             block();

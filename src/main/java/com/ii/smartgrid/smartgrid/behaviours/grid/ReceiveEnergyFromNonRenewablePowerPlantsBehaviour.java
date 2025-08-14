@@ -52,8 +52,8 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
         }else{
             MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(nonRenewablePowerPlantNames.get(0), AID.ISLOCALNAME));
             for(int i = 1; i < nonRenewablePowerPlantNames.size(); i++){
-                String smartHomeName = nonRenewablePowerPlantNames.get(i);
-                mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartHomeName, AID.ISLOCALNAME)));
+                String smartBuildingName = nonRenewablePowerPlantNames.get(i);
+                mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartBuildingName, AID.ISLOCALNAME)));
             }
             mt = MessageTemplate.and(mt1, mt2); 
         }

@@ -15,41 +15,41 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviour{
+public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBehaviour{
     private int requestCont = 0;
     private boolean finished = false;
-    private int smartHomesCount = 0;
+    private int smartBuildingsCount = 0;
     private GridAgent gridAgent;
 
-    public ReceiveEnergyRequestsFromSmartHomesBehaviour(GridAgent gridAgent){
+    public ReceiveEnergyRequestsFromSmartBuildingsBehaviour(GridAgent gridAgent){
         super(gridAgent);
-        this.smartHomesCount = gridAgent.getGrid().getSmartHomeNames().size();
+        this.smartBuildingsCount = gridAgent.getGrid().getSmartBuildingNames().size();
         this.gridAgent = gridAgent;
     }
 
     @Override
     public void action() {
 
-        if(smartHomesCount == 0){
+        if(smartBuildingsCount == 0){
             this.finished = true;
             return;
         }
 
-		//request from non black out, inform from black out homes
+		//request from non black out, inform from black out buildings
 		MessageTemplate mt1 = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), 
                                                 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         
         Grid grid = gridAgent.getGrid();
-        List<String> smartHomeNames = grid.getSmartHomeNames();
+        List<String> smartBuildingNames = grid.getSmartBuildingNames();
 
         MessageTemplate mt;
-        if(smartHomeNames.isEmpty()){
+        if(smartBuildingNames.isEmpty()){
             mt = mt1;
         }else{
-            MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(smartHomeNames.get(0), AID.ISLOCALNAME));
-            for(int i = 1; i < smartHomeNames.size(); i++){
-                String smartHomeName = smartHomeNames.get(i);
-                mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartHomeName, AID.ISLOCALNAME)));
+            MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(smartBuildingNames.get(0), AID.ISLOCALNAME));
+            for(int i = 1; i < smartBuildingNames.size(); i++){
+                String smartBuildingName = smartBuildingNames.get(i);
+                mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartBuildingName, AID.ISLOCALNAME)));
             }
             mt = MessageTemplate.and(mt1, mt2); 
         }
@@ -85,26 +85,26 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviou
                     log("Released Energy: " + releasedEnergy);
                     // grid.removeExpectedConsumption(releasedEnergy);
                     grid.addExpectedProduction(releasedEnergy);
-                    if(grid.containsSmartHomeWithoutPower(sender)){
+                    if(grid.containsSmartBuildingWithoutPower(sender)){
                         // false -> energy restored independently
-                        // true -> home still in blackout		
+                        // true -> building still in blackout		
                         boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                         if(!blackout){
-                            grid.removeSmartHomeWithoutPower(sender);
+                            grid.removeSmartBuildingWithoutPower(sender);
                         }
                     }
                 }
             }else if(receivedMsg.getPerformative() == ACLMessage.INFORM){
                 //{"blackout": true/false}
 				// false -> energy restored independently
-				// true -> home still in blackout
+				// true -> building still in blackout
                 // String conversationId = receivedMsg.getConversationId();
                 boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                 if(!blackout){
-                    grid.removeSmartHomeWithoutPower(sender);
+                    grid.removeSmartBuildingWithoutPower(sender);
                 }
             }
-            if(requestCont < this.smartHomesCount){
+            if(requestCont < this.smartBuildingsCount){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 finished = true;
