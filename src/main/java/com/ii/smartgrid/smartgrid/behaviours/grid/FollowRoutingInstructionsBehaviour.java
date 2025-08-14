@@ -20,11 +20,13 @@ public class FollowRoutingInstructionsBehaviour extends CustomBehaviour{
 
     private boolean finished;
     private int messageCont;
+    private GridAgent gridAgent;
 
     public FollowRoutingInstructionsBehaviour(GridAgent gridAgent){
         super(gridAgent);
         this.finished = false;
         this.messageCont = 0;
+        this.gridAgent = gridAgent;
     }
 
     /*
@@ -35,10 +37,10 @@ public class FollowRoutingInstructionsBehaviour extends CustomBehaviour{
 
     @Override
     public void action() {
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
         int numberOfMessagesToReceive = grid.getNumberOfMessagesToReceive();
 
-        ((CustomAgent) myAgent).log("numberOfMessagesToReceive: " + numberOfMessagesToReceive, BEHAVIOUR_NAME);
+        log("numberOfMessagesToReceive: " + numberOfMessagesToReceive);
 
         if(numberOfMessagesToReceive == 0){
             this.finished = true;
@@ -62,15 +64,15 @@ public class FollowRoutingInstructionsBehaviour extends CustomBehaviour{
             mt = MessageTemplate.and(mt1, mt2); 
         }
 
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("RECEIVED A ROUTING INFO FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+            log("RECEIVED A ROUTING INFO FROM " + receivedMsg.getSender().getLocalName());
             messageCont++;
         
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
 
             // DistributionInstruction distributionInstruction = (DistributionInstruction) jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS);
-            DistributionInstruction distributionInstruction = ((CustomAgent) myAgent).readValueFromJson(jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS), DistributionInstruction.class);
+            DistributionInstruction distributionInstruction = customAgent.readValueFromJson(jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS), DistributionInstruction.class);
 
             double energyToDistribute = distributionInstruction.getEnergyToDistribute();
 
@@ -87,16 +89,16 @@ public class FollowRoutingInstructionsBehaviour extends CustomBehaviour{
 
                 Map<String, Object> content = new HashMap<String, Object>();
                 content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, distributionInstruction); 
-                ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content);
+                customAgent.createAndSend(ACLMessage.INFORM, receiverName, content);
             }
 
             if(messageCont < numberOfMessagesToReceive){
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 finished = true;
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
 

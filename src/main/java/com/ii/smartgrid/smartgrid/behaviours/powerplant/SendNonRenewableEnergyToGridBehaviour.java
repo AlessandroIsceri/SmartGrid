@@ -25,23 +25,25 @@ import jade.lang.acl.MessageTemplate;
 
 public class SendNonRenewableEnergyToGridBehaviour extends CustomOneShotBehaviour{
 
-	public SendNonRenewableEnergyToGridBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
-		super(nonRenewablePowerPlantAgent);
-	}
-	
-	@Override
-	public void action() {
+    private NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent;
+    
+    public SendNonRenewableEnergyToGridBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
+        super(nonRenewablePowerPlantAgent);
+        this.nonRenewablePowerPlantAgent = nonRenewablePowerPlantAgent;
+    }
 
-        NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
-        
+    @Override
+    public void action() {
+        NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
+
         double givenEnergy = nonRenewablePowerPlant.getHourlyProduction() * TimeUtils.getTurnDurationHours();;
 
         Map<String, Object> content = new HashMap<String, Object>();
         String gridName = nonRenewablePowerPlant.getGridName();
-        
+
         Cable cable = nonRenewablePowerPlant.getCable(gridName);
         content.put(MessageUtil.GIVEN_ENERGY, cable.computeTransmittedPower(givenEnergy));
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
-	}
+        customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
+    }
 
 }

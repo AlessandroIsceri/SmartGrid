@@ -29,7 +29,9 @@ public class SmartHomeAgent extends CustomAgent{
         //puo' rilasciare energia se ne ha troppa e non gli serve
         //spegnere/accendere gli elettrodomestici in base alla routine decisa dall'owner
         
-        this.referencedObject.addConnectedAgentName(this.getSmartHome().getGridName());
+        SmartHome smartHome = getSmartHome();
+
+        smartHome.addConnectedAgentName(smartHome.getGridName());
         
        
         this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
@@ -43,28 +45,31 @@ public class SmartHomeAgent extends CustomAgent{
 
     private class SmartHomeTurnBehaviour extends GenericTurnBehaviour{
 
+        private SmartHomeAgent smartHomeAgent;
+
         private SmartHomeTurnBehaviour(SmartHomeAgent smartHomeAgent){
             super(smartHomeAgent);
+            this.smartHomeAgent = smartHomeAgent;
         }
 
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
-            SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
+            SmartHome smartHome = smartHomeAgent.getSmartHome();
             smartHome.followRoutine(curTurn, curWeather, homeStatus);
             if(homeStatus == SmartHomeStatus.BLACKOUT){
                 log("else (status blackout)");
-                sequentialTurnBehaviour.addSubBehaviour(new WaitForRestoreBehaviour((SmartHomeAgent) myAgent));
+                sequentialTurnBehaviour.addSubBehaviour(new WaitForRestoreBehaviour(smartHomeAgent));
             } else {
                 // LOSING or GAINING
                 double availableEnergy = smartHome.getExpectedProduction();
 				double expectedConsumption = smartHome.getExpectedConsumption();
 
-                sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToGridBehaviour((SmartHomeAgent) myAgent));
+                sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToGridBehaviour(smartHomeAgent));
                 if(availableEnergy >= expectedConsumption){ 
                     homeStatus = SmartHomeStatus.GAINING_ENERGY;
                 }else{
                     homeStatus = SmartHomeStatus.LOSING_ENERGY;
-                    sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromGridBehaviour((SmartHomeAgent) myAgent));
+                    sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromGridBehaviour(smartHomeAgent));
                 }
             }
         }

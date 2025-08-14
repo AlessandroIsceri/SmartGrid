@@ -23,13 +23,15 @@ import jade.lang.acl.ACLMessage;
 
 public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
 
+    private SmartHomeAgent smartHomeAgent;
     public SendEnergyRequestToGridBehaviour(SmartHomeAgent smartHomeAgent){
         super(smartHomeAgent);
+        this.smartHomeAgent = smartHomeAgent;
     }
 
     @Override
     public void action() {
-        SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome(); 
+        SmartHome smartHome = smartHomeAgent.getSmartHome(); 
         //richiede energia se serve (non ne ha abbastanza, attaccandosi alla rete)
         //può rilasciare energia se ne ha troppa e non gli serve
 		double expectedConsumption = smartHome.getExpectedConsumption();
@@ -43,24 +45,24 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
             transactionType = TransactionType.SEND;
             Cable cable = smartHome.getCable(gridName);
             energy = cable.computeTransmittedPower(energy);
-            // conversationId = "release-"+myAgent.getLocalName();
+            // conversationId = "release-"+customAgent.getLocalName();
         } else {
             transactionType = TransactionType.RECEIVE; 
-            // conversationId = "request-"+myAgent.getLocalName();
+            // conversationId = "request-"+customAgent.getLocalName();
         }
-        EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHome.getPriority(), energy, myAgent.getLocalName(), transactionType);
+        EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHome.getPriority(), energy, customAgent.getLocalName(), transactionType);
         Map<String, Object> content = new HashMap<String, Object>();
 
-        ObjectMapper objectMapper = ((CustomAgent) myAgent).getObjectMapper();
+        ObjectMapper objectMapper = customAgent.getObjectMapper();
         JsonNode node = objectMapper.valueToTree(energyTransaction); // include @JsonTypeInfo
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
         
         // content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
         content.put(MessageUtil.BLACKOUT, false);
 
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.REQUEST, gridName, content); //conversationId);
+        customAgent.createAndSend(ACLMessage.REQUEST, gridName, content); //conversationId);
         //TODO REMOVE
-        // SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
-        ((CustomAgent) myAgent).log("*****" + smartHome.toString(), BEHAVIOUR_NAME);
+        // SmartHome smartHome = smartHomeAgent.getSmartHome();
+        log("*****" + smartHome.toString());
 	} 
 }

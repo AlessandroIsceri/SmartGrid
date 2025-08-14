@@ -19,15 +19,15 @@ import jade.lang.acl.MessageTemplate;
 
 public class ReceiveEnergyRequestsFromGridBehaviour extends CustomBehaviour{
 
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
     private boolean finished = false;
     private int requestCont = 0;
     private int gridCount;
+    private LoadManagerAgent loadManagerAgent;
 
     public ReceiveEnergyRequestsFromGridBehaviour (LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
-        gridCount = ((LoadManagerAgent) myAgent).getLoadManager().getGridNames().size();
+        this.gridCount = loadManagerAgent.getLoadManager().getGridNames().size();
+        this.loadManagerAgent = loadManagerAgent;
     }
 
     @Override
@@ -38,34 +38,34 @@ public class ReceiveEnergyRequestsFromGridBehaviour extends CustomBehaviour{
         }
 
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             requestCont++;
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             // double requestedEnergy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
-            EnergyTransaction energyTransaction = ((CustomAgent) myAgent).readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
+            EnergyTransaction energyTransaction = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
             double requestedEnergy = energyTransaction.getEnergyTransactionValue();
             double energyWithMargin = requestedEnergy;
             if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
                 energyWithMargin = requestedEnergy + requestedEnergy * 0.05; //add 5% bonus energy
             }
-            ((CustomAgent) myAgent).log("Requested: " + requestedEnergy + "\twithMargin: " + energyWithMargin, BEHAVIOUR_NAME);
+            log("Requested: " + requestedEnergy + "\twithMargin: " + energyWithMargin);
 
             
             String sender = receivedMsg.getSender().getLocalName();
-            LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager(); 
+            LoadManager loadManager = loadManagerAgent.getLoadManager(); 
             energyTransaction.setEnergyTransactionValue(energyWithMargin);
             loadManager.addGridRequestedEnergy(sender, energyTransaction);
             // loadManager.addExpectedConsumption(requestedEnergy);
 
             if(requestCont < gridCount){
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 finished = true;
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
 

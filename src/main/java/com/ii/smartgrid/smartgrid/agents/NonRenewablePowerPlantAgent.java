@@ -2,7 +2,8 @@ package com.ii.smartgrid.smartgrid.agents;
 
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendNonRenewableEnergyToGridBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.UpdateNonRenewableStatus;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.UpdateNonRenewableStatusBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.powerplant.UpdateNonRenewableStatusBehaviour;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 
 import jade.core.behaviours.SequentialBehaviour;
@@ -15,18 +16,21 @@ public abstract class NonRenewablePowerPlantAgent extends PowerPlantAgent{
 
     protected class NonRenewablePowerPlantBehaviour extends GenericTurnBehaviour{
 
+        private NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent;
+
         public NonRenewablePowerPlantBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent){
             super(nonRenewablePowerPlantAgent);
+            this.nonRenewablePowerPlantAgent = nonRenewablePowerPlantAgent;
         }
 
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             //se è attivo, invia l'energia prodotta
-            NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
+            NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
             if(nonRenewablePowerPlant.isOn()){
-                sequentialTurnBehaviour.addSubBehaviour(new SendNonRenewableEnergyToGridBehaviour((NonRenewablePowerPlantAgent) myAgent));
+                sequentialTurnBehaviour.addSubBehaviour(new SendNonRenewableEnergyToGridBehaviour(nonRenewablePowerPlantAgent));
             }
-            sequentialTurnBehaviour.addSubBehaviour(new UpdateNonRenewableStatus((NonRenewablePowerPlantAgent) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new UpdateNonRenewableStatusBehaviour(nonRenewablePowerPlantAgent));
         }
 
     }

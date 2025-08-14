@@ -28,12 +28,11 @@ public class GridAgent extends CustomAgent{
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.GRIDS_PATH, gridName, Grid.class);
 
         Grid grid = this.getGrid();
-        //this.referencedObject.addConnectedAgentName(grid.getLoadManagerName());
 
-        this.referencedObject.addConnectedAgentNames(grid.getSmartHomeNames());
-        this.referencedObject.addConnectedAgentNames(grid.getNonRenewablePowerPlantNames());
-        this.referencedObject.addConnectedAgentNames(grid.getRenewablePowerPlantNames());
-        this.referencedObject.addConnectedAgentNames(grid.getGridNames());
+        grid.addConnectedAgentNames(grid.getSmartHomeNames());
+        grid.addConnectedAgentNames(grid.getNonRenewablePowerPlantNames());
+        grid.addConnectedAgentNames(grid.getRenewablePowerPlantNames());
+        grid.addConnectedAgentNames(grid.getGridNames());
 
         this.addBehaviour(new GridCoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new GridBehaviour(this));
@@ -46,8 +45,11 @@ public class GridAgent extends CustomAgent{
 
     private class GridBehaviour extends GenericTurnBehaviour{
 
+        private GridAgent gridAgent;
+
         public GridBehaviour(GridAgent gridAgent) {
             super(gridAgent);
+            this.gridAgent = gridAgent;
         }
 
         @Override
@@ -64,18 +66,17 @@ public class GridAgent extends CustomAgent{
 			//SendXYZ -> inviare messaggi 
 			//ReceiveXYZ -> ricevere risposte ai messaggi
 
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartHomesBehaviour((GridAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromRenewablePowerPlantsBehaviour((GridAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromNonRenewablePowerPlantsBehaviour((GridAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToLoadManagerBehaviour((GridAgent) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartHomesBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromRenewablePowerPlantsBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToLoadManagerBehaviour(gridAgent));
 
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveRoutingInstructionsFromLoadManagerBehaviour((GridAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new InitRoutingInstructionsBehaviour((GridAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new FollowRoutingInstructionsBehaviour((GridAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToSmartHomesBehaviour((GridAgent) myAgent));
-            // sequentialTurnBehaviour.addSubBehaviour(new SendRestoreMessagesToSmartHomesBehaviour((GridAgent) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveRoutingInstructionsFromLoadManagerBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new InitRoutingInstructionsBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new FollowRoutingInstructionsBehaviour(gridAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendEnergyToSmartHomesBehaviour(gridAgent));
             
-            sequentialTurnBehaviour.addSubBehaviour(new HandleExtraEnergyBehaviour((GridAgent)myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new HandleExtraEnergyBehaviour(gridAgent));
         }
 
     }

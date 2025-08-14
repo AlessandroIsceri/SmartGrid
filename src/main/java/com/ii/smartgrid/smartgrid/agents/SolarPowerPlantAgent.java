@@ -20,7 +20,9 @@ public class SolarPowerPlantAgent extends RenewablePowerPlantAgent{
 
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.SOLAR_POWERPLANTS_PATH, solarPowerPlantName, SolarPowerPlant.class);
         
-        this.referencedObject.addConnectedAgentName(this.getRenewablePowerPlant().getGridName());
+        RenewablePowerPlant solarPowerPlant = getRenewablePowerPlant();
+
+        solarPowerPlant.addConnectedAgentName(solarPowerPlant.getGridName());
         
         this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
 

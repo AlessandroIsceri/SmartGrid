@@ -9,23 +9,26 @@ import jade.core.behaviours.OneShotBehaviour;
 
 public class HandleExtraEnergyBehaviour extends CustomOneShotBehaviour{
     
+    private GridAgent gridAgent;
+
     public HandleExtraEnergyBehaviour(GridAgent gridAgent){
         super(gridAgent);
+        this.gridAgent = gridAgent;
     }
 
     @Override
     public void action() {
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
         double extraEnergy = grid.getExpectedProduction() - grid.getExpectedConsumption();
         if(grid.getBattery() != null){
             double energyLost = grid.fillBattery(extraEnergy);
-            ((CustomAgent) myAgent).log("Energy lost: " + energyLost, BEHAVIOUR_NAME);
+            log("Energy lost: " + energyLost);
         }
         grid.setExpectedConsumption(grid.getBlackoutEnergyRequest());
 
         //TODO:REMOVE
         grid.resetValues();
-        ((CustomAgent) myAgent).log("*****" + grid.toString(), BEHAVIOUR_NAME);
+        log("*****" + grid.toString());
 
     }    
 

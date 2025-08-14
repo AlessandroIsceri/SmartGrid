@@ -17,21 +17,21 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import jade.lang.acl.ACLMessage;
 
 public class NonRenewablePowerPlantCoordinatesDiscoveryBehaviour extends CoordinatesDiscoveryBehaviour{
-    
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
 
+    private NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent;
 
     public NonRenewablePowerPlantCoordinatesDiscoveryBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent) {
         super(nonRenewablePowerPlantAgent);
+        this.nonRenewablePowerPlantAgent = nonRenewablePowerPlantAgent;
     }
 
     @Override
     protected void sendInformationToLoadManager(){
-        NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
+        NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
         Map<String, Object> content = new HashMap<String, Object>();
         content.put(MessageUtil.ON, nonRenewablePowerPlant.isOn());
         content.put(MessageUtil.MAX_TURN_PRODUCTION, nonRenewablePowerPlant.getHourlyProduction() * TimeUtils.getTurnDurationHours());
         String loadManagerName = nonRenewablePowerPlant.getLoadManagerName();
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, loadManagerName, content, "nonRenewablePowerPlantInfo");
+        customAgent.createAndSend(ACLMessage.INFORM, loadManagerName, content, "nonRenewablePowerPlantInfo");
     }
 }

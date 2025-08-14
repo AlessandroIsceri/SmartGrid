@@ -7,16 +7,14 @@ import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
 public class SendProducedSolarEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-
     public SendProducedSolarEnergyToGridBehaviour(SolarPowerPlantAgent solarPowerPlantAgent){
         super(solarPowerPlantAgent);
     }
     
     @Override
     protected double getHourlyProduction(RenewablePowerPlant solarPowerPlant){
-        WeatherStatus curWeather = ((CustomAgent) myAgent).getCurWeather();
-        int curTurn = ((CustomAgent) myAgent).getCurTurn();
+        WeatherStatus curWeather = customAgent.getCurWeather();
+        int curTurn = customAgent.getCurTurn();
         return solarPowerPlant.getHourlyProduction(curWeather, curTurn);
     }
     

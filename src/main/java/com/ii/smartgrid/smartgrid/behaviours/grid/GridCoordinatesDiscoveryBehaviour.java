@@ -8,23 +8,28 @@ import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
+import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;
 
 public class GridCoordinatesDiscoveryBehaviour extends CoordinatesDiscoveryBehaviour{
     
+    private GridAgent gridAgent;
+
     public GridCoordinatesDiscoveryBehaviour(GridAgent gridAgent) {
         super(gridAgent);
+        this.gridAgent = gridAgent;
     }
 
     @Override
     protected void sendInformationToLoadManager(){
         Map<String, Object> content = new HashMap<String, Object>();
-        List<Cable> cables = ((GridAgent) myAgent).getGrid().getConnectedGridsCables();
+        Grid grid = gridAgent.getGrid();
+        List<Cable> cables = grid.getConnectedGridsCables();
         content.put(MessageUtil.CABLE_COSTS, cables);
-        String loadManagerName = ((GridAgent) myAgent).getGrid().getLoadManagerName();
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, loadManagerName, content, "cableDiscovery");
-        ((CustomAgent) myAgent).log("Sending cable info to " + loadManagerName, BEHAVIOUR_NAME);
+        String loadManagerName = gridAgent.getGrid().getLoadManagerName();
+        customAgent.createAndSend(ACLMessage.INFORM, loadManagerName, content, "cableDiscovery");
+        log("Sending cable info to " + loadManagerName);
     }
 }

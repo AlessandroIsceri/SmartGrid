@@ -18,19 +18,22 @@ import jade.lang.acl.ACLMessage;
 
 public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
     
+    private LoadManagerAgent loadManagerAgent;
+
     public ChangeNonRenewablePowerPlantsInfo(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
+        this.loadManagerAgent = loadManagerAgent;
     }
 
     @Override
     public void action() {
-        LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
-        double requestedEnergySum = loadManager.getAllRequestedEnergySum();
+        LoadManager loadManager = loadManagerAgent.getLoadManager();
+        // double requestedEnergySum = loadManager.getAllRequestedEnergySum();
     
-        if(requestedEnergySum > 0){
-            //No requests to be satisfied
-            return;
-        }
+        // if(requestedEnergySum > 0){
+        //     //No requests to be satisfied
+        //     return;
+        // }
 
         /*
          * if(almeno una batteria è < 25) -> attiva non rinnovabili (quante e quali?)
@@ -76,7 +79,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
         for(NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos){
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.ON, nonRenewablePowerPlantInfo.isOn());
-            ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, nonRenewablePowerPlantInfo.getName(), content);
+            customAgent.createAndSend(ACLMessage.INFORM, nonRenewablePowerPlantInfo.getName(), content);
         }
         
     }

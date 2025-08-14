@@ -4,6 +4,7 @@ import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedHydroEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.model.HydroPowerPlant;
+import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class HydroPowerPlantAgent extends RenewablePowerPlantAgent{
@@ -14,7 +15,9 @@ public class HydroPowerPlantAgent extends RenewablePowerPlantAgent{
         String hydroPowerPlantName = this.getLocalName();
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.HYDRO_POWERPLANTS_PATH, hydroPowerPlantName, HydroPowerPlant.class);
         
-        this.referencedObject.addConnectedAgentName(this.getRenewablePowerPlant().getGridName());
+        RenewablePowerPlant hydroPowerPlant = getRenewablePowerPlant();
+
+        hydroPowerPlant.addConnectedAgentName(hydroPowerPlant.getGridName());
         
         this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new RenewablePowerPlantBehaviour(this));

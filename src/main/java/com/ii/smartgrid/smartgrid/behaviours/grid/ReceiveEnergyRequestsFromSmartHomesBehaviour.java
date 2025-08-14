@@ -19,10 +19,12 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviou
     private int requestCont = 0;
     private boolean finished = false;
     private int smartHomesCount = 0;
+    private GridAgent gridAgent;
 
     public ReceiveEnergyRequestsFromSmartHomesBehaviour(GridAgent gridAgent){
         super(gridAgent);
         this.smartHomesCount = gridAgent.getGrid().getSmartHomeNames().size();
+        this.gridAgent = gridAgent;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviou
 		MessageTemplate mt1 = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), 
                                                 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
         List<String> smartHomeNames = grid.getSmartHomeNames();
 
         MessageTemplate mt;
@@ -54,13 +56,13 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviou
 
         
         
-        ACLMessage receivedMsg = myAgent.receive(mt);
+        ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             requestCont++;
 
             String sender = receivedMsg.getSender().getLocalName();
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             if(receivedMsg.getPerformative() == ACLMessage.REQUEST){
 				/**
 				 * {
@@ -70,17 +72,17 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviou
 				 */
                 // String operation = (String) jsonObject.get(MessageUtil.OPERATION);
                 
-                EnergyTransaction energyTransaction  = ((CustomAgent) myAgent).readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
+                EnergyTransaction energyTransaction  = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
                 TransactionType transactionType = energyTransaction.getTransactionType();
                 if(transactionType == TransactionType.RECEIVE) {
                     double requestedEnergy = energyTransaction.getEnergyTransactionValue();
                     grid.addExpectedConsumption(requestedEnergy);
                     grid.addEnergyRequest(sender, energyTransaction);
                     grid.updateGridPriority(energyTransaction.getPriority());
-                    ((CustomAgent) myAgent).log("Requested Energy: " + requestedEnergy, BEHAVIOUR_NAME);
+                    log("Requested Energy: " + requestedEnergy);
                 } else {
                     double releasedEnergy = energyTransaction.getEnergyTransactionValue();
-                    ((CustomAgent) myAgent).log("Released Energy: " + releasedEnergy, BEHAVIOUR_NAME);
+                    log("Released Energy: " + releasedEnergy);
                     // grid.removeExpectedConsumption(releasedEnergy);
                     grid.addExpectedProduction(releasedEnergy);
                     if(grid.containsSmartHomeWithoutPower(sender)){
@@ -103,12 +105,12 @@ public class ReceiveEnergyRequestsFromSmartHomesBehaviour extends CustomBehaviou
                 }
             }
             if(requestCont < this.smartHomesCount){
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 finished = true;
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
 

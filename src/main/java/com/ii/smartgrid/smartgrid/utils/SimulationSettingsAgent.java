@@ -18,7 +18,7 @@ import jade.wrapper.StaleProxyException;
 import us.dustinj.timezonemap.TimeZone;
 import us.dustinj.timezonemap.TimeZoneMap;
 
-public class SimulationSettings extends CustomAgent{
+public class SimulationSettingsAgent extends CustomAgent{
 	
     public enum SimulationStatus {ON, OFF};
     
@@ -146,7 +146,6 @@ public class SimulationSettings extends CustomAgent{
         this.log("Weather: " + this.curWeather);
         this.log("Wind speed: " + this.curWindSpeed);
 
-		// List<String> allAgentNames = ((SimulationSettings) myAgent).getAgentNames();
 		for(int i = 0; i < agentNames.size(); i++) {
             this.createAndSend(ACLMessage.INFORM, agentNames.get(i), content, "turn-" + agentNames.get(i));
 		}

@@ -7,27 +7,25 @@ import java.util.List;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
-import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.model.WeightedGraphPath;
-import com.ii.smartgrid.smartgrid.utils.EnergyUtil;
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-
-import jade.core.behaviours.OneShotBehaviour;
 
 public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
+    private LoadManagerAgent loadManagerAgent;
+
     public DistributeExcessEnergyBehaviour(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
+        this.loadManagerAgent = loadManagerAgent;
     }
 
 
     @Override
     public void action() {
-        LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
+        LoadManager loadManager = loadManagerAgent.getLoadManager();
 
         List<EnergyTransaction> producerNodes = loadManager.getProducerNodes();
         if(!producerNodes.isEmpty()){
@@ -40,10 +38,10 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
                 EnergyTransaction producerNode = producerNodesIterator.next();
 
-                ((CustomAgent) myAgent).log("*********************", BEHAVIOUR_NAME);
-                ((CustomAgent) myAgent).log("producerNodes: " + producerNodes, BEHAVIOUR_NAME);
-                ((CustomAgent) myAgent).log("currentProducer: " + producerNode, BEHAVIOUR_NAME);
-                ((CustomAgent) myAgent).log("gridWithBatteries: " + gridsWithBattery, BEHAVIOUR_NAME);
+                log("*********************");
+                log("producerNodes: " + producerNodes);
+                log("currentProducer: " + producerNode);
+                log("gridWithBatteries: " + gridsWithBattery);
 
                 if(gridsWithBattery.contains(producerNode)){
                     // The producer node already has a battery -> continue
@@ -66,7 +64,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                         continue;
                     }
 
-                    ((CustomAgent) myAgent).log("gridWithBattery: " + gridWithBattery, BEHAVIOUR_NAME);
+                    log("gridWithBattery: " + gridWithBattery);
                     WeightedGraphPath path = loadManager.getShortestPath(producerNode.getNodeName(), gridWithBattery.getNodeName());
                     double curCost = path.getTotalCost();
                     if(curCost < minCost){
@@ -84,8 +82,8 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                 }
 
                 String nearestGridWithBatteryName = shortesPath.getTarget();
-                ((CustomAgent) myAgent).log("nearestGridWithBatteryName found: " + nearestGridWithBatteryName, BEHAVIOUR_NAME);
-                ((CustomAgent) myAgent).log("shortest path: " + shortesPath, BEHAVIOUR_NAME);
+                log("nearestGridWithBatteryName found: " + nearestGridWithBatteryName);
+                log("shortest path: " + shortesPath);
                 EnergyTransactionWithBattery nearestGridWithBattery = (EnergyTransactionWithBattery) loadManager.getEnergyTransaction(nearestGridWithBatteryName);
 
                 double availableEnergy = producerNode.getEnergyTransactionValue();
@@ -95,14 +93,14 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                  
                 maxSendableEnergy = loadManager.computeEnergyToSatisfyRequest(maxSendableEnergy, shortesPath.getGraphPath());
 
-                ((CustomAgent) myAgent).log("maxSendableEnergy: " + maxSendableEnergy, BEHAVIOUR_NAME);
+                log("maxSendableEnergy: " + maxSendableEnergy);
                 if(maxSendableEnergy > availableEnergy){
                     // All energy can be sended
                     distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), availableEnergy);
                     producerNode.sendEnergy(availableEnergy);
 
                     double lostEnergy = loadManager.computeEnergyLoss(availableEnergy, shortesPath.getGraphPath());
-                    ((CustomAgent) myAgent).log("lostEnergy: " + lostEnergy, BEHAVIOUR_NAME);
+                    log("lostEnergy: " + lostEnergy);
                     double receivedEnergy = availableEnergy - lostEnergy;
                     nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
                     
@@ -114,7 +112,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                     producerNode.sendEnergy(maxSendableEnergy);
 
                     double lostEnergy = loadManager.computeEnergyLoss(maxSendableEnergy, shortesPath.getGraphPath());
-                    ((CustomAgent) myAgent).log("lostEnergy: " + lostEnergy, BEHAVIOUR_NAME);
+                    log("lostEnergy: " + lostEnergy);
                     double receivedEnergy = maxSendableEnergy - lostEnergy;
                     nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
                     
@@ -134,7 +132,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
             }
         }
-        ((CustomAgent) myAgent).log("DistributionInstructions: " + loadManager.getDistributionInstructions(), BEHAVIOUR_NAME);
+        log("DistributionInstructions: " + loadManager.getDistributionInstructions());
     }
 
 }

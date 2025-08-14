@@ -15,41 +15,43 @@ import jade.lang.acl.MessageTemplate;
 
 public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
     
+    private SmartHomeAgent smartHomeAgent;
     private boolean finished = false;
-
+    
 	public ReceiveEnergyFromGridBehaviour(SmartHomeAgent smartHomeAgent) {
 		super(smartHomeAgent);
+        this.smartHomeAgent = smartHomeAgent;
 	}
 
 	@Override
 	public void action() {
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.AGREE), 
                                                 MessageTemplate.MatchPerformative(ACLMessage.REFUSE));
-        ACLMessage receivedMsg = myAgent.receive(mt);
+        ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
             double energy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
             if(receivedMsg.getPerformative() == ACLMessage.AGREE){
                 if(operation.equals(MessageUtil.CONSUME)){
-                    ((CustomAgent) myAgent).log("Energy consumed", BEHAVIOUR_NAME);
+                    log("Energy consumed");
                 }else{
-                    ((CustomAgent) myAgent).log("Error: invalid operation", BEHAVIOUR_NAME);
+                    log("Error: invalid operation");
                 }
             } else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
                 //possible blackout 
                 if(operation.equals(MessageUtil.CONSUME)){
-                    ((CustomAgent) myAgent).log("ATTENTION: Blackout soon", BEHAVIOUR_NAME);
-                    ((SmartHomeAgent) myAgent).getSmartHome().shutDown();
-                    ((SmartHomeAgent) myAgent).setHomeStatus(SmartHomeStatus.BLACKOUT);
+                    log("ATTENTION: Blackout soon");
+                    smartHomeAgent.getSmartHome().shutDown();
+                    smartHomeAgent.setHomeStatus(SmartHomeStatus.BLACKOUT);
                 }else{
-                    ((CustomAgent) myAgent).log("Error: invalid operation", BEHAVIOUR_NAME);
+                    log("Error: invalid operation");
                 }
             }
             //TODO REMOVE
-            SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
-            ((CustomAgent) myAgent).log("*****" + smartHome.toString(), BEHAVIOUR_NAME);
+            SmartHome smartHome = smartHomeAgent.getSmartHome();
+            log("*****" + smartHome.toString());
             finished = true;
 		} else {
 			block();

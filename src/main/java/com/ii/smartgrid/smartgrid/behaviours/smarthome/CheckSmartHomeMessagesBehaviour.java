@@ -21,14 +21,17 @@ import jade.lang.acl.MessageTemplate;
 
 public class CheckSmartHomeMessagesBehaviour extends CustomCyclicBehaviour{
 	
+    private SmartHomeAgent smartHomeAgent;
+
 	public CheckSmartHomeMessagesBehaviour(SmartHomeAgent smartHomeAgent) {
 		super(smartHomeAgent);
+        this.smartHomeAgent = smartHomeAgent;
 	}
 
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		//owner -> manda msg request -> smartHome riceve, manda agree ed esegue -> inform è andata bene
 		if (receivedMsg != null) {
 			/**
@@ -37,15 +40,15 @@ public class CheckSmartHomeMessagesBehaviour extends CustomCyclicBehaviour{
 			 * 		"tasks": task[] sempre JSON 
 			 * }
 			 */
-            SmartHome smartHome = ((SmartHomeAgent) myAgent).getSmartHome();
-			Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            SmartHome smartHome = smartHomeAgent.getSmartHome();
+			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
-            List<Task> tasks = (List<Task>) ((CustomAgent) myAgent).readValueFromJson(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
+            List<Task> tasks = (List<Task>) customAgent.readValueFromJson(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
             
             Routine routine = smartHome.getRoutine();
             
             //rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
-            ((CustomAgent) myAgent).createAndSendReply(ACLMessage.AGREE, receivedMsg);
+            customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
             
             boolean result = true;
             if(operation.equals(MessageUtil.ADD)) {
@@ -53,15 +56,15 @@ public class CheckSmartHomeMessagesBehaviour extends CustomCyclicBehaviour{
             } else if (operation.equals(MessageUtil.REMOVE)){
                 result = routine.removeTasks(tasks);
             } else {
-                ((CustomAgent) myAgent).log("Error: invalid parameter \"operation\": " + operation, BEHAVIOUR_NAME);
+                log("Error: invalid parameter \"operation\": " + operation);
                 result = false;
             }
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.RESULT, result);
-            ((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
+            customAgent.createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
 
-			((CustomAgent) myAgent).log("Routine updated", BEHAVIOUR_NAME);			
+			log("Routine updated");			
 		} else {
 			block();
 		}

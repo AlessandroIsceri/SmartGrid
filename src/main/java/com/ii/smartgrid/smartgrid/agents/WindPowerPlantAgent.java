@@ -3,6 +3,7 @@ package com.ii.smartgrid.smartgrid.agents;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedWindEnergyToGridBehaviour;
+import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.model.WindPowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
@@ -14,7 +15,8 @@ public class WindPowerPlantAgent extends RenewablePowerPlantAgent{
 
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.WIND_POWERPLANTS_PATH, windPowerPlantName, WindPowerPlant.class);
 
-        this.referencedObject.addConnectedAgentName(this.getRenewablePowerPlant().getGridName());
+        RenewablePowerPlant windPowerPlant = getRenewablePowerPlant();
+        windPowerPlant.addConnectedAgentName(windPowerPlant.getGridName());
         
         this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new RenewablePowerPlantBehaviour(this));

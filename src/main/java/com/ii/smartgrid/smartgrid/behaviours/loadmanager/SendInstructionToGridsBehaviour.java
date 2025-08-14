@@ -16,21 +16,24 @@ import jade.lang.acl.ACLMessage;
 
 public class SendInstructionToGridsBehaviour extends CustomOneShotBehaviour{
 
+    private LoadManagerAgent loadManagerAgent;
+
     public SendInstructionToGridsBehaviour(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
+        this.loadManagerAgent = loadManagerAgent;
     }
 
     @Override
     public void action() {
-        LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
+        LoadManager loadManager = loadManagerAgent.getLoadManager();
         List<String> gridNames = loadManager.getGridNames();
         for(String gridName : gridNames){
-            ((CustomAgent) myAgent).log("DistributionInstructionsForGrid " + gridName + " " + loadManager.getDistributionInstructionsForGrid(gridName), BEHAVIOUR_NAME);
+            log("DistributionInstructionsForGrid " + gridName + " " + loadManager.getDistributionInstructionsForGrid(gridName));
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, loadManager.getDistributionInstructionsForGrid(gridName));
             content.put(MessageUtil.ACTIVE_NON_RENEWABLE_POWERPLANTS, loadManager.getNonRenewablePowerPlantInfos());
             content.put(MessageUtil.NUMBER_OF_MSGS_TO_RECEIVE, loadManager.getNumberOfMessagesForGrid(gridName));
-            ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
+            customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
         }
         // LoadManager loadManager = loadManagerAgent.getLoadManager();
         loadManager.removeAllDistributionInstructions();

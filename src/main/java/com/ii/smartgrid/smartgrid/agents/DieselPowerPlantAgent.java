@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.NonRenewablePowerPlantCoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.model.DieselPowerPlant;
+import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
@@ -16,10 +17,10 @@ public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
 
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.DIESEL_POWERPLANTS_PATH, dieselPowerPlantName, DieselPowerPlant.class);
         
-        ((DieselPowerPlant) this.referencedObject).setOn(false);
+        NonRenewablePowerPlant dieselPowerPlant = getNonRenewablePowerPlant();
+        dieselPowerPlant.setOn(false);
 
-        DieselPowerPlant dieselPowerPlant = ((DieselPowerPlant) this.referencedObject);
-        this.referencedObject.addConnectedAgentName(dieselPowerPlant.getGridName());
+        dieselPowerPlant.addConnectedAgentName(dieselPowerPlant.getGridName());
         
         this.addBehaviour(new NonRenewablePowerPlantCoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new NonRenewablePowerPlantBehaviour(this));

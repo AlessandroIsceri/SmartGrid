@@ -14,26 +14,26 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class UpdateNonRenewableStatus extends CustomBehaviour{
-
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+public class UpdateNonRenewableStatusBehaviour extends CustomBehaviour{
 
     private boolean finished;
+    private NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent;
 
-    public UpdateNonRenewableStatus(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent){
+    public UpdateNonRenewableStatusBehaviour(NonRenewablePowerPlantAgent nonRenewablePowerPlantAgent){
         super(nonRenewablePowerPlantAgent);
         this.finished = false;
+        this.nonRenewablePowerPlantAgent = nonRenewablePowerPlantAgent;
     }
 
     @Override
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-        ACLMessage receivedMsg = myAgent.receive(mt);
+        ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("Received a message FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            log("Received a message FROM " + receivedMsg.getSender().getLocalName());
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             boolean on = (boolean) jsonObject.get(MessageUtil.ON);
-            NonRenewablePowerPlant nonRenewablePowerPlant = ((NonRenewablePowerPlantAgent) myAgent).getNonRenewablePowerPlant();
+            NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
             nonRenewablePowerPlant.setOn(on);
             finished = true;
 		} else {

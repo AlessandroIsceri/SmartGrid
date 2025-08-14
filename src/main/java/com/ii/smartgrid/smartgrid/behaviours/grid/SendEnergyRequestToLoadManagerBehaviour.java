@@ -23,13 +23,16 @@ import jade.lang.acl.ACLMessage;
 
 public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehaviour{
 
+    private GridAgent gridAgent;
+
     public SendEnergyRequestToLoadManagerBehaviour(GridAgent gridAgent) {
         super(gridAgent);
+        this.gridAgent = gridAgent;
     }
 
     @Override
     public void action() {
-        Grid grid= ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
         String loadManagerName = grid.getLoadManagerName();
         Map<String, Object> content = new HashMap<String, Object>();
         EnergyTransaction energyTransaction = null;
@@ -40,22 +43,22 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
         if(energyTransactionValue >= 0){
             //producer
             energyTransactionType = TransactionType.SEND;
-            ((GridAgent) myAgent).setGridStatus(GridStatus.SEND);
+            gridAgent.setGridStatus(GridStatus.SEND);
         }else{
             energyTransactionType = TransactionType.RECEIVE;
-            ((GridAgent) myAgent).setGridStatus(GridStatus.RECEIVE);
+            gridAgent.setGridStatus(GridStatus.RECEIVE);
         }
 
         if(battery != null){
-            energyTransaction = new EnergyTransactionWithBattery(grid.getPriority(), Math.abs(energyTransactionValue), myAgent.getLocalName(), battery, energyTransactionType);
+            energyTransaction = new EnergyTransactionWithBattery(grid.getPriority(), Math.abs(energyTransactionValue), customAgent.getLocalName(), battery, energyTransactionType);
         }else{
-            energyTransaction = new EnergyTransactionWithoutBattery(grid.getPriority(), Math.abs(energyTransactionValue), myAgent.getLocalName(), energyTransactionType);
+            energyTransaction = new EnergyTransactionWithoutBattery(grid.getPriority(), Math.abs(energyTransactionValue), customAgent.getLocalName(), energyTransactionType);
         }
-        ObjectMapper objectMapper = ((CustomAgent) myAgent).getObjectMapper();
+        ObjectMapper objectMapper = customAgent.getObjectMapper();
         JsonNode node = objectMapper.valueToTree(energyTransaction); // include @JsonTypeInfo
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
         
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.REQUEST, loadManagerName, content);
+        customAgent.createAndSend(ACLMessage.REQUEST, loadManagerName, content);
     }
 
 }

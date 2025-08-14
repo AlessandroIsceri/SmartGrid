@@ -19,15 +19,16 @@ import jade.lang.acl.ACLMessage;
 
 public abstract class SendProducedEnergyToGridBehaviour extends CustomOneShotBehaviour{
 
-    private final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+    private RenewablePowerPlantAgent renewablePowerPlantAgent;
 
     public SendProducedEnergyToGridBehaviour(RenewablePowerPlantAgent renewablePowerPlantAgent){
         super(renewablePowerPlantAgent);
+        this.renewablePowerPlantAgent = renewablePowerPlantAgent;
     }
 
     @Override
     public void action() {     
-        RenewablePowerPlant renewablePowerPlant = ((RenewablePowerPlantAgent) myAgent).getRenewablePowerPlant();
+        RenewablePowerPlant renewablePowerPlant = renewablePowerPlantAgent.getRenewablePowerPlant();
         double expectedProduction = this.getHourlyProduction(renewablePowerPlant) * TimeUtils.getTurnDurationHours();
         String gridName = renewablePowerPlant.getGridName();
         Map<String, Object> content = new HashMap<String, Object>();
@@ -35,7 +36,7 @@ public abstract class SendProducedEnergyToGridBehaviour extends CustomOneShotBeh
         Cable cable = renewablePowerPlant.getCable(gridName);
         content.put(MessageUtil.GIVEN_ENERGY, cable.computeTransmittedPower(expectedProduction));
 
-        ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, gridName, content);
+        customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
     }
 
     protected abstract double getHourlyProduction(RenewablePowerPlant renewablePowerPlant);

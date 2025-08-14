@@ -129,17 +129,28 @@ public class LoadManager extends CustomObject{
         }
     }
 
-    public double getAllRequestedEnergySum() {
-		double sum = 0;
+    public boolean areAllRequestsSatisfied(){
         for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
             if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
-                sum = sum + energyTransaction.getEnergyTransactionValue();
-            }else{
-                sum = sum - energyTransaction.getEnergyTransactionValue();
-            }      
+                if(energyTransaction.getEnergyTransactionValue() > 0){
+                    return false;
+                }
+            }
         }
-        return sum;
-	}
+        return true;
+    }
+
+    // public double getAllRequestedEnergySum() {
+	// 	double sum = 0;
+    //     for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
+    //         if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
+    //             sum = sum + energyTransaction.getEnergyTransactionValue();
+    //         }else{
+    //             sum = sum - energyTransaction.getEnergyTransactionValue();
+    //         }      
+    //     }
+    //     return sum;
+	// }
 
     public double getRequestedEnergySum(List<? extends EnergyTransaction> producerNodes, List<? extends EnergyTransaction> consumerNodes) {
         double sum = 0;
@@ -249,8 +260,9 @@ public class LoadManager extends CustomObject{
     // public <T extends EnergyTransaction> T getEnergyTransaction(String gridName){
     //     return (T) gridRequestedEnergy.get(gridName);
     // }
-    public EnergyTransaction getEnergyTransaction(String gridName){
-         return gridRequestedEnergy.get(gridName);
+    //TODO FORSE RIMUOVERE TEMPLATE T ?
+    public <T extends EnergyTransaction> T getEnergyTransaction(String gridName){
+         return (T) gridRequestedEnergy.get(gridName);
     }
 
     public void addDistributionInstructions(String nearestProducerNodeName, DistributionInstruction shortesPath) {

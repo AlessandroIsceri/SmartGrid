@@ -22,13 +22,16 @@ import jade.lang.acl.ACLMessage;
 
 public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
 
+    private GridAgent gridAgent;
+
     public SendEnergyToSmartHomesBehaviour(GridAgent gridAgent){
         super(gridAgent);
+        this.gridAgent = gridAgent;
     }
 
     @Override
     public void action() {
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
 
         //consumption: richieste da case in blackput 200 + richieste case 400 + energia inviata alle grid 300
         //production: energia da pp/case + energia da altre grid +1000
@@ -49,11 +52,11 @@ public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
                 if(neededEnergy < availableEnergy){
                     content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
                     availableEnergy -= neededEnergy;
-                    ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, smartHomeName, content, "restore-" + smartHomeName);
+                    customAgent.createAndSend(ACLMessage.INFORM, smartHomeName, content, "restore-" + smartHomeName);
                     grid.removeSmartHomeWithoutPower(smartHomeName);
                 }else{
                     content.put(MessageUtil.GIVEN_ENERGY, -1.0);
-                    ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, smartHomeName, content, "restore-" + smartHomeName);
+                    customAgent.createAndSend(ACLMessage.INFORM, smartHomeName, content, "restore-" + smartHomeName);
                     // grid.removeSmartHomeWithoutPower(smartHomeName); TODO: check
                 }
             }
@@ -81,9 +84,9 @@ public class SendEnergyToSmartHomesBehaviour extends CustomOneShotBehaviour{
                 
                 if(availableEnergy >= neededEnergy){
                     availableEnergy -= neededEnergy;
-                    ((CustomAgent) myAgent).createAndSend(ACLMessage.AGREE, smartHomeName, content);
+                    customAgent.createAndSend(ACLMessage.AGREE, smartHomeName, content);
                 }else{
-                    ((CustomAgent) myAgent).createAndSend(ACLMessage.REFUSE, smartHomeName, content);
+                    customAgent.createAndSend(ACLMessage.REFUSE, smartHomeName, content);
                     EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartHomesEnergyRequest.getPriority(), neededEnergy, smartHomeName, TransactionType.RECEIVE);
                     grid.addSmartHomeWithoutPower(smartHomeName, energyTransaction);
                 }

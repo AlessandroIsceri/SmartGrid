@@ -1,21 +1,15 @@
 package com.ii.smartgrid.smartgrid.behaviours;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.Coordinates;
 import com.ii.smartgrid.smartgrid.model.CustomObject;
-import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.utils.EnergyUtil;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
-import com.ii.smartgrid.smartgrid.utils.SimulationSettings;
 
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -28,7 +22,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
 
     public CoordinatesDiscoveryBehaviour(CustomAgent customAgent){
         super(customAgent);
-        neighborsCont = ((CustomAgent) myAgent).getReferencedObject().getConnectedAgents().size();
+        neighborsCont = customAgent.getReferencedObject().getConnectedAgents().size();
     }
 
     @Override
@@ -36,7 +30,6 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
 
         if(neighborsCont == 0){
             this.state = Status.FINISHED;
-            
             return;
         }
 
@@ -54,34 +47,34 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
     }
 
     private void sendCoordinates(){
-        ((CustomAgent) myAgent).log("Sending coordinates...", BEHAVIOUR_NAME);
-        CustomObject referencedObject = ((CustomAgent) myAgent).getReferencedObject();
+        log("Sending coordinates...");
+        CustomObject referencedObject = customAgent.getReferencedObject();
         Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
         for(String agentName : connectedAgents.keySet()){
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MessageUtil.OPERATION, MessageUtil.DISCOVERY);
             content.put(MessageUtil.LATITUDE, referencedObject.getCoordinates().getLatitude());
             content.put(MessageUtil.LONGITUDE, referencedObject.getCoordinates().getLongitude());
-            ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, agentName, content);
+            customAgent.createAndSend(ACLMessage.INFORM, agentName, content);
         }
         state = Status.RECEIVING_MSGS;
     }
 
     private void receiveCoordinates(){
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
             String otherAgentName = receivedMsg.getSender().getLocalName();
-            String myAgentName = myAgent.getLocalName();      
-            ((CustomAgent) myAgent).log("Received coordinates from " + otherAgentName, BEHAVIOUR_NAME);
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            String myAgentName = customAgent.getLocalName();      
+            log("Received coordinates from " + otherAgentName);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
             if(operation.equals(MessageUtil.DISCOVERY)){
                 requestCont++;
                 double latitude = (double) jsonObject.get(MessageUtil.LATITUDE);
                 double longitude = (double) jsonObject.get(MessageUtil.LONGITUDE);
                 Coordinates otherCoordinates = new Coordinates(latitude, longitude);
-                Coordinates myCoordinates = ((CustomAgent) myAgent).getReferencedObject().getCoordinates();
+                Coordinates myCoordinates = customAgent.getReferencedObject().getCoordinates();
                 
                 Cable cableInfo = EnergyUtil.getCableTypeInfo(myAgentName, otherAgentName);
                 double cableSection = cableInfo.getCableSection();
@@ -94,23 +87,23 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
                 String cableType = cableInfo.getCableType();
                 Cable cable = new Cable(cableSection, resistivity, voltage, myCoordinates, otherCoordinates, to, from, cableType);
 
-                ((CustomAgent) myAgent).getReferencedObject().addCable(otherAgentName, cable);
+                customAgent.getReferencedObject().addCable(otherAgentName, cable);
             } else {
-                ((CustomAgent) myAgent).log("The received message is not a discovery", BEHAVIOUR_NAME);
-                myAgent.putBack(receivedMsg);
+                log("The received message is not a discovery");
+                customAgent.putBack(receivedMsg);
             }
 
             if(requestCont < neighborsCont){
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
-                ((CustomAgent) myAgent).log("Coordinates discovery done", BEHAVIOUR_NAME);
+                log("Coordinates discovery done");
                 
                 sendInformationToLoadManager();
                 
                 state = Status.FINISHED;
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
     

@@ -6,20 +6,27 @@ import jade.core.behaviours.OneShotBehaviour;
 
 public abstract class CustomOneShotBehaviour extends OneShotBehaviour{
     
-  	protected final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
-    
+    protected CustomAgent customAgent;
+
     public CustomOneShotBehaviour(CustomAgent customAgent){
         super(customAgent);
+        this.customAgent = customAgent;
     }
 
     @Override
     public void onStart() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
+        log("Started");
     }
 
     @Override
     public int onEnd() {
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
+        log("Finished");
         return super.onEnd();
     }
+
+    public void log(String logMessage){
+        customAgent.log(logMessage, this.getBehaviourName());
+    }
+
+
 }

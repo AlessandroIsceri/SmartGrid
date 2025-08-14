@@ -17,22 +17,25 @@ import jade.lang.acl.ACLMessage;
 
 public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour{
 
+    private GridAgent gridAgent;
+
     public InitRoutingInstructionsBehaviour(GridAgent gridAgent){
         super(gridAgent);
+        this.gridAgent = gridAgent;
     }
 
 
     @Override
     public void action() {
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
 
-        if(((GridAgent) myAgent).getGridStatus() == GridStatus.RECEIVE){
+        if(gridAgent.getGridStatus() == GridStatus.RECEIVE){
             return;
         }
         
         List<DistributionInstruction> distributionInstructions = grid.getDistributionInstructions();
 
-        ((CustomAgent) myAgent).log("Distribution Instructions: " + distributionInstructions, BEHAVIOUR_NAME);
+        log("Distribution Instructions: " + distributionInstructions);
 
         for(DistributionInstruction distributionInstruction : distributionInstructions){
             distributionInstruction.removeFirstElement();
@@ -49,7 +52,7 @@ public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour{
                 content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, distributionInstruction);
                 // content.put(MessageUtil.GIVEN_ENERGY, energyToDistributeWithLoss); //499
                 grid.addExpectedConsumption(energyToDistribute);
-                ((CustomAgent) myAgent).createAndSend(ACLMessage.INFORM, receiverName, content);
+                customAgent.createAndSend(ACLMessage.INFORM, receiverName, content);
             }
         }
     }

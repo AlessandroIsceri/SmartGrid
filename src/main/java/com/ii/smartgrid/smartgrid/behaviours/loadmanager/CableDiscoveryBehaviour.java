@@ -19,15 +19,17 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
 
     private int numberOfNodes;
     private int requestCont;
+    private LoadManagerAgent loadManagerAgent;
     
     private boolean finished;
 
     public CableDiscoveryBehaviour(LoadManagerAgent loadManagerAgent) {
         super(loadManagerAgent);
         this.numberOfNodes = loadManagerAgent.getLoadManager().getGridNames().size();
-        loadManagerAgent.log("waiting for " + numberOfNodes + " messages", BEHAVIOUR_NAME);
+        log("waiting for " + numberOfNodes + " messages");
         this.requestCont = 0;
         this.finished = false;
+        this.loadManagerAgent = loadManagerAgent;
     }
 
     @Override
@@ -39,19 +41,19 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
         }
 
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
             if(!receivedMsg.getConversationId().contains("cable")){
-                myAgent.putBack(receivedMsg);
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.putBack(receivedMsg);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 String gridName = receivedMsg.getSender().getLocalName();
-                ((CustomAgent) myAgent).log("Received a cable discovery msg from... " + gridName, BEHAVIOUR_NAME);
-                Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
-                ArrayList<Cable> cables = ((CustomAgent) myAgent).readValueFromJson(jsonObject.get(MessageUtil.CABLE_COSTS), new TypeReference<ArrayList<Cable>>() {});
+                log("Received a cable discovery msg from... " + gridName);
+                Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
+                ArrayList<Cable> cables = customAgent.readValueFromJson(jsonObject.get(MessageUtil.CABLE_COSTS), new TypeReference<ArrayList<Cable>>() {});
                 requestCont++;
                 //{"cable_costs": [{"cost": 450, "to": "Grid-2", "from": "Grid-1"}]}
-                LoadManager loadManager = ((LoadManagerAgent) myAgent).getLoadManager();
+                LoadManager loadManager = loadManagerAgent.getLoadManager();
                 for(Cable cable : cables){
                     double cost = cable.computeTransmissionCost();
                     String to = cable.getTo();
@@ -63,15 +65,15 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
                 loadManager.addGridCables(gridName, cables);
 
                 if(requestCont < numberOfNodes){
-                    ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                    customAgent.blockBehaviourIfQueueIsEmpty(this);
                 }else{
-                    ((CustomAgent) myAgent).log("done", BEHAVIOUR_NAME);
+                    log("done");
                     loadManager.computeDijkstraForAllNodes();
                     finished = true;
                 }
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
 

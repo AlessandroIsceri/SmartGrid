@@ -25,31 +25,31 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 
     @Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("turn-" + myAgent.getLocalName()),
+		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("turn-" + customAgent.getLocalName()),
 												 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-			Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
 			
 			int curTurn = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
-			((CustomAgent) myAgent).setCurTurn(curTurn);
+			customAgent.setCurTurn(curTurn);
 			int weather = (int) jsonObject.get(MessageUtil.CURRENT_WEATHER);
-			((CustomAgent) myAgent).setCurWeather(WeatherStatus.values()[weather]);
+			customAgent.setCurWeather(WeatherStatus.values()[weather]);
 			int windSpeed = (int) jsonObject.get(MessageUtil.CURRENT_WIND_SPEED);
-			((CustomAgent) myAgent).setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
+			customAgent.setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
             double electricityPrice = (double) jsonObject.get(MessageUtil.ELECTRICITY_PRICE);
-			((CustomAgent) myAgent).setCurElectricityPrice(electricityPrice);
+			customAgent.setCurElectricityPrice(electricityPrice);
 					
-			SequentialBehaviour sequentialTurnBehaviour = new SequentialBehaviour(myAgent){
+			SequentialBehaviour sequentialTurnBehaviour = new SequentialBehaviour(customAgent){
              	@Override
              	public int onEnd(){
-					((CustomAgent) myAgent).createAndSendReply(ACLMessage.INFORM, receivedMsg);
+					customAgent.createAndSendReply(ACLMessage.INFORM, receivedMsg);
                     return 0;
                 }
             };
 			
 			executeTurn(sequentialTurnBehaviour);
-            myAgent.addBehaviour(sequentialTurnBehaviour);
+            customAgent.addBehaviour(sequentialTurnBehaviour);
             block();
 		}else {
 			block();

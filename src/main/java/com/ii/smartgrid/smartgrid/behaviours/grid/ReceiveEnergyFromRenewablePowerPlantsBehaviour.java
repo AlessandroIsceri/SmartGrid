@@ -19,9 +19,11 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
     private int requestCont = 0;
     private boolean finished = false;
     private int renewablePowerPlantCount; 
+    private GridAgent gridAgent;
 
     public ReceiveEnergyFromRenewablePowerPlantsBehaviour(GridAgent gridAgent){
         super(gridAgent);
+        this.gridAgent = gridAgent;
         renewablePowerPlantCount = gridAgent.getGrid().getRenewablePowerPlantNames().size();
     }
 
@@ -35,7 +37,7 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
 
 		MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
         
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
         List<String> renewablePowerPlantNames = grid.getRenewablePowerPlantNames();
 
         MessageTemplate mt;
@@ -50,30 +52,30 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
             mt = MessageTemplate.and(mt1, mt2); 
         }
 
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             requestCont++;
 			/**
 			 * {
 			 * 		"energy": 200.0
 			 * }
 			 */
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
-            ((CustomAgent) myAgent).log("receivedEnergy: " + receivedEnergy, BEHAVIOUR_NAME);
+            log("receivedEnergy: " + receivedEnergy);
             
             
             // grid.removeExpectedConsumption(receivedEnergy);
             grid.addExpectedProduction(receivedEnergy);
 
             if(requestCont < renewablePowerPlantCount){
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 finished = true;
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
 

@@ -4,7 +4,7 @@ import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.CableDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.DistributeBatteryEnergyBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.DistributeExcessEnergyBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.loadmanager.FindOptimalDistributionStrategyBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.loadmanager.DistributeGridEnergyBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.NonRenewablePowerPlantDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveEnergyRequestsFromGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendInstructionToGridsBehaviour;
@@ -22,12 +22,7 @@ public class LoadManagerAgent extends CustomAgent{
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.LOAD_MANAGERS_PATH, loadManagerName, LoadManager.class);
         
         LoadManager loadManager = this.getLoadManager();
-        // this.referencedObject.addConnectedAgentNames(loadManager.getGridNames());
-        // int numberOfGrids = (int) this.getArguments()[0];
-        // int numberOfNonRenewablePowerPlants = (int) this.getArguments()[1];
-        
     
-        // this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new CableDiscoveryBehaviour(this));
         this.addBehaviour(new NonRenewablePowerPlantDiscoveryBehaviour(this));
         this.addBehaviour(new LoadManagerBehaviour(this));
@@ -40,8 +35,11 @@ public class LoadManagerAgent extends CustomAgent{
 
     private class LoadManagerBehaviour extends GenericTurnBehaviour{
 
+        private LoadManagerAgent loadManagerAgent;
+
         public LoadManagerBehaviour(LoadManagerAgent loadManagerAgent){
             super(loadManagerAgent);
+            this.loadManagerAgent = loadManagerAgent;
         }
 
 
@@ -53,12 +51,12 @@ public class LoadManagerAgent extends CustomAgent{
             // se necessario (se la percentuale di una o più batterie è < 20%) -> accende pp non rinnovabili; altrimenti, se sono tutte > 80% li spegne
             // comunicare l'instradamento ad ogni grid e che pp non rinnovabili sono attive x il turno dopo
         
-            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromGridBehaviour((LoadManagerAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new FindOptimalDistributionStrategyBehaviour((LoadManagerAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new DistributeBatteryEnergyBehaviour((LoadManagerAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new DistributeExcessEnergyBehaviour((LoadManagerAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new ChangeNonRenewablePowerPlantsInfo((LoadManagerAgent) myAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendInstructionToGridsBehaviour((LoadManagerAgent) myAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromGridBehaviour(loadManagerAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new DistributeGridEnergyBehaviour(loadManagerAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new DistributeBatteryEnergyBehaviour(loadManagerAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new DistributeExcessEnergyBehaviour(loadManagerAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new ChangeNonRenewablePowerPlantsInfo(loadManagerAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendInstructionToGridsBehaviour(loadManagerAgent));
         }
     }
 }

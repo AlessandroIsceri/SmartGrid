@@ -18,11 +18,13 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
     private int requestCont = 0;
     private boolean finished = false;
     private int nonRenewableActivePowerPlantCount; 
+    private GridAgent gridAgent;
 
     public ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(GridAgent gridAgent){
         super(gridAgent);
         Map<String, Boolean> nonRenewablePowerPlantActiveStatus = gridAgent.getGrid().getNonRenewablePowerPlantActiveStatus();
         nonRenewableActivePowerPlantCount = 0;
+        this.gridAgent = gridAgent;
         for(String nonRenewablePowerPlantName : nonRenewablePowerPlantActiveStatus.keySet()){
             if(nonRenewablePowerPlantActiveStatus.get(nonRenewablePowerPlantName)){
                 nonRenewableActivePowerPlantCount++;
@@ -33,7 +35,7 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
     @Override
     public void action() {
         if(nonRenewableActivePowerPlantCount == 0){
-            ((CustomAgent) myAgent).log("NO RENEWABLE PP TO WAIT FOR", BEHAVIOUR_NAME);
+            log("NO RENEWABLE PP TO WAIT FOR");
             this.finished = true;
             return;
         }
@@ -41,7 +43,7 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
 		MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
 
-        Grid grid = ((GridAgent) myAgent).getGrid();
+        Grid grid = gridAgent.getGrid();
         List<String> nonRenewablePowerPlantNames = grid.getNonRenewablePowerPlantNames();
 
         MessageTemplate mt;
@@ -56,25 +58,25 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
             mt = MessageTemplate.and(mt1, mt2); 
         }
 
-		ACLMessage receivedMsg = myAgent.receive(mt);
+		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            ((CustomAgent) myAgent).log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName(), BEHAVIOUR_NAME);
+            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             requestCont++;
             
-            Map<String, Object> jsonObject = ((CustomAgent) myAgent).convertAndReturnContent(receivedMsg);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
-            ((CustomAgent) myAgent).log("receivedEnergy: " + receivedEnergy, BEHAVIOUR_NAME);
+            log("receivedEnergy: " + receivedEnergy);
             
             // grid.removeExpectedConsumption(receivedEnergy);
             grid.addExpectedProduction(receivedEnergy);
 
             if(requestCont < nonRenewableActivePowerPlantCount){
-                ((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+                customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 finished = true;
             }
 		} else {
-			((CustomAgent) myAgent).blockBehaviourIfQueueIsEmpty(this);
+			customAgent.blockBehaviourIfQueueIsEmpty(this);
 		}
     }
 

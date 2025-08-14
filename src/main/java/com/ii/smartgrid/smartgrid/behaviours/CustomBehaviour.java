@@ -6,21 +6,26 @@ import jade.core.behaviours.Behaviour;
 
 public abstract class CustomBehaviour extends Behaviour{
     
-    protected final String BEHAVIOUR_NAME = this.getClass().getSimpleName();
+    protected CustomAgent customAgent;
 
     public CustomBehaviour(CustomAgent customAgent){
         super(customAgent);
+        this.customAgent = customAgent;
     }
 
     @Override
     public void onStart() {
-        ((CustomAgent) myAgent).log("Started", BEHAVIOUR_NAME);
+        //log("Started");
     }
 
     @Override
     public int onEnd() {
-        ((CustomAgent) myAgent).log("Finished", BEHAVIOUR_NAME);
+        log("Finished");
         return super.onEnd();
+    }
+
+    public void log(String logMessage){
+        customAgent.log(logMessage, this.getBehaviourName());
     }
 
 

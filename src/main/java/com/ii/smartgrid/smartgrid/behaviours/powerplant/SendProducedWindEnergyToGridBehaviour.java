@@ -24,7 +24,7 @@ public class SendProducedWindEnergyToGridBehaviour extends SendProducedEnergyToG
     
     @Override
     protected double getHourlyProduction(RenewablePowerPlant windPowerPlant){
-        return windPowerPlant.getHourlyProduction(((CustomAgent) myAgent).getCurWindSpeed());
+        return windPowerPlant.getHourlyProduction(customAgent.getCurWindSpeed());
     }
     
 }
