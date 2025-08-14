@@ -40,14 +40,6 @@ public abstract class CustomAgent extends Agent{
     protected CustomAgent(){
         super();
         objectMapper = new ObjectMapper();
-        // BasicPolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-        //                                                                  .allowIfSubType("com.ii.smartgrid.smartgrid.model")
-        //                                                                  .allowIfSubType("java.util")
-        //                                                                  .allowIfSubType("java.lang")
-        //                                                                  .build();
-
-        // objectMapper.activateDefaultTyping(ptv, DefaultTyping.OBJECT_AND_NON_CONCRETE);
-        //  objectMapper.activateDefaultTyping(ptv, DefaultTyping.NON_CONCRETE_AND_ARRAYS);
     }
 
     public void blockBehaviourIfQueueIsEmpty(Behaviour b){

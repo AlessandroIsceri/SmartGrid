@@ -29,7 +29,7 @@ public class GridCoordinatesDiscoveryBehaviour extends CoordinatesDiscoveryBehav
         List<Cable> cables = grid.getConnectedGridsCables();
         content.put(MessageUtil.CABLE_COSTS, cables);
         String loadManagerName = gridAgent.getGrid().getLoadManagerName();
-        customAgent.createAndSend(ACLMessage.INFORM, loadManagerName, content, "cableDiscovery");
+        customAgent.createAndSend(ACLMessage.INFORM, loadManagerName, content, MessageUtil.CONVERSATION_ID_CABLE_DISCOVERY);
         log("Sending cable info to " + loadManagerName);
     }
 }

@@ -148,7 +148,7 @@ public class SolarPowerPlant extends RenewablePowerPlant{
         double Izero = GLOBAL_SOLAR_CONSTANT * (1.0 + 0.033 * Math.cos(( 2.0 * Math.PI / 365.0) * (double)dayOfTheYear));
         double GHIClear = Izero * 0.7 * cosZenithAngle;
         
-        double GHI = GHIClear * (1.0 - 0.75 * Math.pow(cloudCover, 3.4));
+        double GHI = GHIClear * (1.0 - 0.75 * Math.pow((double) cloudCover / 8.0, 3.4));        
         double kT = GHI / (Izero * Math.max(0.065, cosZenithAngle));
 
         double DHI;
@@ -159,8 +159,8 @@ public class SolarPowerPlant extends RenewablePowerPlant{
         } else if(kT >= 0){
             DHI = (1.0 - 0.09 * kT) * GHI;
         } else {
-            System.out.println("An error occurred while calculating kT in SolarPowerPlant.");
-            return -1; 
+            System.out.println("An error occurred while calculating kT in SolarPowerPlant. " + kT);
+            return 0; 
         }
 
         double DNI = (GHI - DHI) / cosZenithAngle;

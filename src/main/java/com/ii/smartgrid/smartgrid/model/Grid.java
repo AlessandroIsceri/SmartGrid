@@ -15,7 +15,7 @@ public class Grid extends CustomObject {
     private Map<String, EnergyTransaction> smartHomesWithoutPower;
     private Map<String, EnergyTransaction> smartHomesEnergyRequests;
     private List<String> renewablePowerPlantNames;
-    private List<String> nonRenewablePowerPlantNames;
+    //private List<String> nonRenewablePowerPlantNames;
     private Map<String, Boolean> nonRenewablePowerPlantActiveStatus;
     private List<DistributionInstruction> distributionInstructions;
     private List<String> gridNames;
@@ -31,7 +31,7 @@ public class Grid extends CustomObject {
         smartHomesWithoutPower = new HashMap<String, EnergyTransaction>();
         smartHomesEnergyRequests = new HashMap<String, EnergyTransaction>();
         renewablePowerPlantNames = new ArrayList<String>();
-        nonRenewablePowerPlantNames = new ArrayList<String>();
+        // nonRenewablePowerPlantNames = new ArrayList<String>();
         nonRenewablePowerPlantActiveStatus = new HashMap<String, Boolean>();
         distributionInstructions = new ArrayList<DistributionInstruction>();
         gridNames = new ArrayList<String>();
@@ -43,7 +43,10 @@ public class Grid extends CustomObject {
         for (NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos) {
             String name = nonRenewablePowerPlantInfo.getName();
             boolean status = nonRenewablePowerPlantInfo.isOn();
-            if(nonRenewablePowerPlantNames.contains(name)){
+            // if(nonRenewablePowerPlantNames.contains(name)){
+            //     nonRenewablePowerPlantActiveStatus.put(name, status);
+            // }
+            if(nonRenewablePowerPlantActiveStatus.containsKey(name)){
                 nonRenewablePowerPlantActiveStatus.put(name, status);
             }
         }
@@ -165,11 +168,14 @@ public class Grid extends CustomObject {
     }
 
     public List<String> getNonRenewablePowerPlantNames() {
-        return nonRenewablePowerPlantNames;
+        return new ArrayList<String>(nonRenewablePowerPlantActiveStatus.keySet());
     }
 
     public void setNonRenewablePowerPlantNames(List<String> nonRenewablePowerPlantNames) {
-        this.nonRenewablePowerPlantNames = nonRenewablePowerPlantNames;
+        // this.nonRenewablePowerPlantNames = nonRenewablePowerPlantNames;
+        for(String nonRenewablePowerPlantName : nonRenewablePowerPlantNames){
+            nonRenewablePowerPlantActiveStatus.put(nonRenewablePowerPlantName, false);
+        }
     }
 
     public List<Cable> getConnectedGridsCables() {
@@ -271,7 +277,7 @@ public class Grid extends CustomObject {
     public String toString() {
         return "Grid [smartHomeNames=" + smartHomeNames + ", smartHomesWithoutPower=" + smartHomesWithoutPower
                 + ", smartHomesEnergyRequests=" + smartHomesEnergyRequests + ", renewablePowerPlantNames="
-                + renewablePowerPlantNames + ", nonRenewablePowerPlantNames=" + nonRenewablePowerPlantNames
+                + renewablePowerPlantNames
                 + ", nonRenewablePowerPlantActiveStatus=" + nonRenewablePowerPlantActiveStatus
                 + ", distributionInstructions=" + distributionInstructions + ", gridNames=" + gridNames
                 + ", expectedConsumption=" + expectedConsumption + ", expectedProduction=" + expectedProduction

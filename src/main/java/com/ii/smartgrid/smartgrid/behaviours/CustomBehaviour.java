@@ -15,7 +15,7 @@ public abstract class CustomBehaviour extends Behaviour{
 
     @Override
     public void onStart() {
-        //log("Started");
+        log("Started");
     }
 
     @Override

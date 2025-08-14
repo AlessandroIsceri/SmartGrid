@@ -42,4 +42,6 @@ public class MessageUtil {
     public static final String ENERGY_TRANSACTION = "energyTransaction";
     public static final String GRID_CABLES = "gridCables";
 
+    public static final String CONVERSATION_ID_CABLE_DISCOVERY = "cableDiscovery";
+
 }

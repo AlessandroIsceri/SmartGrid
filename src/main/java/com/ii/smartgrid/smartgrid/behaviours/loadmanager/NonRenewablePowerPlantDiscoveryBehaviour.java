@@ -14,6 +14,7 @@ import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -40,31 +41,34 @@ public class NonRenewablePowerPlantDiscoveryBehaviour extends CustomBehaviour{
             this.finished = true;
             return; 
         }
+        LoadManager loadManager = loadManagerAgent.getLoadManager();
+        List<String> nonRenewablePowerPlantNames = loadManager.getNonRenewablePowerPlantNames();
 
-        MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+        MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+        MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(nonRenewablePowerPlantNames.get(0), AID.ISLOCALNAME));
+        for(int i = 1; i < nonRenewablePowerPlantNames.size(); i++){
+            String nonRenewablePowerPlantName = nonRenewablePowerPlantNames.get(i);
+            mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(nonRenewablePowerPlantName, AID.ISLOCALNAME)));
+        }
+        MessageTemplate mt = MessageTemplate.and(mt1, mt2); 
+
+
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            if(!receivedMsg.getConversationId().contains("nonRenewable")){
-                customAgent.putBack(receivedMsg);
+            log("Received a nonRenewablePP discovery msg from... " + receivedMsg.getSender().getLocalName());
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
+            String nonRenewablePowerPlantName = receivedMsg.getSender().getLocalName();
+            double maxTurnProduction = (double) jsonObject.get(MessageUtil.MAX_TURN_PRODUCTION);
+            boolean on = (boolean) jsonObject.get(MessageUtil.ON); 
+            NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = new NonRenewablePowerPlantInfo(nonRenewablePowerPlantName, maxTurnProduction, on);
+            loadManager.addNonRenewablePowerPlantInfo(nonRenewablePowerPlantInfo);
+
+            if(requestCont < numberOfNonRenewablePowerPlants){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
-                log("Received a nonRenewablePP discovery msg from... " + receivedMsg.getSender().getLocalName());
-
-                LoadManager loadManager = loadManagerAgent.getLoadManager();
-                Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-                String nonRenewablePowerPlantName = receivedMsg.getSender().getLocalName();
-                double maxTurnProduction = (double) jsonObject.get(MessageUtil.MAX_TURN_PRODUCTION);
-                boolean on = (boolean) jsonObject.get(MessageUtil.ON); 
-                NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = new NonRenewablePowerPlantInfo(nonRenewablePowerPlantName, maxTurnProduction, on);
-                loadManager.addNonRenewablePowerPlantInfo(nonRenewablePowerPlantInfo);
-
-                if(requestCont < numberOfNonRenewablePowerPlants){
-                    customAgent.blockBehaviourIfQueueIsEmpty(this);
-                }else{
-                    log("done");
-                    loadManager.sortNonRenewablePowerPlantInfo();
-                    finished = true;
-                }
+                log("done");
+                loadManager.sortNonRenewablePowerPlantInfo();
+                finished = true;
             }
 		} else {
 			customAgent.blockBehaviourIfQueueIsEmpty(this);

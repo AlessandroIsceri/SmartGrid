@@ -40,37 +40,33 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
             return; 
         }
 
-        MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+        MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM), 
+                                                 MessageTemplate.MatchConversationId(MessageUtil.CONVERSATION_ID_CABLE_DISCOVERY));
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            if(!receivedMsg.getConversationId().contains("cable")){
-                customAgent.putBack(receivedMsg);
+            String gridName = receivedMsg.getSender().getLocalName();
+            log("Received a cable discovery msg from... " + gridName);
+            Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
+            ArrayList<Cable> cables = customAgent.readValueFromJson(jsonObject.get(MessageUtil.CABLE_COSTS), new TypeReference<ArrayList<Cable>>() {});
+            requestCont++;
+            //{"cable_costs": [{"cost": 450, "to": "Grid-2", "from": "Grid-1"}]}
+            LoadManager loadManager = loadManagerAgent.getLoadManager();
+            for(Cable cable : cables){
+                double cost = cable.computeTransmissionCost();
+                String to = cable.getTo();
+                String from = cable.getFrom();
+            
+                loadManager.addCommunicationCost(from, to, cost);
+            }
+
+            loadManager.addGridCables(gridName, cables);
+
+            if(requestCont < numberOfNodes){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
-                String gridName = receivedMsg.getSender().getLocalName();
-                log("Received a cable discovery msg from... " + gridName);
-                Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-                ArrayList<Cable> cables = customAgent.readValueFromJson(jsonObject.get(MessageUtil.CABLE_COSTS), new TypeReference<ArrayList<Cable>>() {});
-                requestCont++;
-                //{"cable_costs": [{"cost": 450, "to": "Grid-2", "from": "Grid-1"}]}
-                LoadManager loadManager = loadManagerAgent.getLoadManager();
-                for(Cable cable : cables){
-                    double cost = cable.computeTransmissionCost();
-                    String to = cable.getTo();
-                    String from = cable.getFrom();
-                
-                    loadManager.addCommunicationCost(from, to, cost);
-                }
-
-                loadManager.addGridCables(gridName, cables);
-
-                if(requestCont < numberOfNodes){
-                    customAgent.blockBehaviourIfQueueIsEmpty(this);
-                }else{
-                    log("done");
-                    loadManager.computeDijkstraForAllNodes();
-                    finished = true;
-                }
+                log("done");
+                loadManager.computeDijkstraForAllNodes();
+                finished = true;
             }
 		} else {
 			customAgent.blockBehaviourIfQueueIsEmpty(this);
