@@ -32,7 +32,6 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
-.project
 .metadata
 bin/**
 tmp/**
@@ -42,7 +41,6 @@ tmp/**/*
 *.swp
 *~.nib
 local.properties
-.classpath
 .settings/
 .loadpath
 
@@ -58,3 +56,4 @@ legacy/
 technicalInfo.txt
 
 .vscode
+.idea

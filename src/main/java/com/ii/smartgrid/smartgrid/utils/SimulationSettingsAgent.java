@@ -64,7 +64,8 @@ public class SimulationSettingsAgent extends CustomAgent{
         
         this.curTurn = 0;
         agentNames = JsonUtil.getAllAgentNames();
-        
+        System.out.println("Current Working Directory: " + System.getProperty("user.dir"));
+
         try {
             ContainerController conC = this.getContainerController();
 
@@ -90,7 +91,7 @@ public class SimulationSettingsAgent extends CustomAgent{
             for(int j = 0; j < weatherTransitionProbabilities.length; j++){
                 System.out.print(String.format("%.2f", weatherTransitionProbabilities[i][j]) + "\t");
             }
-            System.out.println("");
+            System.out.println();
         }
         
         windSpeedTransitionProbabilities = WeatherUtil.getWindTransitionProbabilities(latitude, longitude);
@@ -98,7 +99,7 @@ public class SimulationSettingsAgent extends CustomAgent{
             for(int j = 0; j < windSpeedTransitionProbabilities.length; j++){
                 System.out.print(String.format("%.2f", windSpeedTransitionProbabilities[i][j]) + "\t");
             }
-            System.out.println("");
+            System.out.println();
         }
 
         WeatherUtil.setSunriseAndSunset(latitude, longitude);
@@ -123,6 +124,7 @@ public class SimulationSettingsAgent extends CustomAgent{
 			e.printStackTrace();
 		}
 		Map<String, Object> content = new HashMap<>();
+        content.put(MessageUtil.CURRENT_TURN, this.curTurn);
         content.put(MessageUtil.CURRENT_WEATHER, this.curWeather.ordinal());
         content.put(MessageUtil.CURRENT_WIND_SPEED, this.curWindSpeed.ordinal());
         content.put(MessageUtil.ELECTRICITY_PRICE, this.curElectricityPrice);

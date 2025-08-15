@@ -8,111 +8,46 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
 
-public class SmartBuilding extends CustomObject{
-	private List<Appliance> appliances;
-	private BuildingPhotovoltaicSystem buildingPhotovoltaicSystem;
-	private Battery battery;
-	private Routine routine;
-	private double expectedConsumption;
+public class SmartBuilding extends CustomObject {
+    private List<Appliance> appliances;
+    private BuildingPhotovoltaicSystem buildingPhotovoltaicSystem;
+    private Battery battery;
+    private Routine routine;
+    private double expectedConsumption;
     private double expectedProduction;
-	private String gridName;
+    private String gridName;
     private Priority priority;
 
-    public SmartBuilding(){
+    public SmartBuilding() {
         super();
         appliances = new ArrayList<>();
     }
 
-	public List<Appliance> getAppliances() {
-		return appliances;
-	}
-
-	public Routine getRoutine() {
-		return routine;
-	}
-
-	public void setRoutine(Routine routine) {
-		this.routine = routine;
-	}
-
-	public void setAppliances(List<Appliance> appliances) {
-		this.appliances = appliances;
-	}
-	
-	public double getExpectedConsumption() {
-		return expectedConsumption;
-	}
-
-	public void setExpectedConsumption(double expectedConsumption) {
-		this.expectedConsumption = expectedConsumption;
-	}
-
-	public Battery getBattery() {
-		return battery;
-	}
-
-	public void setBattery(Battery battery) {
-		this.battery = battery;
-	}
-	
-	public String getGridName() {
-		return gridName;
-	}
-
-    public void setGridName(String gridName) {
-		this.gridName = gridName;
-	}
-
-	@Override
-    public String toString() {
-        return "SmartBuilding [appliances=" + appliances + ", buildingPhotovoltaicSystem=" + buildingPhotovoltaicSystem + ", battery=" + battery
-                + ", routine=" + routine + ", expectedConsumption=" + expectedConsumption
-                + ", expectedProduction=" + expectedProduction + ", gridName=" + gridName + "]";
+    public boolean canBeRestored() {
+        return this.battery.getMaxCapacityInWatt() * 0.5 < this.battery.getStoredEnergy() + this.expectedProduction;
     }
 
-
-	public double getExpectedProduction() {
-        return expectedProduction;
+    public void fillBattery(double extraEnergy) {
+        if (battery != null) {
+            battery.fillBattery(extraEnergy);
+        }
     }
 
-    public void setExpectedProduction(double expectedProduction) {
-        this.expectedProduction = expectedProduction;
-    }
+    public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus) {
 
-    public void shutDown(){
-		for(Appliance appliance: appliances){
-			appliance.setOn(false);
-		}
-        expectedConsumption = 0;
-    }
-
-	public void restorePower(double energy){
-		if(battery != null){
-			battery.fillBattery(energy);
-		}
-		for(Appliance appliance: appliances){
-			if(appliance.isAlwaysOn()){
-				appliance.setOn(true);
-                expectedConsumption += appliance.getHourlyConsumption() * TimeUtils.getTurnDurationHours();
-			}
-		}
-	}
-
-    public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus){
-
-        if(smartBuildingStatus != SmartBuildingStatus.BLACKOUT){
+        if (smartBuildingStatus != SmartBuildingStatus.BLACKOUT) {
             double turnDurationHours = TimeUtils.getTurnDurationHours();
-            for(Task curTask : routine.getTasks()) {
+            for (Task curTask : routine.getTasks()) {
                 int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
                 int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
                 String applianceName = curTask.getApplianceName();
-                if(startTurn == curTurn) {
+                if (startTurn == curTurn) {
                     // Find the object with the given name using stream
                     Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
                     curAppliance.setOn(true);
                     expectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
-                    
-                } else if(endTurn == curTurn) {
+
+                } else if (endTurn == curTurn) {
                     Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
                     curAppliance.setOn(false);
                     expectedConsumption -= curAppliance.getHourlyConsumption() * turnDurationHours;
@@ -120,12 +55,28 @@ public class SmartBuilding extends CustomObject{
             }
         }
         expectedProduction = 0;
-        if(buildingPhotovoltaicSystem != null){
-		    expectedProduction = buildingPhotovoltaicSystem.getHourlyProduction(curWeather, curTurn) * TimeUtils.getTurnDurationHours();
+        if (buildingPhotovoltaicSystem != null) {
+            expectedProduction = buildingPhotovoltaicSystem.getHourlyProduction(curWeather, curTurn) * TimeUtils.getTurnDurationHours();
         }
-        if(battery != null){
+        if (battery != null) {
             expectedProduction = expectedProduction + battery.getAvailableEnergy();
         }
+    }
+
+    public List<Appliance> getAppliances() {
+        return appliances;
+    }
+
+    public void setAppliances(List<Appliance> appliances) {
+        this.appliances = appliances;
+    }
+
+    public Battery getBattery() {
+        return battery;
+    }
+
+    public void setBattery(Battery battery) {
+        this.battery = battery;
     }
 
     public BuildingPhotovoltaicSystem getBuildingPhotovoltaicSystem() {
@@ -136,8 +87,28 @@ public class SmartBuilding extends CustomObject{
         this.buildingPhotovoltaicSystem = buildingPhotovoltaicSystem;
     }
 
-    public boolean canBeRestored() {
-        return this.battery.getMaxCapacityInWatt() * 0.5 < this.battery.getStoredEnergy() + this.expectedProduction;
+    public double getExpectedConsumption() {
+        return expectedConsumption;
+    }
+
+    public void setExpectedConsumption(double expectedConsumption) {
+        this.expectedConsumption = expectedConsumption;
+    }
+
+    public double getExpectedProduction() {
+        return expectedProduction;
+    }
+
+    public void setExpectedProduction(double expectedProduction) {
+        this.expectedProduction = expectedProduction;
+    }
+
+    public String getGridName() {
+        return gridName;
+    }
+
+    public void setGridName(String gridName) {
+        this.gridName = gridName;
     }
 
     public Priority getPriority() {
@@ -148,10 +119,38 @@ public class SmartBuilding extends CustomObject{
         this.priority = priority;
     }
 
-    public void fillBattery(double extraEnergy) {
-        if(battery != null){
-            battery.fillBattery(extraEnergy);
+    public Routine getRoutine() {
+        return routine;
+    }
+
+    public void setRoutine(Routine routine) {
+        this.routine = routine;
+    }
+
+    public void restorePower(double energy) {
+        if (battery != null) {
+            battery.fillBattery(energy);
         }
+        for (Appliance appliance : appliances) {
+            if (appliance.isAlwaysOn()) {
+                appliance.setOn(true);
+                expectedConsumption += appliance.getHourlyConsumption() * TimeUtils.getTurnDurationHours();
+            }
+        }
+    }
+
+    public void shutDown() {
+        for (Appliance appliance : appliances) {
+            appliance.setOn(false);
+        }
+        expectedConsumption = 0;
+    }
+
+    @Override
+    public String toString() {
+        return "SmartBuilding [appliances=" + appliances + ", buildingPhotovoltaicSystem=" + buildingPhotovoltaicSystem + ", battery=" + battery
+                + ", routine=" + routine + ", expectedConsumption=" + expectedConsumption
+                + ", expectedProduction=" + expectedProduction + ", gridName=" + gridName + "]";
     }
 
 }

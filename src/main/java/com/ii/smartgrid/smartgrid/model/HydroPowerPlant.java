@@ -1,15 +1,14 @@
 package com.ii.smartgrid.smartgrid.model;
 
-public class HydroPowerPlant extends RenewablePowerPlant{
-    
+public class HydroPowerPlant extends RenewablePowerPlant {
+
+    private static final double WATER_DENSITY = 1000.0; // kg/m^3
+    private static final double GRAVITATIONAL_ACCELERATION = 9.81; // m/s^2
     private double efficiency;
     private double flowRate; // m^3/s
     private double headHeight; // m
 
-    private static final double WATER_DENSITY = 1000.0; // kg/m^3
-    private static final double GRAVITATIONAL_ACCELERATION = 9.81; // m/s^2
-
-    public HydroPowerPlant(){
+    public HydroPowerPlant() {
         super();
     }
 
@@ -30,7 +29,6 @@ public class HydroPowerPlant extends RenewablePowerPlant{
     }
 
 
-
     public double getHeadHeight() {
         return headHeight;
     }
@@ -44,7 +42,7 @@ public class HydroPowerPlant extends RenewablePowerPlant{
     @Override
     public double getHourlyProduction(Object... weatherConditions) {
         return efficiency * WATER_DENSITY * GRAVITATIONAL_ACCELERATION * flowRate * headHeight;
-	}   
+    }
 
 
 }

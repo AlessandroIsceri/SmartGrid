@@ -15,34 +15,8 @@ public class Cable {
     private String from;
     private String to;
     private String cableType;
-    
-    public double computeTransmissionCost(){
-        return cableResistance / Math.pow(voltage, 2);
-    }
 
-    public String getFrom() {
-        return from;
-    }
-
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-
-    public String getTo() {
-        return to;
-    }
-
-
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-
-
-    public Cable(){
+    public Cable() {
         super();
     }
 
@@ -58,57 +32,11 @@ public class Cable {
         this.cableType = cableType;
     }
 
-
-    public double getCableSection() {
-        return cableSection;
+    public void computeAndSetCableResistance() {
+        this.cableResistance = this.resistivity * this.length / this.cableSection;
     }
 
-
-    public void setCableSection(double cableSection) {
-        this.cableSection = cableSection;
-    }
-
-
-    public double getLength() {
-        return length;
-    }
-
-
-    public void setLength(double length) {
-        this.length = length;
-    }
-
-
-    public double getResistivity() {
-        return resistivity;
-    }
-
-
-    public void setResistivity(double resistivity) {
-        this.resistivity = resistivity;
-    }
-
-
-    public double getVoltage() {
-        return voltage;
-    }
-
-
-    public void setVoltage(double voltage) {
-        this.voltage = voltage;
-    }
-
-
-    public double getCableResistance() {
-        return cableResistance;
-    }
-
-
-    public void setCableResistance(double cableResistance) {
-        this.cableResistance = cableResistance;
-    }
-
-    private void computeAndSetLength(Coordinates firstNodeCoordinates, Coordinates secondNodeCoordinates){
+    private void computeAndSetLength(Coordinates firstNodeCoordinates, Coordinates secondNodeCoordinates) {
         double latitudeFirstNodeRadians = firstNodeCoordinates.getRadiansLatitude();
         double longitudeFirstNodeRadians = firstNodeCoordinates.getRadiansLongitude();
         double latitudeSecondNodeRadians = secondNodeCoordinates.getRadiansLatitude();
@@ -123,42 +51,45 @@ public class Cable {
         this.length = earthRadius * c; //metres
     }
 
-    public void computeAndSetCableResistance(){
-        this.cableResistance = this.resistivity * this.length / this.cableSection;
+    public double computeTransmissionCost() {
+        return cableResistance / Math.pow(voltage, 2);
     }
 
-
-    public double computeTransmittedPower(double powerSentWH){
+    public double computeTransmittedPower(double powerSentWH) {
         double powerSent = powerSentWH / TimeUtils.getTurnDurationHours();
         double i = powerSent / voltage;
-        double transmittedPower = powerSent - cableResistance *  Math.pow(i, 2);
+        double transmittedPower = powerSent - cableResistance * Math.pow(i, 2);
         double transmittedPowerWH = transmittedPower * TimeUtils.getTurnDurationHours();
-        return Math.max(0, transmittedPowerWH);  
-    } 
-
-    @Override
-    public String toString() {
-        return "Cable [cableSection=" + cableSection + ", resistivity=" + resistivity + ", voltage=" + voltage
-                + ", length=" + length + ", cableResistance=" + cableResistance + "]";
+        return Math.max(0, transmittedPowerWH);
     }
 
+    public double getCableResistance() {
+        return cableResistance;
+    }
 
+    public void setCableResistance(double cableResistance) {
+        this.cableResistance = cableResistance;
+    }
 
+    public double getCableSection() {
+        return cableSection;
+    }
+
+    public void setCableSection(double cableSection) {
+        this.cableSection = cableSection;
+    }
 
     public String getCableType() {
         return cableType;
     }
 
-
-
-
     public void setCableType(String cableType) {
         this.cableType = cableType;
     }
 
-    public double getEnergyToSatifyRequest(double requestedEnergyWH) {
+    public double getEnergyToSatisfyRequest(double requestedEnergyWH) {
         double requestedEnergy = requestedEnergyWH / TimeUtils.getTurnDurationHours(); //W
-           
+
         // neededEnergy = (+voltage^2 ± √(voltage^4 - 4 * cableResistance * voltage^2*requestedEnergy)) / (2*cableResistance)
         double den = 2.0 * cableResistance;
         double delta = Math.sqrt(Math.pow(voltage, 4) - 4.0 * cableResistance * Math.pow(voltage, 2) * requestedEnergy);
@@ -166,15 +97,61 @@ public class Cable {
         double sol2 = (Math.pow(voltage, 2) + delta) / den;
         double sol1WH = sol1 * TimeUtils.getTurnDurationHours();
         double sol2WH = sol2 * TimeUtils.getTurnDurationHours();
-        if(sol1WH > 0 && sol2WH > 0){
-            return Math.min(sol1WH, sol2WH); 
-        }else if(sol1WH > 0){
+        if (sol1WH > 0 && sol2WH > 0) {
+            return Math.min(sol1WH, sol2WH);
+        } else if (sol1WH > 0) {
             return sol1WH;
-        }else if(sol2WH > 0){
+        } else if (sol2WH > 0) {
             return sol2WH; //WH
-        }else{
+        } else {
             return -1;
         }
     }
-    
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public double getLength() {
+        return length;
+    }
+
+    public void setLength(double length) {
+        this.length = length;
+    }
+
+    public double getResistivity() {
+        return resistivity;
+    }
+
+    public void setResistivity(double resistivity) {
+        this.resistivity = resistivity;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public double getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(double voltage) {
+        this.voltage = voltage;
+    }
+
+    @Override
+    public String toString() {
+        return "Cable [cableSection=" + cableSection + ", resistivity=" + resistivity + ", voltage=" + voltage
+                + ", length=" + length + ", cableResistance=" + cableResistance + "]";
+    }
+
 }

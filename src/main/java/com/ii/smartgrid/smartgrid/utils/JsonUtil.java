@@ -2,6 +2,7 @@ package com.ii.smartgrid.smartgrid.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class JsonUtil {
-        
+
     public static String CABLES_PATH;
     public static String GRIDS_PATH;
     public static String LOAD_MANAGERS_PATH;
@@ -28,10 +29,11 @@ public class JsonUtil {
 
     private static String BASE_PATH = "src/main/resources/scenarios/";
 
-    private JsonUtil(){}
+    private JsonUtil() {
+    }
 
 
-    public static void setUpScenario(String scenarioName){
+    public static void setUpScenario(String scenarioName) {
         BASE_PATH = BASE_PATH + scenarioName + "/";
 
         CABLES_PATH = BASE_PATH + "cables.json";
@@ -58,7 +60,7 @@ public class JsonUtil {
         return null;
     }
 
-    public static List<String> getAllAgentNames(){
+    public static List<String> getAllAgentNames() {
         List<String> agentNames = new ArrayList<>();
         String[] pathsToSkip = {CABLES_PATH, OWNERS_PATH};
         File dir = new File(BASE_PATH);
@@ -66,22 +68,21 @@ public class JsonUtil {
         if (directoryListing != null) {
             for (File child : directoryListing) {
                 boolean skip = false;
-                for(String pathToSkip : pathsToSkip){
+                for (String pathToSkip : pathsToSkip) {
                     Path p1 = Paths.get(child.getPath()).normalize();
                     Path p2 = Paths.get(pathToSkip).normalize();
-                    if(p1.equals(p2)){
+                    if (p1.equals(p2)) {
                         skip = true;
                     }
                 }
-                if(!skip){
+                if (!skip) {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
+                    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+                    };
                     Map<String, Object> fileContent;
                     try {
                         fileContent = objectMapper.readValue(child, typeRef);
-                        for(String key : fileContent.keySet()){
-                            agentNames.add(key);
-                        }
+                        agentNames.addAll(fileContent.keySet());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

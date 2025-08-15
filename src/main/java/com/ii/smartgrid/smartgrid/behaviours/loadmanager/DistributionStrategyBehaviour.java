@@ -56,7 +56,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
 
             // If energy request of current priority is too high, order consumers
             if(priorityRequestedEnergySum < 0){
-                Collections.sort(consumerNodes, Comparator.comparingDouble(EnergyTransaction::getEnergyTransactionValue));
+                consumerNodes.sort(Comparator.comparingDouble(EnergyTransaction::getEnergyTransactionValue));
             }
 
             Iterator<? extends EnergyTransaction> consumerNodesIterator = consumerNodes.iterator();

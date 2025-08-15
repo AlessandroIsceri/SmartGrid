@@ -41,12 +41,12 @@ public abstract class CustomAgent extends Agent{
 
     protected void log(String message){
         int day = TimeUtils.getCurrentDayFromTurn(curTurn);
-		logger.info(this.curTurn + " - " + "Day " + day + " - " + TimeUtils.convertTurnToTime(this.curTurn) + " - " + this.getLocalName() + " --> " + message);
+        logger.info("{} - Day {} - {} - {} --> {}", this.curTurn, day, TimeUtils.convertTurnToTime(this.curTurn), this.getLocalName(), message);
     }
 
 	public void log(String message, String behaviourName){
 		int day = TimeUtils.getCurrentDayFromTurn(curTurn);
-		logger.info(this.curTurn + " - " + "Day " + day + " - " + TimeUtils.convertTurnToTime(this.curTurn) + " - " + this.getLocalName() + ":" + behaviourName + " --> " + message);
+        logger.info("{} - Day {} - {} - {}:{} --> {}", this.curTurn, day, TimeUtils.convertTurnToTime(this.curTurn), this.getLocalName(), behaviourName, message);
 	}
 	
 	private String convertContentToJSON(Map<String, Object> content){

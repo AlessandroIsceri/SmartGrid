@@ -1,19 +1,19 @@
 package com.ii.smartgrid.smartgrid.model;
 
-public abstract class PowerPlant extends CustomObject{
-	
-	protected boolean on;
+public abstract class PowerPlant extends CustomObject {
+
+    protected boolean on;
     protected String gridName;
 
-    public abstract double getHourlyProduction(Object... weatherConditions);
-
-    public String getGridName(){
+    public String getGridName() {
         return gridName;
     }
 
-    public void setGridName(String gridName){
+    public void setGridName(String gridName) {
         this.gridName = gridName;
     }
+
+    public abstract double getHourlyProduction(Object... weatherConditions);
 
     public boolean isOn() {
         return on;

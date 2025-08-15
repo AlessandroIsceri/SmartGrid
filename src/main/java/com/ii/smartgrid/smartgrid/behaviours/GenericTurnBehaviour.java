@@ -25,7 +25,7 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
 			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-			
+			System.out.println("JSONOBJECT: " + jsonObject);
 			int curTurn = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
 			customAgent.setCurTurn(curTurn);
 			int weather = (int) jsonObject.get(MessageUtil.CURRENT_WEATHER);

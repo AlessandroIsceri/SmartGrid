@@ -1,58 +1,19 @@
 package com.ii.smartgrid.smartgrid.model;
 
 public class Task {
-	private String applianceName;
-	private String startTime;
-	private String endTime;
-	
-	public Task() {
-		super();
-	}
-	
-	public String getApplianceName() {
-		return applianceName;
-	}
-	
-	public void setApplianceName(String applianceName) {
-		this.applianceName = applianceName;
-	}
-	
-	public String getStartTime() {
-		return startTime;
-	}
-	
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
-	}
-	
-	public String getEndTime() {
-		return endTime;
-	}
-	
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
-	}
+    private String applianceName;
+    private String startTime;
+    private String endTime;
 
-	public Task(String applianceName, String startTime, String endTime) {
-		super();
-		this.applianceName = applianceName;
-		this.startTime = startTime;
-		this.endTime = endTime;
-	}
-
-    @Override
-    public String toString() {
-        return "Task [applianceName=" + applianceName + ", startTime=" + startTime + ", endTime=" + endTime + "]";
+    public Task() {
+        super();
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((applianceName == null) ? 0 : applianceName.hashCode());
-        result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
-        result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
-        return result;
+    public Task(String applianceName, String startTime, String endTime) {
+        super();
+        this.applianceName = applianceName;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     @Override
@@ -75,12 +36,48 @@ public class Task {
         } else if (!startTime.equals(other.startTime))
             return false;
         if (endTime == null) {
-            if (other.endTime != null)
-                return false;
-        } else if (!endTime.equals(other.endTime))
-            return false;
-        return true;
+            return other.endTime == null;
+        } else return endTime.equals(other.endTime);
     }
 
-	
+    public String getApplianceName() {
+        return applianceName;
+    }
+
+    public void setApplianceName(String applianceName) {
+        this.applianceName = applianceName;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((applianceName == null) ? 0 : applianceName.hashCode());
+        result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
+        result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Task [applianceName=" + applianceName + ", startTime=" + startTime + ", endTime=" + endTime + "]";
+    }
+
+
 }

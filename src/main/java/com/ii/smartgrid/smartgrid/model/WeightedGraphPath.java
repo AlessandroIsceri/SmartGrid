@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WeightedGraphPath{
+public class WeightedGraphPath {
     private List<Double> edgeCosts;
     private List<String> graphPath;
 
-    public WeightedGraphPath(){
+    public WeightedGraphPath() {
         this.graphPath = new ArrayList<>();
         this.edgeCosts = new ArrayList<>();
     }
@@ -19,41 +19,40 @@ public class WeightedGraphPath{
         this.edgeCosts.addAll(weightedGraphPath.edgeCosts);
     }
 
-    public void addSource(String source){
-        graphPath.add(0, source);
-    }
-
-    public void addVertex(String vertex){
-        graphPath.add(vertex);
-    }
-
-    public double getTotalCost(){
-        double sum = 0;
-        for(Double cost : edgeCosts){
-            sum += cost;
-        }
-        return sum;
-    }
-
-    public void addCost(double cost){
+    public void addCost(double cost) {
         edgeCosts.add(cost);
     }
 
-    public String getSource(){
-        return this.graphPath.get(0);
+    public void addSource(String source) {
+        graphPath.add(0, source);
     }
 
-    public String getTarget(){
-        return this.graphPath.get(this.graphPath.size() - 1);
+    public void addVertex(String vertex) {
+        graphPath.add(vertex);
+    }
+
+    public List<Double> getEdgeCosts() {
+        return edgeCosts;
     }
 
     public List<String> getGraphPath() {
         return graphPath;
     }
 
-    @Override
-    public String toString() {
-        return "WeightedGraphPath [edgeCosts=" + edgeCosts + ", graphPath=" + graphPath + "]";
+    public String getSource() {
+        return this.graphPath.get(0);
+    }
+
+    public String getTarget() {
+        return this.graphPath.get(this.graphPath.size() - 1);
+    }
+
+    public double getTotalCost() {
+        double sum = 0;
+        for (Double cost : edgeCosts) {
+            sum += cost;
+        }
+        return sum;
     }
 
     public void reverse() {
@@ -61,8 +60,9 @@ public class WeightedGraphPath{
         Collections.reverse(graphPath);
     }
 
-    public List<Double> getEdgeCosts() {
-        return edgeCosts;
+    @Override
+    public String toString() {
+        return "WeightedGraphPath [edgeCosts=" + edgeCosts + ", graphPath=" + graphPath + "]";
     }
 
 }

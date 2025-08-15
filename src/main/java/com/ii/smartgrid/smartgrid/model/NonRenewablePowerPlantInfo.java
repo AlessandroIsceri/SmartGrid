@@ -1,12 +1,11 @@
 package com.ii.smartgrid.smartgrid.model;
 
 
-
-public class NonRenewablePowerPlantInfo{
+public class NonRenewablePowerPlantInfo {
     private String name;
     private double maxTurnProduction;
     private boolean on;
-    
+
     public NonRenewablePowerPlantInfo() {
     }
 
@@ -15,7 +14,15 @@ public class NonRenewablePowerPlantInfo{
         this.maxTurnProduction = maxTurnProduction;
         this.on = on;
     }
-    
+
+    public double getMaxTurnProduction() {
+        return maxTurnProduction;
+    }
+
+    public void setMaxTurnProduction(double maxTurnProduction) {
+        this.maxTurnProduction = maxTurnProduction;
+    }
+
     public String getName() {
         return name;
     }
@@ -24,21 +31,13 @@ public class NonRenewablePowerPlantInfo{
         this.name = name;
     }
 
-    public double getMaxTurnProduction() {
-        return maxTurnProduction;
-    }
-    
-    public void setMaxTurnProduction(double maxTurnProduction) {
-        this.maxTurnProduction = maxTurnProduction;
-    }
-
     public boolean isOn() {
         return on;
     }
+
     public void setOn(boolean on) {
         this.on = on;
     }
 
-    
 
 }

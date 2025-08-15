@@ -43,7 +43,7 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 String smartBuildingName = blackoutSmartBuildingEnergyRequest.getNodeName();
 
                 Cable cable = grid.getCable(smartBuildingName);
-                double neededEnergy = cable.getEnergyToSatifyRequest(requestedEnergy);
+                double neededEnergy = cable.getEnergyToSatisfyRequest(requestedEnergy);
                 Map<String, Object> content = new HashMap<>();
                 if(neededEnergy < availableEnergy){
                     content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
@@ -71,7 +71,7 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 // voltage^2*x = voltage^2*requestedEnergy + cableResistance * x^2 -> cableResistance* x^2 - voltage^2*x + voltage^2*requestedEnergy = 0
                 // x = (-b ± √(b² - 4ac)) / (2a)
                 // x = (+voltage^2 ± √(voltage^4 - 4 * cableResistance * voltage^2*requestedEnergy)) / (2*cableResistance)
-                double neededEnergy = cable.getEnergyToSatifyRequest(requestedEnergy);
+                double neededEnergy = cable.getEnergyToSatisfyRequest(requestedEnergy);
 
                 Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);

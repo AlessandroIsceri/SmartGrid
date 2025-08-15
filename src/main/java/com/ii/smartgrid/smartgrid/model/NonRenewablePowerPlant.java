@@ -1,6 +1,6 @@
 package com.ii.smartgrid.smartgrid.model;
 
-public abstract class NonRenewablePowerPlant extends PowerPlant{
+public abstract class NonRenewablePowerPlant extends PowerPlant {
 
     protected String loadManagerName;
 

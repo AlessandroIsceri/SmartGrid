@@ -37,9 +37,8 @@ public class CheckOwnerMessagesBehaviour extends CustomCyclicBehaviour {
                 
                 Owner owner = ownerAgent.getOwner();
                 List<String> smartBuildingsNames = owner.getSmartBuildingNames();
-                for(int i = 0; i < smartBuildingsNames.size(); i++) {
-                    String curName = smartBuildingsNames.get(i);
-                    if(curName.equals(buildingName)) {
+                for (String curName : smartBuildingsNames) {
+                    if (curName.equals(buildingName)) {
                         jsonObject.remove(MessageUtil.SMART_BUILDING);
                         customAgent.createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
                     }

@@ -6,34 +6,35 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class CustomObject{
-    
-    public enum Priority {@JsonProperty("HIGH") HIGH, @JsonProperty("MEDIUM") MEDIUM, @JsonProperty("LOW") LOW}
-    
+public abstract class CustomObject {
+
     protected Map<String, Cable> connectedAgents;
     protected Coordinates coordinates;
-
-    protected CustomObject(){
+    protected CustomObject() {
         super();
         connectedAgents = new HashMap<>();
     }
 
-    public void addCable(String receiver, Cable cable){
+    public void addCable(String receiver, Cable cable) {
         this.connectedAgents.put(receiver, cable);
+    }
+
+    public void addConnectedAgentName(String agentName) {
+        addCable(agentName, null);
+    }
+
+    public void addConnectedAgentNames(List<String> agentNames) {
+        for (String agentName : agentNames) {
+            addConnectedAgentName(agentName);
+        }
+    }
+
+    public Cable getCable(String agentName) {
+        return connectedAgents.get(agentName);
     }
 
     public Map<String, Cable> getConnectedAgents() {
         return connectedAgents;
-    }
-
-    public void addConnectedAgentName(String agentName){
-        addCable(agentName, null);
-    }
-
-    public void addConnectedAgentNames(List<String> agentNames){
-        for(String agentName : agentNames){
-            addConnectedAgentName(agentName);
-        }
     }
 
     public void setConnectedAgents(Map<String, Cable> connectedAgents) {
@@ -47,9 +48,7 @@ public abstract class CustomObject{
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
     }
-    
-    public Cable getCable(String agentName){
-        return connectedAgents.get(agentName);
-    }
+
+    public enum Priority {@JsonProperty("HIGH") HIGH, @JsonProperty("MEDIUM") MEDIUM, @JsonProperty("LOW") LOW}
 
 }

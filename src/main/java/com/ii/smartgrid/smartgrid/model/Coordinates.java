@@ -4,11 +4,11 @@ public class Coordinates {
     private double latitude;
     private double longitude;
 
-    public Coordinates(){
+    public Coordinates() {
         super();
     }
 
-    
+
     public Coordinates(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
@@ -26,7 +26,7 @@ public class Coordinates {
     public double getLongitude() {
         return longitude;
     }
-    
+
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }

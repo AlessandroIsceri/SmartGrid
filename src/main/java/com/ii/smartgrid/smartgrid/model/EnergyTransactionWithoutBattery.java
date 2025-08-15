@@ -2,8 +2,8 @@ package com.ii.smartgrid.smartgrid.model;
 
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 
-public class EnergyTransactionWithoutBattery extends EnergyTransaction{
-     
+public class EnergyTransactionWithoutBattery extends EnergyTransaction {
+
     public EnergyTransactionWithoutBattery() {
         super();
         this.batteryAvailable = false;
