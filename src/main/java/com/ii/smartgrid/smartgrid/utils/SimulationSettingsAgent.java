@@ -20,10 +20,10 @@ import us.dustinj.timezonemap.TimeZoneMap;
 
 public class SimulationSettingsAgent extends CustomAgent{
 	
-    public enum SimulationStatus {ON, OFF};
+    public enum SimulationStatus {ON, OFF}
     
-    private final String CONFIG_PATH = "src/main/resources/app.config";
-    private final String PACKAGE_PATH = CustomAgent.class.getPackage().getName();
+    private static final String CONFIG_PATH = "src/main/resources/app.config";
+    private static final String PACKAGE_PATH = CustomAgent.class.getPackage().getName();
 
 
 	private List<String> agentNames;
@@ -40,7 +40,7 @@ public class SimulationSettingsAgent extends CustomAgent{
         try (FileInputStream fis = new FileInputStream(CONFIG_PATH)) {
             prop.load(fis);
         } catch (Exception ex) {
-            System.out.println("File app.config not found");
+            log("File app.config not found");
         }
         String turnDurationStr = prop.getProperty("turn_duration");
         TimeUtils.computeAndSetTurnDuration(turnDurationStr);
@@ -68,24 +68,9 @@ public class SimulationSettingsAgent extends CustomAgent{
         try {
             ContainerController conC = this.getContainerController();
 
-            // int numberOfGrids = 0;
-            // int numberOfNonRenewablePowerPlants = 0;
-            // for(String agentName : agentNames){
-            //     if(agentName.startsWith("Grid")){
-            //         numberOfGrids++;
-            //     } else if(agentName.startsWith("NonRenewablePowerPlant")){
-            //         numberOfNonRenewablePowerPlants++;
-            //     }
-            // }
-
             for(String agentName : agentNames){
                 String className = agentName.split("-")[0]; 
                 Object[] params = null;
-                // if(agentName.contains("LoadManager")){
-                //     params = new Object[2];
-                //     params[0] = numberOfGrids;
-                //     params[1] = numberOfNonRenewablePowerPlants;
-                // }
                 AgentController ac = conC.createNewAgent(agentName, PACKAGE_PATH + "." + className + "Agent", params);
                 ac.start();
             }        
@@ -137,8 +122,7 @@ public class SimulationSettingsAgent extends CustomAgent{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		Map<String, Object> content = new HashMap<String, Object>();
-		content.put(MessageUtil.CURRENT_TURN, this.curTurn);
+		Map<String, Object> content = new HashMap<>();
         content.put(MessageUtil.CURRENT_WEATHER, this.curWeather.ordinal());
         content.put(MessageUtil.CURRENT_WIND_SPEED, this.curWindSpeed.ordinal());
         content.put(MessageUtil.ELECTRICITY_PRICE, this.curElectricityPrice);
@@ -153,10 +137,6 @@ public class SimulationSettingsAgent extends CustomAgent{
 
 	public List<String> getAgentNames() {
 		return agentNames;
-	}
-
-	public int getCurTurn() {
-		return curTurn;
 	}
 
     public SimulationStatus getSimulationStatus() {

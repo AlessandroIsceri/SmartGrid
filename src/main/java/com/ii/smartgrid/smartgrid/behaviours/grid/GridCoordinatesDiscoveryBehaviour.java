@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
@@ -24,7 +23,7 @@ public class GridCoordinatesDiscoveryBehaviour extends CoordinatesDiscoveryBehav
 
     @Override
     protected void sendInformationToLoadManager(){
-        Map<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<>();
         Grid grid = gridAgent.getGrid();
         List<Cable> cables = grid.getConnectedGridsCables();
         content.put(MessageUtil.CABLE_COSTS, cables);

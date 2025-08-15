@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
@@ -71,7 +70,6 @@ public class FollowRoutingInstructionsBehaviour extends CustomBehaviour{
         
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
 
-            // DistributionInstruction distributionInstruction = (DistributionInstruction) jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS);
             DistributionInstruction distributionInstruction = customAgent.readValueFromJson(jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS), DistributionInstruction.class);
 
             double energyToDistribute = distributionInstruction.getEnergyToDistribute();
@@ -87,7 +85,7 @@ public class FollowRoutingInstructionsBehaviour extends CustomBehaviour{
 
                 distributionInstruction.setEnergyToDistribute(energyToDistributeWithLoss);
 
-                Map<String, Object> content = new HashMap<String, Object>();
+                Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, distributionInstruction); 
                 customAgent.createAndSend(ACLMessage.INFORM, receiverName, content);
             }

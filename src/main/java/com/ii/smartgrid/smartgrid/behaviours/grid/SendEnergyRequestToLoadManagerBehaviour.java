@@ -3,22 +3,19 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
+import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehaviour{
@@ -34,7 +31,7 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
     public void action() {
         Grid grid = gridAgent.getGrid();
         String loadManagerName = grid.getLoadManagerName();
-        Map<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<>();
         EnergyTransaction energyTransaction = null;
         Battery battery = grid.getBattery();
 
@@ -55,7 +52,7 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
             energyTransaction = new EnergyTransactionWithoutBattery(grid.getPriority(), Math.abs(energyTransactionValue), customAgent.getLocalName(), energyTransactionType);
         }
         ObjectMapper objectMapper = customAgent.getObjectMapper();
-        JsonNode node = objectMapper.valueToTree(energyTransaction); // include @JsonTypeInfo
+        JsonNode node = objectMapper.valueToTree(energyTransaction);
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
         
         customAgent.createAndSend(ACLMessage.REQUEST, loadManagerName, content);

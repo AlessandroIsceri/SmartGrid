@@ -1,11 +1,9 @@
 package com.ii.smartgrid.smartgrid.model;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
@@ -20,7 +18,7 @@ public class Routine {
 	
 	public Routine() {
 		super();
-		tasks = new ArrayList<Task>();
+		tasks = new ArrayList<>();
 	}
 	
 	public Routine(List<Task> tasks) {
@@ -44,7 +42,7 @@ public class Routine {
 	
 	public boolean addTasks(List<Task> newTasks, List<Appliance> appliances) {
 		
-		if(divideTasks(newTasks) == false) {
+		if(! divideTasks(newTasks)) {
 			return false;
 		}
 		
@@ -94,7 +92,7 @@ public class Routine {
 	}
 
 
-	private enum TaskStatus {OK, TO_SPLIT, TO_DELETE};
+	private enum TaskStatus {OK, TO_SPLIT, TO_DELETE}
 	
 	private TaskStatus checkTask(Task task) {
         LocalTime start = TimeUtils.getLocalTimeFromString(task.getStartTime());
@@ -127,7 +125,7 @@ public class Routine {
 	
 	public boolean removeTasks(List<Task> newTasks) {
 		
-		if(divideTasks(newTasks) == false) {
+		if(! divideTasks(newTasks)) {
 			return false;
 		}
 		

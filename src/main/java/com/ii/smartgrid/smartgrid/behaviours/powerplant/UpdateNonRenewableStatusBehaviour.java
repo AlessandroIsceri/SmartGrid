@@ -2,15 +2,11 @@ package com.ii.smartgrid.smartgrid.behaviours.powerplant;
 
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlantAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 

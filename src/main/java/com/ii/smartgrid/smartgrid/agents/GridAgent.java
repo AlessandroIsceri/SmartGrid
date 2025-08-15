@@ -1,6 +1,5 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.FollowRoutingInstructionsBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.GridCoordinatesDiscoveryBehaviour;
@@ -19,7 +18,7 @@ import jade.core.behaviours.SequentialBehaviour;
 
 public class GridAgent extends CustomAgent{
 
-    public enum GridStatus {RECEIVE, SEND};
+    public enum GridStatus {RECEIVE, SEND}
 	private GridStatus gridStatus = null;
 
 	@Override

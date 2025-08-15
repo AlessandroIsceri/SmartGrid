@@ -1,9 +1,5 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import java.util.Map;
-
-import com.ii.smartgrid.smartgrid.utils.JsonUtil;
-
 public class DieselPowerPlant extends NonRenewablePowerPlant{
     
     private double enginePower;
@@ -17,7 +13,6 @@ public class DieselPowerPlant extends NonRenewablePowerPlant{
     public double getEnginePower() {
         return enginePower;
     }
-
 
 
     public void setEnginePower(double enginePower) {
@@ -37,10 +32,7 @@ public class DieselPowerPlant extends NonRenewablePowerPlant{
 
     @Override
     public double getHourlyProduction(Object... weatherConditions) {
-
-        double energyProd = 0.0;
-        energyProd = enginePower * efficiency;
-        return energyProd;
+        return enginePower * efficiency;
     }
 
 
@@ -49,6 +41,5 @@ public class DieselPowerPlant extends NonRenewablePowerPlant{
         return "DieselPowerPlant [enginePower=" + enginePower + ", efficiency=" + efficiency + "]";
     }
 
-    
     
 }

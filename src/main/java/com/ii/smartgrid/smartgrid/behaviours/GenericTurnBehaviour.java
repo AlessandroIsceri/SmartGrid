@@ -1,17 +1,12 @@
 package com.ii.smartgrid.smartgrid.behaviours;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -19,7 +14,7 @@ import jade.lang.acl.MessageTemplate;
 public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 
 	
-	public GenericTurnBehaviour(CustomAgent agent) {
+	protected GenericTurnBehaviour(CustomAgent agent) {
         super(agent);
     }
 
@@ -56,5 +51,5 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 		}
 	}
 
-    abstract protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour);
+    protected abstract void executeTurn(SequentialBehaviour sequentialTurnBehaviour);
 }

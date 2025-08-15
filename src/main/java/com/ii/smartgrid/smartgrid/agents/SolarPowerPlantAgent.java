@@ -1,16 +1,11 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-import java.util.ArrayList;
-
-import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlantAgent.RenewablePowerPlantBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedSolarEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.model.SolarPowerPlant;
-import com.ii.smartgrid.smartgrid.model.WindPowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 public class SolarPowerPlantAgent extends RenewablePowerPlantAgent{
 

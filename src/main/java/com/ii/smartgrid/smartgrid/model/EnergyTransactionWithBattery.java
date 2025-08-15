@@ -1,15 +1,11 @@
 package com.ii.smartgrid.smartgrid.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority; 
 
 public class EnergyTransactionWithBattery extends EnergyTransaction{
 
     public static final double FULL_BATTERY = 1.0;
-    // public static final double EMPTY_BATTERY = 0.0;
-    // public static final double END_CHARGE_THRESHOLD = 0.95;
 
     private double curTurnReceivedEnergy;
 
@@ -44,11 +40,6 @@ public class EnergyTransactionWithBattery extends EnergyTransaction{
         curTurnReceivedEnergy = curTurnReceivedEnergy + energyReceived - excess;
         return excess;
     }
-    
-    // private double getMaxCapacityInWatt(){
-    //     //300 W / 0.3 = 1000
-    //     return energyBatteryAvailable / batteryStateOfCharge;
-    // }
 
     public double getMissingEnergyForThreshold(double threhsoldPercentage){
         //0.25 -> 0.75  
@@ -80,9 +71,6 @@ public class EnergyTransactionWithBattery extends EnergyTransaction{
     }
 
     public boolean hasReachedLimit() {
-        // System.out.println("******nodeName and curTurnReceived: " + nodeName + " " + curTurnReceivedEnergy);
-        // System.out.println("******storedEnergy: " + battery.getStoredEnergy());
-        // System.out.println("******maxEnergyInTurn: " + battery.getMaxEnergyInTurn());
         return curTurnReceivedEnergy >= battery.getMaxEnergyInTurn() - 0.01; 
     }
 

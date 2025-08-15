@@ -6,8 +6,8 @@ public class HydroPowerPlant extends RenewablePowerPlant{
     private double flowRate; // m^3/s
     private double headHeight; // m
 
-    private final double WATER_DENSITY = 1000.0; // kg/m^3
-    private final double GRAVITATIONAL_ACCELERATION = 9.81; // m/s^2
+    private static final double WATER_DENSITY = 1000.0; // kg/m^3
+    private static final double GRAVITATIONAL_ACCELERATION = 9.81; // m/s^2
 
     public HydroPowerPlant(){
         super();
@@ -36,18 +36,14 @@ public class HydroPowerPlant extends RenewablePowerPlant{
     }
 
 
-
     public void setHeadHeight(double headHeight) {
         this.headHeight = headHeight;
     }
 
 
-
     @Override
     public double getHourlyProduction(Object... weatherConditions) {
-		double energyProd = 0.0;
-        energyProd = efficiency * WATER_DENSITY * GRAVITATIONAL_ACCELERATION * flowRate * headHeight;
-        return energyProd;
+        return efficiency * WATER_DENSITY * GRAVITATIONAL_ACCELERATION * flowRate * headHeight;
 	}   
 
 

@@ -1,7 +1,5 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-
 public abstract class PowerPlant extends CustomObject{
 	
 	protected boolean on;

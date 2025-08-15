@@ -5,20 +5,17 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.SmartBuilding;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
-import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -51,18 +48,15 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
     private void updateInternalEnergy(){
         SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
 		
-		WeatherStatus curWeatherStatus = smartBuildingAgent.getCurWeather();
-        int curTurn = smartBuildingAgent.getCurTurn();
 		double expectedProduction = smartBuilding.getExpectedProduction();
         log("PV: expectedProduction: " + expectedProduction);
 		        
 		Battery battery = smartBuilding.getBattery();
 
 		if(battery != null){
-            Map<String, Object> content = new HashMap<String, Object>();
+            Map<String, Object> content = new HashMap<>();
             String gridName = smartBuilding.getGridName();
-            // String conversationId = "blackout-" + customAgent.getLocalName();
-            if(smartBuilding.canBeRestored(curTurn, curWeatherStatus)){
+            if(smartBuilding.canBeRestored()){
                 log("Ho almeno metà batteria piena, provo a ripartire");
                 smartBuilding.restorePower(expectedProduction);
                 smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
@@ -71,17 +65,12 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 battery.fillBattery(expectedProduction);
                 content.put(MessageUtil.BLACKOUT, true);
             }
-            customAgent.createAndSend(ACLMessage.INFORM, gridName, content); //conversationId);
+            customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
 		}else{
             log("Non ho una batteria, ma ho dei pannelli, rilascio l'energia in rete");
             
-            Map<String, Object> content = new HashMap<String, Object>();
+            Map<String, Object> content = new HashMap<>();
             String gridName = smartBuilding.getGridName();
-            // String conversationId = "release-"+customAgent.getLocalName();
-            // content.put(MessageUtil.OPERATION, MessageUtil.RELEASE);
-
-            // content.put(MessageUtil.RELEASED_ENERGY, expectedProduction);
-            // content.put(MessageUtil.RELEASED_ENERGY, customAgent.updateEnergyValue(gridName, expectedProduction));
             Cable cable = smartBuilding.getCable(gridName);
             double sendedEnergy = cable.computeTransmittedPower(expectedProduction);
             EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sendedEnergy, customAgent.getLocalName(), TransactionType.SEND);
@@ -91,7 +80,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             
             content.put(MessageUtil.ENERGY_TRANSACTION, node);
             content.put(MessageUtil.BLACKOUT, true);
-            customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);//conversationId);
+            customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
         }
         state = Status.RECEIVING_MSGS;
     }
@@ -99,7 +88,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
     private void receiveMsgs() {
         MessageTemplate mtOR = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.AGREE), 
                                                   MessageTemplate.MatchPerformative(ACLMessage.REFUSE));
-        MessageTemplate mtAND = MessageTemplate.and(MessageTemplate.MatchConversationId("restore-" + customAgent.getLocalName()),
+        MessageTemplate mtAND = MessageTemplate.and(MessageTemplate.MatchConversationId(MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + customAgent.getLocalName()),
 												    MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         MessageTemplate mt = MessageTemplate.or(mtOR, mtAND);
 		ACLMessage receivedMsg = customAgent.receive(mt);
@@ -107,8 +96,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
             log("WAIT FOR RESTORE: HO RICEVUTO QUALCOSA: " + receivedMsg);
            
-            if(receivedMsg.getPerformative() == ACLMessage.INFORM && receivedMsg.getConversationId().equals("restore-" + customAgent.getLocalName())){
-                String receivedContent = receivedMsg.getContent();
+            if(receivedMsg.getPerformative() == ACLMessage.INFORM && receivedMsg.getConversationId().equals(MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + customAgent.getLocalName())){
                 Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
                 log("Restore MSG received");
                 double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
@@ -121,8 +109,6 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             }else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
                 log("Energy not consumed");
             }
-            //TODO REMOVE
-            log("*****" + smartBuilding.toString());
             state = Status.FINISHED;
 		} else {
             block();

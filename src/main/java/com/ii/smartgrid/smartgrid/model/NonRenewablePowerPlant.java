@@ -1,12 +1,10 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-
 public abstract class NonRenewablePowerPlant extends PowerPlant{
 
     protected String loadManagerName;
 
-    public NonRenewablePowerPlant() {
+    protected NonRenewablePowerPlant() {
         super();
     }
 
@@ -19,10 +17,5 @@ public abstract class NonRenewablePowerPlant extends PowerPlant{
     public void setLoadManagerName(String loadManagerName) {
         this.loadManagerName = loadManagerName;
     }
-
-
-
-    
-
 
 }

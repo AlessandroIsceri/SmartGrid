@@ -1,23 +1,19 @@
 package com.ii.smartgrid.smartgrid.behaviours.grid;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.AID;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
@@ -48,16 +44,15 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
 
                 Cable cable = grid.getCable(smartBuildingName);
                 double neededEnergy = cable.getEnergyToSatifyRequest(requestedEnergy);
-                Map<String, Object> content = new HashMap<String, Object>();
+                Map<String, Object> content = new HashMap<>();
                 if(neededEnergy < availableEnergy){
                     content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
                     availableEnergy -= neededEnergy;
-                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, "restore-" + smartBuildingName);
+                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
                     grid.removeSmartBuildingWithoutPower(smartBuildingName);
                 }else{
                     content.put(MessageUtil.GIVEN_ENERGY, -1.0);
-                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, "restore-" + smartBuildingName);
-                    // grid.removeSmartBuildingWithoutPower(smartBuildingName); TODO: check
+                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
                 }
             }
 
@@ -78,7 +73,7 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 // x = (+voltage^2 ± √(voltage^4 - 4 * cableResistance * voltage^2*requestedEnergy)) / (2*cableResistance)
                 double neededEnergy = cable.getEnergyToSatifyRequest(requestedEnergy);
 
-                Map<String, Object> content = new HashMap<String, Object>();
+                Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
                 content.put(MessageUtil.REQUESTED_ENERGY, requestedEnergy);
                 

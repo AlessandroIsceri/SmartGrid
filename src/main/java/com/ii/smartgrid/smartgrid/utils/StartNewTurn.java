@@ -1,16 +1,8 @@
 package com.ii.smartgrid.smartgrid.utils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
 import com.ii.smartgrid.smartgrid.utils.SimulationSettingsAgent.SimulationStatus;
 
-import jade.core.AID;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 

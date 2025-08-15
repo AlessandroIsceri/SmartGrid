@@ -92,7 +92,6 @@ public class Battery {
     }
 
     public double requestEnergy(double requestedEnergyWH){
-        // double requestedEnergyWH = requestedEnergy * TimeUtils.getTurnDurationHours(); //convert Watts in Watts Hour
         double maxEnergyInTurn = getMaxEnergyInTurn(); //in Watts Hour
         double effectiveRequestedEnergy = Math.min(maxEnergyInTurn, requestedEnergyWH);
 
@@ -116,7 +115,6 @@ public class Battery {
 
         //1000W -> 1 ora -> 1000WH
         //1000 -> 0:15 min -> 1000*0.25 WH
-        // double energyWH = energy * TimeUtils.getTurnDurationHours(); //convert Watts in Watts Hour
         double maxEnergyInTurn = getMaxEnergyInTurn(); //in Watts Hour
 
         //maxEnergy = 500; energyWH = 800 -> 500

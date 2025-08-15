@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
@@ -42,15 +41,14 @@ public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour{
 
             if(distributionInstruction.pathSize() != 0){
                 String receiverName = distributionInstruction.getFirstReceiver();
-                double energyToDistribute = distributionInstruction.getEnergyToDistribute(); //500
+                double energyToDistribute = distributionInstruction.getEnergyToDistribute();
 
                 Cable cable = grid.getCable(receiverName);
                 double energyToDistributeWithLoss = cable.computeTransmittedPower(energyToDistribute);
                 distributionInstruction.setEnergyToDistribute(energyToDistributeWithLoss);
                 
-                Map<String, Object> content = new HashMap<String, Object>();
+                Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, distributionInstruction);
-                // content.put(MessageUtil.GIVEN_ENERGY, energyToDistributeWithLoss); //499
                 grid.addExpectedConsumption(energyToDistribute);
                 customAgent.createAndSend(ACLMessage.INFORM, receiverName, content);
             }

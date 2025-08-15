@@ -3,7 +3,6 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
@@ -69,9 +68,7 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
 				 * 		"energyTransaction": 200.0,
                  *      "blackout" : true/false
 				 * }
-				 */
-                // String operation = (String) jsonObject.get(MessageUtil.OPERATION);
-                
+				 */                
                 EnergyTransaction energyTransaction  = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
                 TransactionType transactionType = energyTransaction.getTransactionType();
                 if(transactionType == TransactionType.RECEIVE) {
@@ -83,7 +80,6 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
                 } else {
                     double releasedEnergy = energyTransaction.getEnergyTransactionValue();
                     log("Released Energy: " + releasedEnergy);
-                    // grid.removeExpectedConsumption(releasedEnergy);
                     grid.addExpectedProduction(releasedEnergy);
                     if(grid.containsSmartBuildingWithoutPower(sender)){
                         // false -> energy restored independently
@@ -98,7 +94,6 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
                 //{"blackout": true/false}
 				// false -> energy restored independently
 				// true -> building still in blackout
-                // String conversationId = receivedMsg.getConversationId();
                 boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                 if(!blackout){
                     grid.removeSmartBuildingWithoutPower(sender);

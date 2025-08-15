@@ -1,44 +1,23 @@
 package com.ii.smartgrid.smartgrid.utils;
 
-import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Properties;
 import java.util.TimeZone;
-
-import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 
 public class TimeUtils {
 
-    private static int MINUTES_IN_A_DAY = 1440;
-	//private static int turnDuration = -1;
-
-	// private static void initTurnDuration() {
-	// 	if(turnDuration == -1) {
-	// 		Properties prop = new Properties();
-	// 		String fileName = "src/main/resources/app.config";
-	// 		try (FileInputStream fis = new FileInputStream(fileName)) {
-	// 			prop.load(fis);
-	// 		} catch (Exception ex) {
-	// 			System.out.println("File app.config not found");
-	// 		}
-	// 		String _turnDuration = prop.getProperty("turn_duration");
-	// 		int[] tmp = TimeUtils.splitTime(_turnDuration);
-	//         int hours = tmp[0];
-	//         int minutes = tmp[1];
-	//         //24:00 = 1440 minutes
-	// 		turnDuration = hours * 60 + minutes;
-	// 	}
-	// }
+    private static final int MINUTES_IN_A_DAY = 1440;
 	
 	private static int turnDuration;
 	private static int weatherTurnDuration;
     private static long simulationStartDateInMillis;
     private static String timeZone;
+
+	private TimeUtils(){
+
+	}
 
 	public static void computeAndSetTurnDuration(String newTurnDuration){
         turnDuration = convertDurationInMinutes(newTurnDuration);
@@ -65,12 +44,11 @@ public class TimeUtils {
     }
     
 	public static int getTurnDuration() {
-		// initTurnDuration();
 		return turnDuration;
 	}
 
 	public static double getTurnDurationHours(){
-		return (double) turnDuration / 60.0;
+		return turnDuration / 60.0;
 	}
 	
 	public static LocalTime getLocalTimeFromString(String time){
@@ -88,21 +66,18 @@ public class TimeUtils {
     }
 
 	public static int convertTimeToTurn(String time) {
-		// initTurnDuration();
 		int[] tmp = splitTime(time);
         int hours = tmp[0];
         int minutes = tmp[1];
         int timeMinutes = hours * 60 + minutes;
 		// 12:30; 00:30 -> 25
-        int turn = timeMinutes / turnDuration;
-        return turn;
+        return timeMinutes / turnDuration;
 	}
 	
 	public static String convertTurnToTime(int turn){
 
         turn = turn % TimeUtils.getDailyTurnsNumber();
 
-		// initTurnDuration();
 		int turnInMinutes = turn * turnDuration;
 		int hours = turnInMinutes / 60;
 		int minutes = turnInMinutes % 60;
@@ -123,10 +98,8 @@ public class TimeUtils {
 	}
 	
     public static int getHourFromTurn(int turn){
-        // initTurnDuration();
 		int turnInMinutes = turn * turnDuration;
-		int hours = turnInMinutes / 60;
-        return hours;
+		return turnInMinutes / 60;
     }
 
 	public static int getWeatherTurnDuration() {
@@ -134,8 +107,7 @@ public class TimeUtils {
 	}
 	
 	public static int getMinutesFromTurn(int turn){
-		int turnInMinutes = turn * turnDuration;
-        return turnInMinutes;
+		return turn * turnDuration;
 	}
 
     public static String getTimeZone(){

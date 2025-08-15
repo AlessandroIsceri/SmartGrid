@@ -1,9 +1,11 @@
 package com.ii.smartgrid.smartgrid.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,30 +14,25 @@ import java.util.Map;
 import java.util.Random;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.model.Cable;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-
 public class EnergyUtil {
 
-    private static String CSV_PATH = "src/main/resources/meanElectricityPrice.csv";
+    private EnergyUtil(){}
+
+    private static final String CSV_PATH = "src/main/resources/meanElectricityPrice.csv";
 
     private static Map<String, Cable> cableTypes;
     private static List<Cable> links;
     private static double priceVolatility;
     private static double priceTrend; 
+    private static Random rand;
     
     // Initialize cables on first class call
     static {
+        rand = new Random(42);
         loadCables();
     }
     
@@ -52,13 +49,9 @@ public class EnergyUtil {
             TypeReference<ArrayList<Cable>> typeRefArrayList = new TypeReference<ArrayList<Cable>>() {};
             links = objectMapper.convertValue(fileContent.get("links"), typeRefArrayList);
 
-        } catch (StreamReadException e) {
-            e.printStackTrace();
-        } catch (DatabindException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }  
     }
 
     private static String getCountryFromCoordinates(double lat, double lon) {
@@ -94,14 +87,10 @@ public class EnergyUtil {
             try {
                 jsonObject = objectMapper.readValue(content.toString(), typeRef);
                 return (String) jsonObject.get("name");
-            } catch (JsonMappingException e) {
-                e.printStackTrace();
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }catch (IOException e) {
+            } 
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -127,7 +116,7 @@ public class EnergyUtil {
     }
 
     public static double randomWalk(double curPrice){
-        Random rand = new Random();
+        
         double variation = rand.nextGaussian() * priceVolatility + priceTrend;
         return curPrice * (1 + variation);
     }

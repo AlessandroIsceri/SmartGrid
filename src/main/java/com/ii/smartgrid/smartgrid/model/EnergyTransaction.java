@@ -16,8 +16,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
     @Type(value = EnergyTransactionWithBattery.class),
     @Type(value = EnergyTransactionWithoutBattery.class)
 })
+
 public abstract class EnergyTransaction {
-    public enum TransactionType {RECEIVE, SEND};
+    public enum TransactionType {RECEIVE, SEND}
     protected Priority priority;
     protected double energyTransactionValue;
     protected String nodeName;
@@ -26,11 +27,11 @@ public abstract class EnergyTransaction {
     protected TransactionType transactionType;
     protected double voltage; 
 
-    public EnergyTransaction(){
+    protected EnergyTransaction(){
         super();
     }
 
-    public EnergyTransaction(Priority priority, double energyTransactionValue, String nodeName, TransactionType transactionType) {
+    protected EnergyTransaction(Priority priority, double energyTransactionValue, String nodeName, TransactionType transactionType) {
         super();
         this.priority = priority;
         this.energyTransactionValue = energyTransactionValue;

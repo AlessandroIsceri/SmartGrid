@@ -22,7 +22,7 @@ public class DistributionInstruction{
 
     public DistributionInstruction() {
         super();
-        this.nodesPath = new ArrayList<String>();
+        this.nodesPath = new ArrayList<>();
         this.energyToDistribute = 0.0;
     }
 

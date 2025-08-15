@@ -2,9 +2,7 @@ package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
@@ -22,7 +20,7 @@ public class SmartBuilding extends CustomObject{
 
     public SmartBuilding(){
         super();
-        appliances = new ArrayList<Appliance>();
+        appliances = new ArrayList<>();
     }
 
 	public List<Appliance> getAppliances() {
@@ -72,13 +70,6 @@ public class SmartBuilding extends CustomObject{
                 + ", expectedProduction=" + expectedProduction + ", gridName=" + gridName + "]";
     }
 
-    // public double getAvailableEnergy(){
-    //     if(battery != null){
-    //         return expectedProduction + battery.getStoredEnergy();
-    //     }
-	// 	return expectedProduction;
-	// }
-
 
 	public double getExpectedProduction() {
         return expectedProduction;
@@ -97,7 +88,7 @@ public class SmartBuilding extends CustomObject{
 
 	public void restorePower(double energy){
 		if(battery != null){
-			double extra = battery.fillBattery(energy);
+			battery.fillBattery(energy);
 		}
 		for(Appliance appliance: appliances){
 			if(appliance.isAlwaysOn()){
@@ -108,7 +99,6 @@ public class SmartBuilding extends CustomObject{
 	}
 
     public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus){
-        // expectedConsumption = 0;
 
         if(smartBuildingStatus != SmartBuildingStatus.BLACKOUT){
             double turnDurationHours = TimeUtils.getTurnDurationHours();
@@ -146,7 +136,7 @@ public class SmartBuilding extends CustomObject{
         this.buildingPhotovoltaicSystem = buildingPhotovoltaicSystem;
     }
 
-    public boolean canBeRestored(int curTurn, WeatherStatus curWeather) {
+    public boolean canBeRestored() {
         return this.battery.getMaxCapacityInWatt() * 0.5 < this.battery.getStoredEnergy() + this.expectedProduction;
     }
 
@@ -156,6 +146,12 @@ public class SmartBuilding extends CustomObject{
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public void fillBattery(double extraEnergy) {
+        if(battery != null){
+            battery.fillBattery(extraEnergy);
+        }
     }
 
 }

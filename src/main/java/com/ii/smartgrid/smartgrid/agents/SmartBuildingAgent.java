@@ -5,7 +5,6 @@ import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.smartbuilding.CheckSmartBuildingMessagesBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.smartbuilding.ReceiveEnergyFromGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.smartbuilding.SendEnergyRequestToGridBehaviour;
-// import com.ii.smartgrid.smartgrid.behaviours.smartbuilding.SendEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.smartbuilding.WaitForRestoreBehaviour;
 import com.ii.smartgrid.smartgrid.model.SmartBuilding;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
@@ -14,7 +13,7 @@ import jade.core.behaviours.SequentialBehaviour;
 
 public class SmartBuildingAgent extends CustomAgent{
 	
-    public enum SmartBuildingStatus {GAINING_ENERGY, LOSING_ENERGY, BLACKOUT};
+    public enum SmartBuildingStatus {GAINING_ENERGY, LOSING_ENERGY, BLACKOUT}
 	private SmartBuildingStatus buildingStatus = SmartBuildingStatus.LOSING_ENERGY;
     
     
@@ -33,7 +32,6 @@ public class SmartBuildingAgent extends CustomAgent{
 
         smartBuilding.addConnectedAgentName(smartBuilding.getGridName());
         
-       
         this.addBehaviour(new CoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new SmartBuildingTurnBehaviour(this));
         this.addBehaviour(new CheckSmartBuildingMessagesBehaviour(this));

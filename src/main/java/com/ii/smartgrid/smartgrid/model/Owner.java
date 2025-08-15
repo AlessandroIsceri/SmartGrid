@@ -9,7 +9,7 @@ public class Owner extends CustomObject{
 	
     public Owner(){
         super();
-        smartBuildingNames = new ArrayList<String>();
+        smartBuildingNames = new ArrayList<>();
     }
 
 	public void setSmartBuildingNames(List<String> smartBuildingNames) {

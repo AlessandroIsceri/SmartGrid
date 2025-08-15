@@ -1,19 +1,15 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
@@ -28,12 +24,6 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
     @Override
     public void action() {
         LoadManager loadManager = loadManagerAgent.getLoadManager();
-        // double requestedEnergySum = loadManager.getAllRequestedEnergySum();
-    
-        // if(requestedEnergySum > 0){
-        //     //No requests to be satisfied
-        //     return;
-        // }
 
         /*
          * if(almeno una batteria è < 25) -> attiva non rinnovabili (quante e quali?)
@@ -77,7 +67,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
         }
 
         for(NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos){
-            Map<String, Object> content = new HashMap<String, Object>();
+            Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.ON, nonRenewablePowerPlantInfo.isOn());
             customAgent.createAndSend(ACLMessage.INFORM, nonRenewablePowerPlantInfo.getName(), content);
         }

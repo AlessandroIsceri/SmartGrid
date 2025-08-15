@@ -1,6 +1,5 @@
 package com.ii.smartgrid.smartgrid.behaviours.powerplant;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SolarPowerPlantAgent;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;

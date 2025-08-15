@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
@@ -47,7 +46,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                     // The producer node already has a battery -> continue
                     // Add producer node battery into his battery 
                     ((EnergyTransactionWithBattery) producerNode).receiveBatteryEnergy(producerNode.getEnergyTransactionValue());
-                    ((EnergyTransactionWithBattery) producerNode).sendEnergy(producerNode.getEnergyTransactionValue());
+                    (producerNode).sendEnergy(producerNode.getEnergyTransactionValue());
                     producerNodesIterator.remove();
                     loadManager.addDistributionInstructions(producerNode.getNodeName(), new DistributionInstruction(producerNode.getNodeName()));
                     continue;
@@ -74,7 +73,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                 }
 
                 if(shortesPath == null){
-                    List<String> path = new ArrayList<String>();
+                    List<String> path = new ArrayList<>();
                     path.add(producerNode.getNodeName());
                     DistributionInstruction distributionInstruction = new DistributionInstruction(path, 0);
                     loadManager.addDistributionInstructions(producerNode.getNodeName(), distributionInstruction);

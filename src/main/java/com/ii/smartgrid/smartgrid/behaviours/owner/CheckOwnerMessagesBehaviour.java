@@ -3,13 +3,11 @@ package com.ii.smartgrid.smartgrid.behaviours.owner;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.OwnerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
 import com.ii.smartgrid.smartgrid.model.Owner;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class CheckOwnerMessagesBehaviour extends CustomCyclicBehaviour {

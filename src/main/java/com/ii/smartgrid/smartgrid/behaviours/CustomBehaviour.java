@@ -8,7 +8,7 @@ public abstract class CustomBehaviour extends Behaviour{
     
     protected CustomAgent customAgent;
 
-    public CustomBehaviour(CustomAgent customAgent){
+    protected CustomBehaviour(CustomAgent customAgent){
         super(customAgent);
         this.customAgent = customAgent;
     }

@@ -3,7 +3,6 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Grid;
@@ -25,11 +24,13 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
         Map<String, Boolean> nonRenewablePowerPlantActiveStatus = gridAgent.getGrid().getNonRenewablePowerPlantActiveStatus();
         nonRenewableActivePowerPlantCount = 0;
         this.gridAgent = gridAgent;
-        for(String nonRenewablePowerPlantName : nonRenewablePowerPlantActiveStatus.keySet()){
-            if(nonRenewablePowerPlantActiveStatus.get(nonRenewablePowerPlantName)){
+    
+        for(boolean isActive : nonRenewablePowerPlantActiveStatus.values()){
+            if(isActive){
                 nonRenewableActivePowerPlantCount++;
             }
         }
+
     }
 
     @Override
@@ -67,7 +68,6 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
             double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
             log("receivedEnergy: " + receivedEnergy);
             
-            // grid.removeExpectedConsumption(receivedEnergy);
             grid.addExpectedProduction(receivedEnergy);
 
             if(requestCont < nonRenewableActivePowerPlantCount){

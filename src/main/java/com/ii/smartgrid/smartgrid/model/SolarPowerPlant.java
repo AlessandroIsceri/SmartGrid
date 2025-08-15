@@ -13,8 +13,8 @@ public class SolarPowerPlant extends RenewablePowerPlant{
     private double azimuthAngleArray; //default 0 --> pannelli sud
     private double tiltAngle; // default 30
 
-    private final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2 
-    private final double ALBEDO = 0.33; //red tiles
+    private static final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2 
+    private static final double ALBEDO = 0.33; //red tiles
 
 
     public double getEfficiency() {
@@ -48,62 +48,7 @@ public class SolarPowerPlant extends RenewablePowerPlant{
     public void setTiltAngle(double tiltAngle) {
         this.tiltAngle = tiltAngle;
     }
-
-    // @Override
-    // public double getHourlyProduction(Object... weatherConditions) {
-    //     WeatherStatus curWeather = (WeatherStatus) weatherConditions[0];
-    //     int curTurn = (int) weatherConditions[1];
-        
-    //     int dayOfTheYear = TimeUtils.getCurrentDayFromTurn(curTurn);
-
-
-    //     LocalTime curTime = TimeUtils.getLocalTimeFromTurn(curTurn);
-	// 	LocalTime sunriseTime = TimeUtils.getLocalTimeFromString(WeatherUtil.sunriseHours.get(dayOfTheYear));
-    //     LocalTime sunsetTime = TimeUtils.getLocalTimeFromString(WeatherUtil.sunsetHours.get(dayOfTheYear));
-
-    //     // At night solar energy production is 0
-    //     if (curTime.isBefore(sunriseTime) || curTime.isAfter(sunsetTime)){
-    //         return 0;
-    //     }
-
-    //     int cloudCover = WeatherUtil.cloudCoverageAvg[curWeather.ordinal()];
-                
-    //     double declinationAngle = 23.45 * Math.sin( (360.0/365.0) * ((double)dayOfTheYear - 81.0));
-    //     double latitude = this.coordinates.getLatitude();
-
-    //     double zenithAngle = latitude - declinationAngle; 
-        
-    //     double Izero = GLOBAL_SOLAR_CONSTANT * (1.0 + 0.033 * Math.cos(( 2.0 * Math.PI / 365.0) * (double)dayOfTheYear));
-    //     double GHIClear = Izero * 0.7 * Math.cos(zenithAngle);
-        
-    //     double GHI = GHIClear * (1.0 - 0.75 * Math.pow(cloudCover, 3.4));
-    //     double kT = GHI / (Izero * Math.max(0.065, Math.cos(zenithAngle)));
-
-    //     double DHI;
-    //     if(kT > 0.8) {
-    //         DHI = GHI * 0.165;
-    //     } else if (kT >= 0.22){
-    //         DHI = GHI * (0.951 - 0.16 * kT + 4.388 * Math.pow(kT, 2) - 16.64 * Math.pow(kT, 3) + 12.34 * Math.pow(kT, 4));            
-    //     } else {
-    //         DHI = (1.0 - 0.09 * kT) * GHI;
-    //     }
-
-    //     double DNI = (GHI - DHI) / Math.cos(zenithAngle);
-
-    //     //ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
-    //     double cosAzimuth = Math.sin(zenithAngle) * Math.sin(latitude) - Math.sin(declinationAngle) / (Math.cos(zenithAngle) * Math.cos(latitude));
-
-    //     double incidenceAngle = 1.0 / Math.cos(Math.cos(zenithAngle) * Math.cos(tiltAngle) + Math.sin(zenithAngle) * Math.sin(tiltAngle) * cosAzimuth);
-        
-    //     double GBeamPoa = DNI * Math.cos(incidenceAngle);
-    //     double GDiffusePoa = DHI * ((1.0 + Math.cos(tiltAngle)) / 2.0);
-    //     double GGroundPoa = GHI * ALBEDO * ((1.0 - Math.cos(tiltAngle)) / 2.0);
-
-    //     double GPoa = GBeamPoa + GDiffusePoa + GGroundPoa;
-
-    //     return efficiency * area * GPoa;
-	// }   
-    
+       
     @Override    
     public double getHourlyProduction(Object... weatherConditions) {
         WeatherStatus curWeather = (WeatherStatus) weatherConditions[0];
@@ -116,7 +61,7 @@ public class SolarPowerPlant extends RenewablePowerPlant{
         LocalTime sunsetTime = TimeUtils.getLocalTimeFromString(WeatherUtil.sunsetHours.get(dayOfTheYear));
         int curTimeInMinutes = TimeUtils.getMinutesFromTurn(curTurn);
 
-        double STANDARD_MERIDIAN = TimeUtils.getTimeZoneOffset(curTurn) * 15; //degrees
+        double standardMeridian = TimeUtils.getTimeZoneOffset(curTurn) * 15.0; //degrees
 
         // At night solar energy production is 0
         if (curTime.isBefore(sunriseTime) || curTime.isAfter(sunsetTime)){
@@ -125,16 +70,15 @@ public class SolarPowerPlant extends RenewablePowerPlant{
 
         int cloudCover = WeatherUtil.cloudCoverageAvg[curWeather.ordinal()];
                 
-        // double declinationAngle = 23.45 * Math.sin( (360.0/365.0) * ((double)dayOfTheYear - 81.0));
-        double declinationAngle = Math.toRadians(23.45 * Math.sin(Math.toRadians((360.0/365.0) * ((double)dayOfTheYear - 81.0))));
+        double declinationAngle = Math.toRadians(23.45 * Math.sin(Math.toRadians((360.0/365.0) * (dayOfTheYear - 81.0))));
 
         double longitudeInDegrees = this.coordinates.getLongitude();
         double latitudeInRadians = this.coordinates.getRadiansLatitude();
         
-        double x = Math.toRadians(360.0/365.0 * ((double) dayOfTheYear - 1.0));
+        double x = Math.toRadians(360.0/365.0 * (dayOfTheYear - 1.0));
         double equationOfTime = 9.87 * Math.sin(2.0*x) - 7.53 * Math.cos(x) - 1.5 * Math.sin(x);
     
-        double solarTimeInMinutes = curTimeInMinutes + (STANDARD_MERIDIAN - longitudeInDegrees) * 4.0 + equationOfTime;
+        double solarTimeInMinutes = curTimeInMinutes + (standardMeridian - longitudeInDegrees) * 4.0 + equationOfTime;
         double solarTimeInHours = solarTimeInMinutes / 60.0;
 
         double w = Math.toRadians((solarTimeInHours - 12.0) * 15.0); //degrees -> to radians
@@ -145,25 +89,25 @@ public class SolarPowerPlant extends RenewablePowerPlant{
         double zenithAngle = Math.acos(cosZenithAngle);
         double sinZenithAngle = Math.sin(zenithAngle);
         
-        double Izero = GLOBAL_SOLAR_CONSTANT * (1.0 + 0.033 * Math.cos(( 2.0 * Math.PI / 365.0) * (double)dayOfTheYear));
-        double GHIClear = Izero * 0.7 * cosZenithAngle;
+        double iZero = GLOBAL_SOLAR_CONSTANT * (1.0 + 0.033 * Math.cos(( 2.0 * Math.PI / 365.0) * dayOfTheYear));
+        double ghiClear = iZero * 0.7 * cosZenithAngle;
         
-        double GHI = GHIClear * (1.0 - 0.75 * Math.pow((double) cloudCover / 8.0, 3.4));        
-        double kT = GHI / (Izero * Math.max(0.065, cosZenithAngle));
+        double ghi = ghiClear * (1.0 - 0.75 * Math.pow(cloudCover / 8.0, 3.4));        
+        double kT = ghi / (iZero * Math.max(0.065, cosZenithAngle));
 
-        double DHI;
+        double dhi;
         if(kT > 0.8) {
-            DHI = GHI * 0.165;
+            dhi = ghi * 0.165;
         } else if (kT >= 0.22){
-            DHI = GHI * (0.951 - 0.16 * kT + 4.388 * Math.pow(kT, 2) - 16.64 * Math.pow(kT, 3) + 12.34 * Math.pow(kT, 4));            
+            dhi = ghi * (0.951 - 0.16 * kT + 4.388 * Math.pow(kT, 2) - 16.64 * Math.pow(kT, 3) + 12.34 * Math.pow(kT, 4));            
         } else if(kT >= 0){
-            DHI = (1.0 - 0.09 * kT) * GHI;
+            dhi = (1.0 - 0.09 * kT) * ghi;
         } else {
             System.out.println("An error occurred while calculating kT in SolarPowerPlant. " + kT);
             return 0; 
         }
 
-        double DNI = (GHI - DHI) / cosZenithAngle;
+        double dni = (ghi - dhi) / cosZenithAngle;
 
         //ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
         double cosAzimuth = (Math.sin(declinationAngle) * Math.cos(latitudeInRadians) - Math.cos(w) * Math.cos(declinationAngle) * Math.sin(latitudeInRadians)) / Math.sin(zenithAngle);
@@ -180,13 +124,13 @@ public class SolarPowerPlant extends RenewablePowerPlant{
 
         double incidenceAngle = Math.acos(incidenceCosine);
 
-        double GBeamPoa = DNI * Math.cos(incidenceAngle);
-        double GDiffusePoa = DHI * ((1.0 + Math.cos(tiltAngleInRadians)) / 2.0);
-        double GGroundPoa = GHI * ALBEDO * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
+        double gBeamPoa = dni * Math.cos(incidenceAngle);
+        double gDiffusePoa = dhi * ((1.0 + Math.cos(tiltAngleInRadians)) / 2.0);
+        double gGroundPoa = ghi * ALBEDO * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
 
-        double GPoa = GBeamPoa + GDiffusePoa + GGroundPoa;
+        double gPoa = gBeamPoa + gDiffusePoa + gGroundPoa;
 
-        return efficiency * area * GPoa;
+        return efficiency * area * gPoa;
 	}
 
 

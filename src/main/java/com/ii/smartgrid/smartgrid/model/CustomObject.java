@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class CustomObject{
     
-    public enum Priority {@JsonProperty("HIGH") HIGH, @JsonProperty("MEDIUM") MEDIUM, @JsonProperty("LOW") LOW};
+    public enum Priority {@JsonProperty("HIGH") HIGH, @JsonProperty("MEDIUM") MEDIUM, @JsonProperty("LOW") LOW}
     
     protected Map<String, Cable> connectedAgents;
     protected Coordinates coordinates;
 
-    public CustomObject(){
+    protected CustomObject(){
         super();
-        connectedAgents = new HashMap<String, Cable>();
+        connectedAgents = new HashMap<>();
     }
 
     public void addCable(String receiver, Cable cable){

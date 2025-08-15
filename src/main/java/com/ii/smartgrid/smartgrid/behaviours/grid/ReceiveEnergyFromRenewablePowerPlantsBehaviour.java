@@ -1,16 +1,14 @@
 package com.ii.smartgrid.smartgrid.behaviours.grid;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -65,8 +63,6 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
             double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
             log("receivedEnergy: " + receivedEnergy);
             
-            
-            // grid.removeExpectedConsumption(receivedEnergy);
             grid.addExpectedProduction(receivedEnergy);
 
             if(requestCont < renewablePowerPlantCount){

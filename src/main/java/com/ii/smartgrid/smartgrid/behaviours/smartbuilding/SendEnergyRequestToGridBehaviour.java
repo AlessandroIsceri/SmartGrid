@@ -4,21 +4,17 @@ package com.ii.smartgrid.smartgrid.behaviours.smartbuilding;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
+import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.smartgrid.model.SmartBuilding;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
@@ -38,31 +34,24 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
         double availableEnergy = smartBuilding.getExpectedProduction();
         TransactionType transactionType;
         // Request energy from the grid
-        // String conversationId = null;
         String gridName = smartBuilding.getGridName();
         double energy = Math.abs(expectedConsumption - availableEnergy);
         if(availableEnergy >= expectedConsumption){
             transactionType = TransactionType.SEND;
             Cable cable = smartBuilding.getCable(gridName);
             energy = cable.computeTransmittedPower(energy);
-            // conversationId = "release-"+customAgent.getLocalName();
         } else {
             transactionType = TransactionType.RECEIVE; 
-            // conversationId = "request-"+customAgent.getLocalName();
         }
         EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), energy, customAgent.getLocalName(), transactionType);
-        Map<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<>();
 
         ObjectMapper objectMapper = customAgent.getObjectMapper();
-        JsonNode node = objectMapper.valueToTree(energyTransaction); // include @JsonTypeInfo
+        JsonNode node = objectMapper.valueToTree(energyTransaction);
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
         
-        // content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
         content.put(MessageUtil.BLACKOUT, false);
 
-        customAgent.createAndSend(ACLMessage.REQUEST, gridName, content); //conversationId);
-        //TODO REMOVE
-        // SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
-        log("*****" + smartBuilding.toString());
+        customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
 	} 
 }

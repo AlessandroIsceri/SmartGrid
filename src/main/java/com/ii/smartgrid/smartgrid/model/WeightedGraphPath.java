@@ -1,7 +1,6 @@
 package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,8 +9,8 @@ public class WeightedGraphPath{
     private List<String> graphPath;
 
     public WeightedGraphPath(){
-        this.graphPath = new ArrayList<String>();
-        this.edgeCosts = new ArrayList<Double>();
+        this.graphPath = new ArrayList<>();
+        this.edgeCosts = new ArrayList<>();
     }
 
     public WeightedGraphPath(WeightedGraphPath weightedGraphPath) {

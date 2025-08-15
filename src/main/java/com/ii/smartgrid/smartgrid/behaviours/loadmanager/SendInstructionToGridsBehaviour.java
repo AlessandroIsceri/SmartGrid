@@ -1,17 +1,14 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
-import jade.core.AID;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class SendInstructionToGridsBehaviour extends CustomOneShotBehaviour{
@@ -35,7 +32,6 @@ public class SendInstructionToGridsBehaviour extends CustomOneShotBehaviour{
             content.put(MessageUtil.NUMBER_OF_MSGS_TO_RECEIVE, loadManager.getNumberOfMessagesForGrid(gridName));
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
         }
-        // LoadManager loadManager = loadManagerAgent.getLoadManager();
         loadManager.removeAllDistributionInstructions();
     }
 }

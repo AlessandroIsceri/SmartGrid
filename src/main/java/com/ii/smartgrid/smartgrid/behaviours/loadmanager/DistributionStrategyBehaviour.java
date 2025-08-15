@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
@@ -24,7 +23,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
     protected List<? extends EnergyTransaction> consumerNodes;    
     private LoadManagerAgent loadManagerAgent;
 
-    public DistributionStrategyBehaviour(LoadManagerAgent loadManagerAgent) {
+    protected DistributionStrategyBehaviour(LoadManagerAgent loadManagerAgent) {
         super(loadManagerAgent);
         shortesPath = null;
         this.loadManagerAgent = loadManagerAgent;
@@ -51,7 +50,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
         log("producerNodes: " + producerNodes);
         for(Priority priority : Priority.values()){
             // Get consumers 
-            List<EnergyTransaction> consumerNodes = loadManager.getConsumerNodesByPriority(priority);
+            consumerNodes = loadManager.getConsumerNodesByPriority(priority);
             log("consumerNodes: " + consumerNodes);
             double priorityRequestedEnergySum = loadManager.getRequestedEnergySum(producerNodes, consumerNodes);
 
@@ -93,7 +92,6 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
     
     protected void findPathToNearestProducer(){
         // Find the nearest node that can send energy to the current consumer node
-        LoadManager loadManager = loadManagerAgent.getLoadManager();
         double minCost = Double.MAX_VALUE;
         for(EnergyTransaction producerNode : producerNodes){
             WeightedGraphPath path = loadManager.getShortestPath(producerNode.getNodeName(), consumerNode.getNodeName());

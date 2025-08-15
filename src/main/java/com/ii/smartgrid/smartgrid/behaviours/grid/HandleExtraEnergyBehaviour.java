@@ -1,11 +1,8 @@
 package com.ii.smartgrid.smartgrid.behaviours.grid;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
-import com.ii.smartgrid.smartgrid.model.Grid;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
-
-import jade.core.behaviours.OneShotBehaviour;
+import com.ii.smartgrid.smartgrid.model.Grid;
 
 public class HandleExtraEnergyBehaviour extends CustomOneShotBehaviour{
     
@@ -25,11 +22,7 @@ public class HandleExtraEnergyBehaviour extends CustomOneShotBehaviour{
             log("Energy lost: " + energyLost);
         }
         grid.setExpectedConsumption(grid.getBlackoutEnergyRequest());
-
-        //TODO:REMOVE
         grid.resetValues();
-        log("*****" + grid.toString());
-
     }    
 
 }

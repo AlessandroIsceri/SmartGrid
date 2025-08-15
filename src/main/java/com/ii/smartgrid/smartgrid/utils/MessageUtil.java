@@ -1,6 +1,9 @@
 package com.ii.smartgrid.smartgrid.utils;
 
 public class MessageUtil {
+
+    private MessageUtil(){}
+
     public static final String CURRENT_TURN = "currentTurn";
     public static final String CURRENT_WEATHER = "currentWeather";
     public static final String CURRENT_WIND_SPEED = "currentWindSpeed";
@@ -43,5 +46,7 @@ public class MessageUtil {
     public static final String GRID_CABLES = "gridCables";
 
     public static final String CONVERSATION_ID_CABLE_DISCOVERY = "cableDiscovery";
+    public static final String CONVERSATION_ID_RESTORE_BUILDING = "restore";
+
 
 }

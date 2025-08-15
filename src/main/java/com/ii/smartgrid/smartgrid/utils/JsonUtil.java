@@ -12,9 +12,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.CustomObject;
 
 
 public class JsonUtil {
@@ -30,7 +27,8 @@ public class JsonUtil {
     public static String OWNERS_PATH;
 
     private static String BASE_PATH = "src/main/resources/scenarios/";
-    private static final String PACKAGE_PATH = CustomObject.class.getPackage().getName();
+
+    private JsonUtil(){}
 
 
     public static void setUpScenario(String scenarioName){
@@ -61,7 +59,7 @@ public class JsonUtil {
     }
 
     public static List<String> getAllAgentNames(){
-        List<String> agentNames = new ArrayList<String>();
+        List<String> agentNames = new ArrayList<>();
         String[] pathsToSkip = {CABLES_PATH, OWNERS_PATH};
         File dir = new File(BASE_PATH);
         File[] directoryListing = dir.listFiles();

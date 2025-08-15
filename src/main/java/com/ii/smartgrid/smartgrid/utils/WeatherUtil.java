@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -15,21 +14,18 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jade.lang.acl.ACLMessage;
-import us.dustinj.timezonemap.TimeZoneMap;
-import us.dustinj.timezonemap.TimeZone;
 
 public class WeatherUtil {
     
     public enum WeatherStatus {SUNNY, CLOUDY, RAINY, SNOWY};
     public enum WindSpeedStatus {CALM, LIGHT_AIR, LIGHT_BREEZE, GENTLE_BREEZE, MODERATE_BREEZE, FRESH_BREEZE, STRONG_BREEZE, NEAR_GALE, GALE, STRONG_GALE, STORM, VIOLENT_STORM, HURRICANE}
-    public static double[] windSpeedAvg = {0.5, 3.5, 9.0, 15.5, 24.0, 34.0, 44.5, 56.0, 68.5, 82.0, 96.0, 110.5, 125.0};
-    public static int[] cloudCoverageAvg = new int[WeatherStatus.values().length];
-    public static List<String> sunriseHours = new ArrayList<String>();
-    public static List<String> sunsetHours = new ArrayList<String>();
+    
+    public static final double[] windSpeedAvg = {0.5, 3.5, 9.0, 15.5, 24.0, 34.0, 44.5, 56.0, 68.5, 82.0, 96.0, 110.5, 125.0};
+    public static final int[] cloudCoverageAvg = new int[WeatherStatus.values().length];
+    public static List<String> sunriseHours = new ArrayList<>();
+    public static List<String> sunsetHours = new ArrayList<>();
+
         // 0: CALM --> < 1 KM/H
         // 1: LIGHT AIR --> <6 KM/H 
         // 2: LIGHT BREEZE --> <12 KM/H
@@ -42,7 +38,7 @@ public class WeatherUtil {
         // 9: STRONG GALE --> <89 KM/H
         // 10: STORM --> <103 KM/H
         // 11: VIOLENT STORM--> <118 KM/H
-        // 12: HURRICANE --> > 118 KM/H}
+        // 12: HURRICANE --> > 118 KM/H
 
     private static String getResultFromHTTPRequest(double latitude, double longitude, String startDate, String endDate, String frequence, String requestedParameter){
         URL url;
@@ -62,10 +58,6 @@ public class WeatherUtil {
             parameters.put(frequence, requestedParameter);
             
             // Set TimeZone
-            // TimeZoneMap map = TimeZoneMap.forEverywhere();
-            // TimeZone tz = map.getOverlappingTimeZone(latitude, longitude);
-            // String timezone = tz.getZoneId();
-            // System.out.println("Timezone: " + timezone);
             String timeZone = TimeUtils.getTimeZone();
             parameters.put("timezone", timeZone);
             StringBuilder result = new StringBuilder();
@@ -78,7 +70,7 @@ public class WeatherUtil {
 
             String resultString = result.toString();
             
-            if(resultString.length() > 0){
+            if(!resultString.isEmpty()){
                 resultString = resultString.substring(0, resultString.length() - 1);
             }else{
                 System.out.println("Error: an error occurred while creating url request for weather information.");
@@ -110,9 +102,7 @@ public class WeatherUtil {
             in.close();
             con.disconnect();
             return content.toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -124,7 +114,7 @@ public class WeatherUtil {
         String content = getResultFromHTTPRequest(latitude, longitude, "2019-01-01", "2024-12-31", "hourly", "weather_code,cloud_cover");
         if(content == null){
             System.out.println("Error: getResultFromHTTPRequest returned null");
-            return null;
+            return new double[0][0];
         }
 
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
@@ -136,7 +126,7 @@ public class WeatherUtil {
             List<Integer> weatherCodes = mapper.convertValue(jsonHourlyObject.get("weather_code"), new TypeReference<List<Integer>>() { });
             List<Integer> cloudCoveragePercentages = mapper.convertValue(jsonHourlyObject.get("cloud_cover"), new TypeReference<List<Integer>>() { });
             
-            List<Integer> cloudCoverageOkta = new ArrayList<Integer>();
+            List<Integer> cloudCoverageOkta = new ArrayList<>();
             for(Integer percentage : cloudCoveragePercentages){
                 int cloudOkta = (int) Math.round((double) percentage / 100 * 8);
                 cloudCoverageOkta.add(cloudOkta);
@@ -157,7 +147,7 @@ public class WeatherUtil {
             for(int i = 0; i < weatherStatesNumber; i++){
                 for(int j = 0; j < weatherStatesNumber; j++){
                     if(rowCount[i] != 0){
-                        weatherTransitionProbabilities[i][j] /= (double) rowCount[i];
+                        weatherTransitionProbabilities[i][j] /= rowCount[i];
                     }else{
                         weatherTransitionProbabilities[i][j] = 0.0;
                     }
@@ -165,21 +155,17 @@ public class WeatherUtil {
             }
             for(int i = 0; i < weatherStatesNumber; i++){
                 if(rowCount[i] != 0){
-                    cloudCoverageAvg[i] = (int) Math.round(cloudCoverageAvg[i] / rowCount[i]);
+                    cloudCoverageAvg[i] = Math.round((float) cloudCoverageAvg[i] / rowCount[i]);
                 } else {
                     cloudCoverageAvg[i] = 0;
                 }
             }
         
             return weatherTransitionProbabilities;
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-        return null;
+        } 
+        return new double[0][0];
     }
 
     public static double[][] getWindTransitionProbabilities(double latitude, double longitude){
@@ -187,7 +173,7 @@ public class WeatherUtil {
         String content = getResultFromHTTPRequest(latitude, longitude, "2019-01-01", "2024-12-31", "hourly", "wind_speed_10m");
         if(content == null){
             System.out.println("Error: getResultFromHTTPRequest returned null");
-            return null;
+            return new double[0][0];
         }
 
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
@@ -221,12 +207,10 @@ public class WeatherUtil {
             }
 
             return windTransitionProbabilities;
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-        }
-        return null;
+        } 
+        return new double[0][0];
     }
 
     public static void setSunriseAndSunset(double latitude, double longitude){
@@ -256,13 +240,9 @@ public class WeatherUtil {
                 sunsetHours.set(i, newSunsetHour.substring(11));
             }
             
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        } 
 
     }
     

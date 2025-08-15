@@ -1,24 +1,11 @@
 package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
-import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
-import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
 import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
-import com.ii.smartgrid.smartgrid.model.LoadManager;
-import com.ii.smartgrid.smartgrid.model.WeightedGraphPath;
-import com.ii.smartgrid.smartgrid.utils.EnergyUtil;
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-
-import jade.core.behaviours.OneShotBehaviour;
 
 public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehaviour{
 
@@ -36,7 +23,6 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
 
         neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortesPath.getGraphPath());
 
-        // double availableEnergy = nearestProducerNode.getEnergyBatteryAvailable();
         double epsilon = 1.0;
         
         double sendableEnergy = ((EnergyTransactionWithBattery) nearestProducerNode).sendBatteryEnergy(neededEnergy);

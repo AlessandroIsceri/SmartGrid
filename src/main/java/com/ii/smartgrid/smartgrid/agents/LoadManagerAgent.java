@@ -20,8 +20,6 @@ public class LoadManagerAgent extends CustomAgent{
     public void setup() {
         String loadManagerName = this.getLocalName();
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.LOAD_MANAGERS_PATH, loadManagerName, LoadManager.class);
-        
-        LoadManager loadManager = this.getLoadManager();
     
         this.addBehaviour(new CableDiscoveryBehaviour(this));
         this.addBehaviour(new NonRenewablePowerPlantDiscoveryBehaviour(this));

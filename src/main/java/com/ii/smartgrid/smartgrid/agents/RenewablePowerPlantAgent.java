@@ -1,13 +1,10 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-import java.util.ArrayList;
-
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 
 import jade.core.behaviours.SequentialBehaviour;
-import jade.lang.acl.ACLMessage;
 
 public abstract class RenewablePowerPlantAgent extends PowerPlantAgent{
 

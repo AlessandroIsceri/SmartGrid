@@ -8,7 +8,7 @@ public abstract class CustomOneShotBehaviour extends OneShotBehaviour{
     
     protected CustomAgent customAgent;
 
-    public CustomOneShotBehaviour(CustomAgent customAgent){
+    protected CustomOneShotBehaviour(CustomAgent customAgent){
         super(customAgent);
         this.customAgent = customAgent;
     }

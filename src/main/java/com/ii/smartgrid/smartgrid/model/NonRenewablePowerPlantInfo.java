@@ -6,8 +6,6 @@ public class NonRenewablePowerPlantInfo{
     private String name;
     private double maxTurnProduction;
     private boolean on;
-
-
     
     public NonRenewablePowerPlantInfo() {
     }
@@ -21,12 +19,15 @@ public class NonRenewablePowerPlantInfo{
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public double getMaxTurnProduction() {
         return maxTurnProduction;
     }
+    
     public void setMaxTurnProduction(double maxTurnProduction) {
         this.maxTurnProduction = maxTurnProduction;
     }

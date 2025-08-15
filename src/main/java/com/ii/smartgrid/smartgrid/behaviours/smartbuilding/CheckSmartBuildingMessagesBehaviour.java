@@ -1,21 +1,17 @@
 package com.ii.smartgrid.smartgrid.behaviours.smartbuilding;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.model.SmartBuilding;
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
 import com.ii.smartgrid.smartgrid.model.Routine;
+import com.ii.smartgrid.smartgrid.model.SmartBuilding;
 import com.ii.smartgrid.smartgrid.model.Task;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
-import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -43,7 +39,7 @@ public class CheckSmartBuildingMessagesBehaviour extends CustomCyclicBehaviour{
             SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
 			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
-            List<Task> tasks = (List<Task>) customAgent.readValueFromJson(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
+            List<Task> tasks = customAgent.readValueFromJson(jsonObject.get(MessageUtil.TASKS), new TypeReference<List<Task>>() {});
             
             Routine routine = smartBuilding.getRoutine();
             
@@ -60,7 +56,7 @@ public class CheckSmartBuildingMessagesBehaviour extends CustomCyclicBehaviour{
                 result = false;
             }
 
-            Map<String, Object> content = new HashMap<String, Object>();
+            Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.RESULT, result);
             customAgent.createAndSendReply(ACLMessage.INFORM, receivedMsg, content);
 

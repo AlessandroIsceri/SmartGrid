@@ -9,13 +9,10 @@ import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
 
 public class Grid extends CustomObject {
 
-    // private double currentEnergy;
-    // private double maxCapacity;
     private List<String> smartBuildingNames;
     private Map<String, EnergyTransaction> smartBuildingsWithoutPower;
     private Map<String, EnergyTransaction> smartBuildingsEnergyRequests;
     private List<String> renewablePowerPlantNames;
-    //private List<String> nonRenewablePowerPlantNames;
     private Map<String, Boolean> nonRenewablePowerPlantActiveStatus;
     private List<DistributionInstruction> distributionInstructions;
     private List<String> gridNames;
@@ -27,25 +24,21 @@ public class Grid extends CustomObject {
     private Battery battery;
 
     public Grid() {
-        smartBuildingNames = new ArrayList<String>();
-        smartBuildingsWithoutPower = new HashMap<String, EnergyTransaction>();
-        smartBuildingsEnergyRequests = new HashMap<String, EnergyTransaction>();
-        renewablePowerPlantNames = new ArrayList<String>();
-        // nonRenewablePowerPlantNames = new ArrayList<String>();
-        nonRenewablePowerPlantActiveStatus = new HashMap<String, Boolean>();
-        distributionInstructions = new ArrayList<DistributionInstruction>();
-        gridNames = new ArrayList<String>();
+        smartBuildingNames = new ArrayList<>();
+        smartBuildingsWithoutPower = new HashMap<>();
+        smartBuildingsEnergyRequests = new HashMap<>();
+        renewablePowerPlantNames = new ArrayList<>();
+        nonRenewablePowerPlantActiveStatus = new HashMap<>();
+        distributionInstructions = new ArrayList<>();
+        gridNames = new ArrayList<>();
         expectedConsumption = 0;
-        this.priority = priority.LOW;
+        this.priority = Priority.LOW;
     }
 
     public void updateNonRenewablePowerPlantActiveStatus(List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos) {
         for (NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos) {
             String name = nonRenewablePowerPlantInfo.getName();
             boolean status = nonRenewablePowerPlantInfo.isOn();
-            // if(nonRenewablePowerPlantNames.contains(name)){
-            //     nonRenewablePowerPlantActiveStatus.put(name, status);
-            // }
             if(nonRenewablePowerPlantActiveStatus.containsKey(name)){
                 nonRenewablePowerPlantActiveStatus.put(name, status);
             }
@@ -94,14 +87,6 @@ public class Grid extends CustomObject {
         smartBuildingsEnergyRequests.remove(smartBuildingName);
     }
 
-    // public boolean consumeEnergy(double requestedEnergy) {
-    // if(currentEnergy >= requestedEnergy) {
-    // currentEnergy -= requestedEnergy;
-    // return true;
-    // }
-    // return false;
-    // }
-
     public double getExpectedConsumption() {
         return expectedConsumption;
     }
@@ -136,8 +121,8 @@ public class Grid extends CustomObject {
 
     public double getBlackoutEnergyRequest() {
         double sum = 0;
-        for (String smartBuilding : smartBuildingsWithoutPower.keySet()) {
-            sum += smartBuildingsWithoutPower.get(smartBuilding).getEnergyTransactionValue();
+        for(EnergyTransaction energyTransaction : smartBuildingsWithoutPower.values()) {
+            sum += energyTransaction.getEnergyTransactionValue();
         }
         return sum;
     }
@@ -168,20 +153,18 @@ public class Grid extends CustomObject {
     }
 
     public List<String> getNonRenewablePowerPlantNames() {
-        return new ArrayList<String>(nonRenewablePowerPlantActiveStatus.keySet());
+        return new ArrayList<>(nonRenewablePowerPlantActiveStatus.keySet());
     }
 
     public void setNonRenewablePowerPlantNames(List<String> nonRenewablePowerPlantNames) {
-        // this.nonRenewablePowerPlantNames = nonRenewablePowerPlantNames;
         for(String nonRenewablePowerPlantName : nonRenewablePowerPlantNames){
             nonRenewablePowerPlantActiveStatus.put(nonRenewablePowerPlantName, false);
         }
     }
 
     public List<Cable> getConnectedGridsCables() {
-        List<Cable> connectedGridsCables = new ArrayList<Cable>();
-        for (String agentName : connectedAgents.keySet()) {
-            Cable cable = connectedAgents.get(agentName);
+        List<Cable> connectedGridsCables = new ArrayList<>();
+        for(Cable cable : connectedAgents.values()){
             if (cable.getTo().contains("Grid")) {
                 connectedGridsCables.add(cable);
             }
@@ -224,7 +207,7 @@ public class Grid extends CustomObject {
     }
 
     public List<EnergyTransaction> getSmartBuildingsEnergyRequestsByPriority(Priority priority) {
-        List<EnergyTransaction> results = new ArrayList<EnergyTransaction>(); 
+        List<EnergyTransaction> results = new ArrayList<>(); 
         for(EnergyTransaction energyTransaction : smartBuildingsEnergyRequests.values()){
             if(energyTransaction.getPriority() == priority && energyTransaction.getTransactionType() == TransactionType.RECEIVE){
                 results.add(energyTransaction);
@@ -244,7 +227,7 @@ public class Grid extends CustomObject {
     }
 
     public List<EnergyTransaction> getBlackoutSmartBuildingsEnergyRequestsByPriority(Priority priority) {
-        List<EnergyTransaction> results = new ArrayList<EnergyTransaction>(); 
+        List<EnergyTransaction> results = new ArrayList<>(); 
         for(EnergyTransaction energyTransaction : smartBuildingsWithoutPower.values()){
             if(energyTransaction.getPriority() == priority){
                 results.add(energyTransaction);
@@ -289,8 +272,6 @@ public class Grid extends CustomObject {
         this.expectedConsumption = 0;
         this.expectedProduction = 0;
         distributionInstructions.clear();
-    }
-
-    
+    }    
     
 }

@@ -51,7 +51,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
         CustomObject referencedObject = customAgent.getReferencedObject();
         Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
         for(String agentName : connectedAgents.keySet()){
-            Map<String, Object> content = new HashMap<String, Object>();
+            Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.OPERATION, MessageUtil.DISCOVERY);
             content.put(MessageUtil.LATITUDE, referencedObject.getCoordinates().getLatitude());
             content.put(MessageUtil.LONGITUDE, referencedObject.getCoordinates().getLongitude());
@@ -80,8 +80,6 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
                 double cableSection = cableInfo.getCableSection();
                 double resistivity = cableInfo.getResistivity();
                 double voltage = cableInfo.getVoltage();
-                // String to = cableInfo.getTo();
-                // String from = cableInfo.getFrom();
                 String from = myAgentName;
                 String to = otherAgentName;
                 String cableType = cableInfo.getCableType();
@@ -113,7 +111,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
     }
 
     protected void sendInformationToLoadManager(){
-        
+        //This method will be implemented only by subclasses of CoordinatesDiscoveryBehaviour
     }
 
 }

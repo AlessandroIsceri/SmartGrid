@@ -9,11 +9,6 @@ public class Appliance {
 	private Appliance() {
 		super();
 	}
-	
-	private Appliance(double hourlyConsumption, boolean alwaysOn) {
-		this.hourlyConsumption = hourlyConsumption;
-		this.alwaysOn = alwaysOn;
-	}
 
 	public boolean isAlwaysOn() {
 		return alwaysOn;
@@ -48,6 +43,19 @@ public class Appliance {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (alwaysOn ? 1231 : 1237);
+        result = prime * result + (on ? 1231 : 1237);
+        long temp;
+        temp = Double.doubleToLongBits(hourlyConsumption);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -75,6 +83,8 @@ public class Appliance {
         return "Appliance [name=" + name + ", alwaysOn=" + alwaysOn + ", on=" + on + ", hourlyConsumption="
                 + hourlyConsumption + "]";
     }
+    
+    
     
 	
 	

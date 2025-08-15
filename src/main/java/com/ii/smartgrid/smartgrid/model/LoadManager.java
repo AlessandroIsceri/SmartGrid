@@ -10,14 +10,10 @@ import java.util.Map;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedPseudograph;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
-import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 
 public class LoadManager extends CustomObject{
@@ -34,14 +30,14 @@ public class LoadManager extends CustomObject{
 
     public LoadManager(){
         super();
-        gridRequestedEnergy = new HashMap<String, EnergyTransaction>();
+        gridRequestedEnergy = new HashMap<>();
         graph = new WeightedPseudograph <>(DefaultWeightedEdge.class);
-        shortestPaths = new HashMap<String, WeightedGraphPath>();
-        distributionInstructions = new HashMap<String, List<DistributionInstruction>>();
-        nonRenewablePowerPlantInfos = new ArrayList<NonRenewablePowerPlantInfo>();
-        nonRenewablePowerPlantNames = new ArrayList<String>();
-        gridNames = new ArrayList<String>();
-        gridsCables = new HashMap<String, List<Cable>>();
+        shortestPaths = new HashMap<>();
+        distributionInstructions = new HashMap<>();
+        nonRenewablePowerPlantInfos = new ArrayList<>();
+        nonRenewablePowerPlantNames = new ArrayList<>();
+        gridNames = new ArrayList<>();
+        gridsCables = new HashMap<>();
     }
 
     public List<String> getNonRenewablePowerPlantNames() {
@@ -131,26 +127,12 @@ public class LoadManager extends CustomObject{
 
     public boolean areAllRequestsSatisfied(){
         for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
-            if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
-                if(energyTransaction.getEnergyTransactionValue() > 0){
-                    return false;
-                }
+            if(energyTransaction.getTransactionType() == TransactionType.RECEIVE && energyTransaction.getEnergyTransactionValue() > 0){
+                return false;
             }
         }
         return true;
     }
-
-    // public double getAllRequestedEnergySum() {
-	// 	double sum = 0;
-    //     for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
-    //         if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
-    //             sum = sum + energyTransaction.getEnergyTransactionValue();
-    //         }else{
-    //             sum = sum - energyTransaction.getEnergyTransactionValue();
-    //         }      
-    //     }
-    //     return sum;
-	// }
 
     public double getRequestedEnergySum(List<? extends EnergyTransaction> producerNodes, List<? extends EnergyTransaction> consumerNodes) {
         double sum = 0;
@@ -166,24 +148,9 @@ public class LoadManager extends CustomObject{
         }
         return sum;
     }
-    //  public double getRequestedEnergySum(List<EnergyTransaction> producerNodes, List<EnergyTransaction> consumerNodes) {
-    //     double sum = 0;
-    //     for(EnergyTransaction energyTransaction : producerNodes){
-    //         if(energyTransaction.getTransactionType() == TransactionType.SEND){
-    //             sum = sum + energyTransaction.getEnergyTransactionValue();
-    //         }
-    //     }
-    //     for(EnergyTransaction energyTransaction : consumerNodes){
-    //         if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
-    //             sum = sum - energyTransaction.getEnergyTransactionValue();
-    //         }
-    //     }
-    //     return sum;
-    // }
-
 
     public List<EnergyTransaction> getConsumerNodesByPriority(Priority selectedPriority) {
-        List<EnergyTransaction> nodesByPriority = new ArrayList<EnergyTransaction>();
+        List<EnergyTransaction> nodesByPriority = new ArrayList<>();
         for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
             if(energyTransaction.getPriority() == selectedPriority && energyTransaction.getTransactionType() == TransactionType.RECEIVE){
                 nodesByPriority.add(energyTransaction);
@@ -193,7 +160,7 @@ public class LoadManager extends CustomObject{
     }
 
     public List<EnergyTransaction> getProducerNodes() {
-        List<EnergyTransaction> producerNodes = new ArrayList<EnergyTransaction>();
+        List<EnergyTransaction> producerNodes = new ArrayList<>();
         for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
             if(energyTransaction.getTransactionType() == TransactionType.SEND){
                 producerNodes.add(energyTransaction);
@@ -236,13 +203,11 @@ public class LoadManager extends CustomObject{
         /*
          * ["grid-1", "grid-2", "grid-3"];
         */
-        GraphPath shortestPath = dijkstra.getPath(source, target);
+        GraphPath<String, DefaultWeightedEdge> shortestPath = dijkstra.getPath(source, target);
         WeightedGraphPath weightedGraphPath = new WeightedGraphPath();
         List<DefaultWeightedEdge> shortestNodesPath = shortestPath.getEdgeList();
-        // double cost = shortestPath.getWeight();
         if (shortestPath != null) {
             weightedGraphPath.addSource(source);
-            // weightedGraphPath.setCost(cost);
             for (DefaultWeightedEdge edge : shortestNodesPath) {
                 String lastInsertedNode = weightedGraphPath.getTarget();
                 String vertex = graph.getEdgeSource(edge);
@@ -257,10 +222,6 @@ public class LoadManager extends CustomObject{
         return null;
     }
 
-    // public <T extends EnergyTransaction> T getEnergyTransaction(String gridName){
-    //     return (T) gridRequestedEnergy.get(gridName);
-    // }
-    //TODO FORSE RIMUOVERE TEMPLATE T ?
     public <T extends EnergyTransaction> T getEnergyTransaction(String gridName){
          return (T) gridRequestedEnergy.get(gridName);
     }
@@ -269,14 +230,14 @@ public class LoadManager extends CustomObject{
         // "A" -> [["A", "B", 100], ["A", "B", "C", 300]]
         List<DistributionInstruction> curNodeDistributionInstructions = distributionInstructions.get(nearestProducerNodeName);
         if(curNodeDistributionInstructions == null){
-            curNodeDistributionInstructions = new ArrayList<DistributionInstruction>();
+            curNodeDistributionInstructions = new ArrayList<>();
         }
         curNodeDistributionInstructions.add(shortesPath);
         distributionInstructions.put(nearestProducerNodeName, curNodeDistributionInstructions);
     }
 
     public List<EnergyTransactionWithBattery> getGridsWithBattery() {
-        List<EnergyTransactionWithBattery> gridsWithBattery = new ArrayList<EnergyTransactionWithBattery>();
+        List<EnergyTransactionWithBattery> gridsWithBattery = new ArrayList<>();
         for(EnergyTransaction request : gridRequestedEnergy.values()){
             if(request.isBatteryAvailable()){
                 gridsWithBattery.add((EnergyTransactionWithBattery) request);
@@ -315,22 +276,10 @@ public class LoadManager extends CustomObject{
         return distributionInstructions.get(gridName);
     }
 
-
-    // public List<NonRenewablePowerPlantInfo> getActiveNonRenewablePowerPlants() {
-    //     List<NonRenewablePowerPlantInfo> activeNonRenewablePowerPlants = new ArrayList<NonRenewablePowerPlantInfo>();
-    //     for(NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo: nonRenewablePowerPlantInfos){
-    //         if(nonRenewablePowerPlantInfo.isOn()){
-    //             activeNonRenewablePowerPlants.add(nonRenewablePowerPlantInfo);
-    //         }
-    //     }
-    //     return activeNonRenewablePowerPlants;
-    // }
-
-
     public int getNumberOfMessagesForGrid(String gridName) {
         int count = 0;
         for(String key : distributionInstructions.keySet()){
-            if(! gridName.equals(key)){
+            if(!gridName.equals(key)){
                 List<DistributionInstruction> curDistributionInstructions = distributionInstructions.get(key);
                 for(DistributionInstruction distributionInstruction : curDistributionInstructions){
                     if(distributionInstruction.containsVertex(gridName)){
@@ -351,7 +300,7 @@ public class LoadManager extends CustomObject{
         distributionInstructions.clear();
     }
 
-    public void addGridCables(String gridName, ArrayList<Cable> cables) {
+    public void addGridCables(String gridName, List<Cable> cables) {
         gridsCables.put(gridName, cables);
     }
 
@@ -376,8 +325,7 @@ public class LoadManager extends CustomObject{
     }
 
 
-    public double computeEnergyToSatisfyRequest(double requestedEnergyWH, List<String> shortestPath){
-        double energyLoss = 0; 
+    public double computeEnergyToSatisfyRequest(double requestedEnergyWH, List<String> shortestPath){ 
         for(int i = shortestPath.size() - 1; i > 0; i--){
             String last = shortestPath.get(i);
             String prev = shortestPath.get(i - 1);

@@ -1,9 +1,5 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-import java.util.List;
-import java.util.Map;
-
-import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.NonRenewablePowerPlantCoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.model.DieselPowerPlant;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
@@ -11,6 +7,7 @@ import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
         
+    @Override
     public void setup(){
         
         String dieselPowerPlantName = this.getLocalName();

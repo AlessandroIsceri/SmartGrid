@@ -8,7 +8,7 @@ public abstract class CustomCyclicBehaviour extends CyclicBehaviour{
     
     protected CustomAgent customAgent;
 
-    public CustomCyclicBehaviour(CustomAgent customAgent){
+    protected CustomCyclicBehaviour(CustomAgent customAgent){
         super(customAgent);
         this.customAgent = customAgent;
     }

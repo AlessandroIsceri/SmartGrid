@@ -124,10 +124,6 @@ public class Cable {
     }
 
     public void computeAndSetCableResistance(){
-        //TODO: rimuovi
-        // System.out.println("**** resistivity: " + resistivity);
-        // System.out.println("**** length: " + length);
-        // System.out.println("**** cableSection: " + cableSection);
         this.cableResistance = this.resistivity * this.length / this.cableSection;
     }
 
@@ -135,13 +131,6 @@ public class Cable {
     public double computeTransmittedPower(double powerSentWH){
         double powerSent = powerSentWH / TimeUtils.getTurnDurationHours();
         double i = powerSent / voltage;
-        //TODO: rimuovi
-        // if(powerSent > 400000){
-        //     System.out.println("***** i^2: " + Math.pow(i, 2));
-        //     System.out.println("***** cableResistance: " + cableResistance);
-        //     System.out.println("***** powerSent: " + powerSent);
-        //     System.out.println("***** finale:" + (powerSent - cableResistance *  Math.pow(i, 2)));
-        // }
         double transmittedPower = powerSent - cableResistance *  Math.pow(i, 2);
         double transmittedPowerWH = transmittedPower * TimeUtils.getTurnDurationHours();
         return Math.max(0, transmittedPowerWH);  
@@ -169,7 +158,6 @@ public class Cable {
 
     public double getEnergyToSatifyRequest(double requestedEnergyWH) {
         double requestedEnergy = requestedEnergyWH / TimeUtils.getTurnDurationHours(); //W
-        //System.out.println("requestedEnergy: " + requestedEnergy + " requestedEnergyWH: " + requestedEnergyWH);
            
         // neededEnergy = (+voltage^2 ± √(voltage^4 - 4 * cableResistance * voltage^2*requestedEnergy)) / (2*cableResistance)
         double den = 2.0 * cableResistance;
@@ -178,8 +166,6 @@ public class Cable {
         double sol2 = (Math.pow(voltage, 2) + delta) / den;
         double sol1WH = sol1 * TimeUtils.getTurnDurationHours();
         double sol2WH = sol2 * TimeUtils.getTurnDurationHours();
-        // System.out.println("sol1: " + sol1 + " sol1WH: " + sol1WH);
-        // System.out.println("sol2: " + sol2 + " sol2WH: " + sol2WH);
         if(sol1WH > 0 && sol2WH > 0){
             return Math.min(sol1WH, sol2WH); 
         }else if(sol1WH > 0){

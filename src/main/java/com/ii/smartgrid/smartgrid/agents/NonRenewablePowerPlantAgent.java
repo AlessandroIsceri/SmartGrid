@@ -3,7 +3,6 @@ package com.ii.smartgrid.smartgrid.agents;
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendNonRenewableEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.UpdateNonRenewableStatusBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.powerplant.UpdateNonRenewableStatusBehaviour;
 import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
 
 import jade.core.behaviours.SequentialBehaviour;

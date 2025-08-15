@@ -1,7 +1,5 @@
 package com.ii.smartgrid.smartgrid.model;
 
-import java.util.Objects;
-
 public class Task {
 	private String applianceName;
 	private String startTime;
@@ -48,6 +46,16 @@ public class Task {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((applianceName == null) ? 0 : applianceName.hashCode());
+        result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
+        result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -74,8 +82,5 @@ public class Task {
         return true;
     }
 
-	
-	
-	
 	
 }

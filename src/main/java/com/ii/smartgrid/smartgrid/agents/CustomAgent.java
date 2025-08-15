@@ -1,25 +1,16 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.CustomObject;
-import com.ii.smartgrid.smartgrid.utils.MessageUtil;
-import com.ii.smartgrid.smartgrid.utils.TimeUtils;
-
+import java.util.HashMap;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.ii.smartgrid.smartgrid.model.CustomObject;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
@@ -61,8 +52,6 @@ public abstract class CustomAgent extends Agent{
 	private String convertContentToJSON(Map<String, Object> content){
         String ret = "";
         try {
-            //TODO RIMUOVI
-            content.put(MessageUtil.CURRENT_TURN, curTurn);
             ret = this.objectMapper.writeValueAsString(content);
         } catch (JsonProcessingException e) {
             log("Error: an error occurred while creating the JSON content");
@@ -108,18 +97,9 @@ public abstract class CustomAgent extends Agent{
 		Map<String, Object> jsonObject = null;
 		try {
             jsonObject = this.objectMapper.readValue(receivedContent, typeRef);
-            //TODO RIMUOVI (e rimuovi anche cur turn come content)
-            // int curTurnFromMsg = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
-            // if(curTurnFromMsg != curTurn){
-            //     log("WRONG TURN " + curTurnFromMsg);
-            //     log("sender " + receivedMessage.getSender().getLocalName());
-            //     log("content " + receivedContent);
-            // }
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-        }
+        } 
 		return jsonObject;
     }
 
@@ -164,15 +144,6 @@ public abstract class CustomAgent extends Agent{
     }
 
     public <T> T readValueFromJson(Object object, TypeReference<T> typeReference) {
-        String jsonString;
-        // try {
-        //     jsonString = objectMapper.writeValueAsString(object);
-        //     log("***" + jsonString);
-        //     return objectMapper.readValue(jsonString, typeReference);
-        // } catch (JsonProcessingException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
         return this.objectMapper.convertValue(object, typeReference);
     }
 
