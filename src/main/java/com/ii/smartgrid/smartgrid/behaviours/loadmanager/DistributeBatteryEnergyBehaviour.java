@@ -22,7 +22,7 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
         double neededEnergy = consumerNode.getEnergyTransactionValue();
         neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortesPath.getGraphPath());
 
-        double epsilon = 1.0;
+        
         
         // Compute the sendableEnergy
         double sendableEnergy = ((EnergyTransactionWithBattery) nearestProducerNode).sendBatteryEnergy(neededEnergy);
@@ -35,7 +35,8 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
         consumerNode.receiveEnergy(receivedEnergy);
         
         // Remove producer if it has not enough energy left 
-        if(nearestProducerNode.getEnergyTransactionValue() < epsilon){
+        double epsilon = 0.01;
+        if(((EnergyTransactionWithBattery) nearestProducerNode).getStateOfCharge() < epsilon){
             producerNodes.remove(nearestProducerNode);
         }
         return distributionInstruction;

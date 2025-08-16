@@ -23,8 +23,8 @@ public class HandleExtraEnergyBehaviour extends CustomOneShotBehaviour {
                 log("Energy lost: " + energyLost);
             }
         }
-        grid.setExpectedConsumption(grid.getBlackoutEnergyRequest());
         grid.resetValues();
+        grid.setExpectedConsumption(grid.getBlackoutEnergyRequest());
     }
 
 }

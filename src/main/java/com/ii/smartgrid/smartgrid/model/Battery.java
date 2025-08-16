@@ -122,6 +122,13 @@ public class Battery {
             stateOfCharge = 0.0;
             return oldStored;
         }
-
     }
+
+    @Override
+    public String toString() {
+        return "Battery [voltage=" + voltage + ", maxCapacityInWatt=" + maxCapacityInWatt + ", maxCapacityInAmp="
+                + maxCapacityInAmp + ", storedEnergy=" + storedEnergy + ", dischargeCurrent=" + dischargeCurrent
+                + ", efficiency=" + efficiency + ", stateOfCharge=" + stateOfCharge + "]";
+    }
+
 }

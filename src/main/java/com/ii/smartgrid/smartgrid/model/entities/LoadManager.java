@@ -237,7 +237,9 @@ public class LoadManager extends CustomObject {
         List<EnergyTransactionWithBattery> gridsWithBattery = new ArrayList<>();
         for (EnergyTransaction request : gridRequestedEnergy.values()) {
             if (request.isBatteryAvailable()) {
-                gridsWithBattery.add((EnergyTransactionWithBattery) request);
+                if(((EnergyTransactionWithBattery) request).getStateOfCharge() > 0.01){
+                    gridsWithBattery.add((EnergyTransactionWithBattery) request);
+                }   
             }
         }
         return gridsWithBattery;

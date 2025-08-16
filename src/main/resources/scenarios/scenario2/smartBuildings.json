@@ -98,7 +98,7 @@
         "gridName": "Grid-2",
         "battery": {
             "maxCapacityInWatt": 5120,
-            "storedEnergy": 200.0,
+            "storedEnergy": 0.0,
             "dischargeCurrent": 200.0,
             "efficiency": 0.9,
             "voltage" : 25.6
@@ -140,7 +140,7 @@
         "gridName": "Grid-3",
         "battery": {
             "maxCapacityInWatt": 5120,
-            "storedEnergy": 200.0,
+            "storedEnergy": 0.0,
             "dischargeCurrent": 200.0,
             "efficiency": 0.9,
             "voltage" : 25.6

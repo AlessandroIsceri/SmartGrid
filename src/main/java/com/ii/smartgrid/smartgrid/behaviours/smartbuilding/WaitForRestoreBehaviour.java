@@ -56,9 +56,11 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 smartBuilding.restorePower(expectedProduction);
                 smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
                 content.put(MessageUtil.BLACKOUT, false);
+                state = Status.FINISHED;
             }else{
                 battery.fillBattery(expectedProduction);
                 content.put(MessageUtil.BLACKOUT, true);
+                state = Status.RECEIVING_MSGS;
             }
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
 		}else{
@@ -75,8 +77,8 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             content.put(MessageUtil.ENERGY_TRANSACTION, node);
             content.put(MessageUtil.BLACKOUT, true);
             customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
+            state = Status.RECEIVING_MSGS;
         }
-        state = Status.RECEIVING_MSGS;
     }
 
     private void receiveMsgs() {
