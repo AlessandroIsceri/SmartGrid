@@ -35,20 +35,18 @@ public class ReceiveEnergyRequestsFromGridBehaviour extends CustomBehaviour{
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             requestCont++;
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             EnergyTransaction energyTransaction = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
             double requestedEnergy = energyTransaction.getEnergyTransactionValue();
             double energyWithMargin = requestedEnergy;
             if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
-                energyWithMargin = requestedEnergy + requestedEnergy * 0.05; //add 5% bonus energy
+                energyWithMargin = requestedEnergy + requestedEnergy * 0.05; // Add 5% bonus energy to the requested one
             }
-            log("Requested: " + requestedEnergy + "\twithMargin: " + energyWithMargin);
-
             
             String sender = receivedMsg.getSender().getLocalName();
             LoadManager loadManager = loadManagerAgent.getLoadManager(); 
+            // Add the EnergyTransaction to the loadManager
             energyTransaction.setEnergyTransactionValue(energyWithMargin);
             loadManager.addGridRequestedEnergy(sender, energyTransaction);
 

@@ -24,7 +24,6 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
     public CableDiscoveryBehaviour(LoadManagerAgent loadManagerAgent) {
         super(loadManagerAgent);
         this.numberOfNodes = loadManagerAgent.getLoadManager().getGridNames().size();
-        log("waiting for " + numberOfNodes + " messages");
         this.requestCont = 0;
         this.finished = false;
         this.loadManagerAgent = loadManagerAgent;
@@ -43,17 +42,16 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
             String gridName = receivedMsg.getSender().getLocalName();
-            log("Received a cable discovery msg from... " + gridName);
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             ArrayList<Cable> cables = customAgent.readValueFromJson(jsonObject.get(MessageUtil.CABLE_COSTS), new TypeReference<ArrayList<Cable>>() {});
             requestCont++;
-            //{"cable_costs": [{"cost": 450, "to": "Grid-2", "from": "Grid-1"}]}
             LoadManager loadManager = loadManagerAgent.getLoadManager();
             for(Cable cable : cables){
                 double cost = cable.computeTransmissionCost();
                 String to = cable.getTo();
                 String from = cable.getFrom();
             
+                // Add the nodes and the edge to the graph
                 loadManager.addCommunicationCost(from, to, cost);
             }
 
@@ -62,7 +60,7 @@ public class CableDiscoveryBehaviour extends CustomBehaviour{
             if(requestCont < numberOfNodes){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
-                log("done");
+                // Compute all shortest paths using Dijkstra 
                 loadManager.computeDijkstraForAllNodes();
                 finished = true;
             }

@@ -25,22 +25,11 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
     public void action() {
         LoadManager loadManager = loadManagerAgent.getLoadManager();
 
-        /*
-         * if(almeno una batteria è < 25) -> attiva non rinnovabili (quante e quali?)
-         * elif(tutte sopra > 75) -> disattivano TUTTE non rinnovabili
-         */
-        
-        // 250; 500; 750; 1000; 2000; da produrre = 800 -> 250+500+750 = 1500 - 800 = 700 > 500 -> 250+750 -> 1000 - 800 = 200
-        // 900 -> 250 + 500 + 750 = 1500 - 900 = 600 -> 250 + 750 = 1000 - 900 = 100
-        // 1001 -> 250 + 500 + 750 + 1000 = 2000 - 1001 = 999 -> 999-750-500
-
-        // accendo le pp finchè non supero l'energia da produrre
-        // calcolo la differenza tra ciò che produco e ciò che serve produrre
-        // finche la differenza è > 0, spengo a partire da destra (esclusa l'ultima)
-
-        // contiamo quante sono < 25% e facciamo la somma di ciò che gli serve per tornare al 75% -> 100.000
-        // attivare e disattivare pp non rinnovabili di conseguenza
-
+        // Turn on non renewable powerplants until the system reaches enough energy 
+        // Compute the difference between the effective production and the needed energy
+        // When the effective production is greater than required energy, turn off the powerplants that are no longer required
+         
+        // The required energy is the amount needed to charge all batteries to 75% if they have less than 25%
         double requiredEnergy = loadManager.getBatteryRequiredEnergy();
         double producedEnergy = 0;
         List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = loadManager.getNonRenewablePowerPlantInfos();
@@ -56,7 +45,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
             }
         }
 
-        //the first i non renewable powerplants are "on".. check if are all needed 
+        // The first i non renewable powerplants are "on" --> turn off the ones that are not needed 
         for(int j = pos - 1; j > 0; j--){
             NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = nonRenewablePowerPlantInfos.get(j);
             double ppMaxTurnProduction = nonRenewablePowerPlantInfo.getMaxTurnProduction();
@@ -66,6 +55,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
             }
         }
 
+        // Send messages containing the information about non renewable powerplants that were activated this turn
         for(NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos){
             Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.ON, nonRenewablePowerPlantInfo.isOn());

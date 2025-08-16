@@ -9,11 +9,6 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 public class Routine {
 
-    /*
-     * "washing_machine1": ["12:00", "12:30"]
-     *
-     * */
-
     private List<Task> tasks;
 
     public Routine() {
@@ -28,10 +23,11 @@ public class Routine {
     public boolean addTasks(List<Task> newTasks, List<Appliance> appliances) {
 
         if (!divideTasks(newTasks)) {
+            // Check if tasks have to be divided and if are all valid
             return false;
         }
 
-        // check if one of the new tasks has conflict with already running appliance
+        // Check if one of the new tasks has conflict with an old one
         for (Task newTask : newTasks) {
             String newApplianceName = newTask.getApplianceName();
             Appliance newAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(newApplianceName)).findFirst().get();
@@ -45,31 +41,14 @@ public class Routine {
                     LocalTime oldStart = TimeUtils.getLocalTimeFromString(oldTask.getStartTime());
                     LocalTime oldEnd = TimeUtils.getLocalTimeFromString(oldTask.getEndTime());
 
-                    //conflict caused by intersection of intervals
-
-                    // start old < end new && start new < end old
-
-                    // start old 12.30; end old 13.30
-                    // start new 11; end new 14; intervallo compreso completamente funziona
-
-                    // start old 11.30; end old 13.30
-                    // start new 12; end new 13; intervallo compreso completamente al contrario funziona
-
-                    // start old 12.30; end old 13.30
-                    // start new 11; end new 13; intervallo compreso a sinistra funziona
-
-                    // start old 12.30; end old 13.30
-                    // start new 13; end new 14; intervallo compreso compreso a destra funziona
-
-                    // start old 12.30; end old 13.30
-                    // start new 13.30; end new 16; caso giusto funziona
                     if ((oldStart.isBefore(newEnd)) && (newStart.isBefore(oldEnd))) {
+                        // Conflict
                         return false;
                     }
                 }
             }
         }
-        //all the newTasks can be added
+        // All the newTasks can be added
         this.tasks.addAll(newTasks);
         return true;
     }
@@ -78,8 +57,10 @@ public class Routine {
         LocalTime start = TimeUtils.getLocalTimeFromString(task.getStartTime());
         LocalTime end = TimeUtils.getLocalTimeFromString(task.getEndTime());
         if (start.isAfter(end)) {
+            // Task is running during midnight -> has to be split into two sub tasks
             return TaskStatus.TO_SPLIT;
         } else if (start.equals(end)) {
+            // Useless task
             return TaskStatus.TO_DELETE;
         }
         return TaskStatus.OK;
@@ -91,11 +72,13 @@ public class Routine {
             Task curTask = tasksIterator.next();
             TaskStatus curTaskStatus = checkTask(curTask);
             if (curTaskStatus == TaskStatus.TO_SPLIT) {
+                // The task has to be split into two sub tasks
                 Task task1 = new Task(curTask.getApplianceName(), curTask.getStartTime(), "00:00");
                 Task task2 = new Task(curTask.getApplianceName(), "00:00", curTask.getEndTime());
                 tasksIterator.add(task1);
                 tasksIterator.add(task2);
             } else if (curTaskStatus == TaskStatus.TO_DELETE) {
+                // If a task is invalid, the operation fails
                 return false;
             }
         }
@@ -116,14 +99,14 @@ public class Routine {
             return false;
         }
 
-        //check if all the newTasks are in the routine
+        // Check if all the newTasks are in the routine
         for (Task task : newTasks) {
             if (!this.tasks.contains(task)) {
                 return false;
             }
         }
 
-        //all the newTasks can be removed
+        // All the newTasks can be removed
         for (Task task : newTasks) {
             this.tasks.remove(task);
         }

@@ -31,22 +31,18 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
         this.battery = battery;
     }
 
+    // Compute and returns the amount of energy needed to reach the given threshold of charge
     public double getMissingEnergyForThreshold(double threhsoldPercentage) {
-        //0.25 -> 0.75
-        //1000*0.75 - 250 = 750-250 = 500
-
-        //maxBattery = 10000
-        //threshold = 0.75
-        //curBattery = 5000
-        //maxEnergyInTurn 1000
-
-        //energyRequired = 2500
-
         double energyRequired = battery.getMaxCapacityInWatt() * threhsoldPercentage - battery.getStoredEnergy();
         double maxEnergyInTurn = battery.getMaxEnergyInTurn() - curTurnReceivedEnergy;
 
         return Math.min(energyRequired, maxEnergyInTurn);
     }
+
+    @JsonIgnore
+    public double getStateOfCharge() {
+        return battery.getStateOfCharge();
+	}
 
     public boolean hasReachedLimit() {
         return curTurnReceivedEnergy >= battery.getMaxEnergyInTurn() - 0.01;
@@ -73,6 +69,5 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
                 + ", energyTransactionValue=" + energyTransactionValue + ", nodeName=" + nodeName
                 + ", batteryAvailable=" + batteryAvailable + ", transactionType=" + transactionType + "]";
     }
-
 
 }

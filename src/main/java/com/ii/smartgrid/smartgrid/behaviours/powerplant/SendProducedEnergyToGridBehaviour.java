@@ -24,6 +24,7 @@ public abstract class SendProducedEnergyToGridBehaviour extends CustomOneShotBeh
     @Override
     public void action() {     
         RenewablePowerPlant renewablePowerPlant = renewablePowerPlantAgent.getRenewablePowerPlant();
+        // The energy produced by Renewable Powerplants is always sent to grids
         double expectedProduction = this.getHourlyProduction(renewablePowerPlant) * TimeUtils.getTurnDurationHours();
         String gridName = renewablePowerPlant.getGridName();
         Map<String, Object> content = new HashMap<>();

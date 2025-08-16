@@ -28,14 +28,8 @@ public class CheckSmartBuildingMessagesBehaviour extends CustomCyclicBehaviour{
 	public void action() {
 		MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 		ACLMessage receivedMsg = customAgent.receive(mt);
-		//owner -> manda msg request -> smartBuilding riceve, manda agree ed esegue -> inform è andata bene
+		// When the owner sends a request with an updated routine this method receives the message 
 		if (receivedMsg != null) {
-			/**
-			 * {
-			 * 		"operation": "add"/"remove"
-			 * 		"tasks": task[] sempre JSON 
-			 * }
-			 */
             SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
 			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
@@ -43,11 +37,12 @@ public class CheckSmartBuildingMessagesBehaviour extends CustomCyclicBehaviour{
             
             Routine routine = smartBuilding.getRoutine();
             
-            //rispondo agree; faccio operazioni; dico inform per dire se è andata bene o male
-            customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
+            // Correctly received the new routine, send an agree
+			customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
             
             boolean result = true;
-            if(operation.equals(MessageUtil.ADD)) {
+            // Update the routine
+			if(operation.equals(MessageUtil.ADD)) {
                 result = routine.addTasks(tasks, smartBuilding.getAppliances());
             } else if (operation.equals(MessageUtil.REMOVE)){
                 result = routine.removeTasks(tasks);

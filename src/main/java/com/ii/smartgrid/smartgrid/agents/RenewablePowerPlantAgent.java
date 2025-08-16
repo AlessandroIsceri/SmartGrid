@@ -20,6 +20,7 @@ public abstract class RenewablePowerPlantAgent extends PowerPlantAgent{
 
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
+            // Send the produced energy to the connected grid
             SendProducedEnergyToGridBehaviour sendEnergyBehaviour = createSendEnergyBehaviourBehaviour();
             sequentialTurnBehaviour.addSubBehaviour(sendEnergyBehaviour);    
         }

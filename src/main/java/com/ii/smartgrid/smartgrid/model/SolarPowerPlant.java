@@ -9,10 +9,10 @@ import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 public class SolarPowerPlant extends RenewablePowerPlant {
 
     private static final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2
-    private static final double ALBEDO = 0.33; //red tiles
+    private static final double ALBEDO = 0.33; // Coefficient of the surface where panels are installed (red tiles)
     private double efficiency;
-    private double area;
-    private double azimuthAngleArray; //default 0 --> pannelli sud
+    private double area; // m^2
+    private double azimuthAngleArray; 
     private double tiltAngle; // default 30
 
     public double getArea() {
@@ -73,7 +73,6 @@ public class SolarPowerPlant extends RenewablePowerPlant {
 
         double w = Math.toRadians((solarTimeInHours - 12.0) * 15.0); //degrees -> to radians
 
-        //cos(z) = cosφ cosδ cosω + sinφ sin δ
         double cosZenithAngle = Math.cos(latitudeInRadians) * Math.cos(declinationAngle) * Math.cos(w) + Math.sin(latitudeInRadians) * Math.sin(declinationAngle);
 
         double zenithAngle = Math.acos(cosZenithAngle);
@@ -99,7 +98,7 @@ public class SolarPowerPlant extends RenewablePowerPlant {
 
         double dni = (ghi - dhi) / cosZenithAngle;
 
-        //ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
+        // ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
         double cosAzimuth = (Math.sin(declinationAngle) * Math.cos(latitudeInRadians) - Math.cos(w) * Math.cos(declinationAngle) * Math.sin(latitudeInRadians)) / Math.sin(zenithAngle);
 
         double tiltAngleInRadians = Math.toRadians(tiltAngle);
@@ -130,6 +129,5 @@ public class SolarPowerPlant extends RenewablePowerPlant {
     public void setTiltAngle(double tiltAngle) {
         this.tiltAngle = tiltAngle;
     }
-
 
 }

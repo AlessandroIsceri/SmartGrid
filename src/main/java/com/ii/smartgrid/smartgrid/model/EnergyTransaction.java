@@ -72,14 +72,12 @@ public abstract class EnergyTransaction {
         return batteryAvailable;
     }
 
-    //500 -> 200 -> 500-200 = 300
     public void receiveEnergy(double energy) {
         if (transactionType == TransactionType.RECEIVE) {
             this.energyTransactionValue -= energy;
         }
     }
 
-    //500 -> 200; 500-200 = 300
     public void sendEnergy(double energy) {
         if (transactionType == TransactionType.SEND) {
             this.energyTransactionValue -= energy;

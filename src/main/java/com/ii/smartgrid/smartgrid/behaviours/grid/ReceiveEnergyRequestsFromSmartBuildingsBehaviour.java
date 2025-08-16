@@ -34,8 +34,9 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
             return;
         }
 
-		//request from non black out, inform from black out buildings
-		MessageTemplate mt1 = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), 
+		// Requests are sent from non-blackout buldings
+        // Informs are sent from blackout buildings
+        MessageTemplate mt1 = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), 
                                                 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
         
         Grid grid = gridAgent.getGrid();
@@ -54,46 +55,38 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
         }
 
         
-        
         ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             requestCont++;
 
             String sender = receivedMsg.getSender().getLocalName();
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-            if(receivedMsg.getPerformative() == ACLMessage.REQUEST){
-				/**
-				 * {
-				 * 		"energyTransaction": 200.0,
-                 *      "blackout" : true/false
-				 * }
-				 */                
+            if(receivedMsg.getPerformative() == ACLMessage.REQUEST){               
+                // Message received from non-blackout building
                 EnergyTransaction energyTransaction  = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
                 TransactionType transactionType = energyTransaction.getTransactionType();
                 if(transactionType == TransactionType.RECEIVE) {
+                    // The smartbuilding has requested energy
                     double requestedEnergy = energyTransaction.getEnergyTransactionValue();
                     grid.addExpectedConsumption(requestedEnergy);
                     grid.addEnergyRequest(sender, energyTransaction);
                     grid.updateGridPriority(energyTransaction.getPriority());
                     log("Requested Energy: " + requestedEnergy);
                 } else {
+                    // The smartbuilding has released energy
                     double releasedEnergy = energyTransaction.getEnergyTransactionValue();
                     log("Released Energy: " + releasedEnergy);
                     grid.addExpectedProduction(releasedEnergy);
                     if(grid.containsSmartBuildingWithoutPower(sender)){
-                        // false -> energy restored independently
-                        // true -> building still in blackout		
+                        // If the release was sent from a blackout building, that building it not in blackout anymore (blackout=false)	
                         boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                         if(!blackout){
                             grid.removeSmartBuildingWithoutPower(sender);
                         }
                     }
                 }
-            }else if(receivedMsg.getPerformative() == ACLMessage.INFORM){
-                //{"blackout": true/false}
-				// false -> energy restored independently
-				// true -> building still in blackout
+            } else if(receivedMsg.getPerformative() == ACLMessage.INFORM){
+                // Message received from blackout building, checks if that building is still in blackout
                 boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                 if(!blackout){
                     grid.removeSmartBuildingWithoutPower(sender);

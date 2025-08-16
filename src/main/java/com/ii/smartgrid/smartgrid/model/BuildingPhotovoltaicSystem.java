@@ -9,13 +9,14 @@ import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 public class BuildingPhotovoltaicSystem {
 
     private static final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2
-    private static final double ALBEDO = 0.33; //red tiles
-    private double efficiency;
-    private double area;
-    private double azimuthAngleArray; //default 0 --> pannelli sud
-    private double tiltAngle; // default 30
+    private static final double ALBEDO = 0.33; // Coefficient of the surface where panels are installed (red tiles)
+    private double efficiency; 
+    private double area; // m^2
+    private double azimuthAngleArray; // Default 0
+    private double tiltAngle; // Default 30
     private double latitude;
     private double longitude;
+
     public BuildingPhotovoltaicSystem() {
         super();
     }
@@ -60,9 +61,7 @@ public class BuildingPhotovoltaicSystem {
         }
 
         int cloudCover = WeatherUtil.cloudCoverageAvg[curWeather.ordinal()];
-
         double declinationAngle = Math.toRadians(23.45 * Math.sin(Math.toRadians((360.0 / 365.0) * (dayOfTheYear - 81.0))));
-
         double latitudeInRadians = Math.toRadians(latitude);
 
         double x = Math.toRadians(360.0 / 365.0 * (dayOfTheYear - 1.0));
@@ -71,9 +70,8 @@ public class BuildingPhotovoltaicSystem {
         double solarTimeInMinutes = curTimeInMinutes + (standardMeridian - longitude) * 4.0 + equationOfTime;
         double solarTimeInHours = solarTimeInMinutes / 60.0;
 
-        double w = Math.toRadians((solarTimeInHours - 12.0) * 15.0); //degrees -> to radians
+        double w = Math.toRadians((solarTimeInHours - 12.0) * 15.0); // Degrees -> to radians
 
-        //cos(z) = cosφ cosδ cosω + sinφ sin δ
         double cosZenithAngle = Math.cos(latitudeInRadians) * Math.cos(declinationAngle) * Math.cos(w) + Math.sin(latitudeInRadians) * Math.sin(declinationAngle);
 
         double zenithAngle = Math.acos(cosZenithAngle);
@@ -99,7 +97,7 @@ public class BuildingPhotovoltaicSystem {
 
         double dni = (ghi - dhi) / cosZenithAngle;
 
-        //ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
+        // ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
         double cosAzimuth = (Math.sin(declinationAngle) * Math.cos(latitudeInRadians) - Math.cos(w) * Math.cos(declinationAngle) * Math.sin(latitudeInRadians)) / Math.sin(zenithAngle);
 
         double tiltAngleInRadians = Math.toRadians(tiltAngle);

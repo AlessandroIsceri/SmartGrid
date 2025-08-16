@@ -28,8 +28,7 @@ public class MessageUtil {
     public static final String ENERGY_TRANSACTION = "energyTransaction";
     public static final String CONVERSATION_ID_CABLE_DISCOVERY = "cableDiscovery";
     public static final String CONVERSATION_ID_RESTORE_BUILDING = "restore";
-    private MessageUtil() {
-    }
+    private MessageUtil() {}
 
 
 }

@@ -7,7 +7,7 @@ import com.ii.smartgrid.smartgrid.behaviours.loadmanager.DistributeExcessEnergyB
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.DistributeGridEnergyBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.NonRenewablePowerPlantDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveEnergyRequestsFromGridBehaviour;
-import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendInstructionToGridsBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendInstructionsToGridsBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ChangeNonRenewablePowerPlantsInfo;
 import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
@@ -40,21 +40,21 @@ public class LoadManagerAgent extends CustomAgent{
             this.loadManagerAgent = loadManagerAgent;
         }
 
-
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
-            // riceve le richieste dalle grid
-            // pensa all'instradamento dell'energia
-            // se necessario (se il totale è < 0) -> prova con le batterie available
-            // se necessario (se la percentuale di una o più batterie è < 20%) -> accende pp non rinnovabili; altrimenti, se sono tutte > 80% li spegne
-            // comunicare l'instradamento ad ogni grid e che pp non rinnovabili sono attive x il turno dopo
-        
+            // 1. Receives energy requests/supplies from the grids
+            // 2. Tries to satisfy the greatest number of energy requests from the grids ordered by priority using the energy provided by other grids
+            // 3. Tries to satisfy the greatest number of remaining energy requests from the grids ordered by priority using the energy contained in the batteries
+            // 4. Compute the best routing path for sending excess energy into grids with a battery
+            // 5. Handle the activation or deactivation of NonRenewablePowerPlants based on energy availability
+            // 6. Send the routing instructions to the grids
+
             sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromGridBehaviour(loadManagerAgent));
             sequentialTurnBehaviour.addSubBehaviour(new DistributeGridEnergyBehaviour(loadManagerAgent));
             sequentialTurnBehaviour.addSubBehaviour(new DistributeBatteryEnergyBehaviour(loadManagerAgent));
             sequentialTurnBehaviour.addSubBehaviour(new DistributeExcessEnergyBehaviour(loadManagerAgent));
             sequentialTurnBehaviour.addSubBehaviour(new ChangeNonRenewablePowerPlantsInfo(loadManagerAgent));
-            sequentialTurnBehaviour.addSubBehaviour(new SendInstructionToGridsBehaviour(loadManagerAgent));
+            sequentialTurnBehaviour.addSubBehaviour(new SendInstructionsToGridsBehaviour(loadManagerAgent));
         }
     }
 }

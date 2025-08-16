@@ -19,7 +19,10 @@ import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
+// Abstract agent class that will be extended by all other agents
+// It contains generic methods for creating and sending messages, logging information, and common information shared by all agents
 public abstract class CustomAgent extends Agent{
+
 	protected int curTurn;
 	protected WeatherStatus curWeather;
 	protected WindSpeedStatus curWindSpeed;

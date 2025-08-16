@@ -14,39 +14,37 @@ import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;
 
-public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour{
+public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour {
 
     private GridAgent gridAgent;
 
-    public InitRoutingInstructionsBehaviour(GridAgent gridAgent){
+    public InitRoutingInstructionsBehaviour(GridAgent gridAgent) {
         super(gridAgent);
         this.gridAgent = gridAgent;
     }
-
 
     @Override
     public void action() {
         Grid grid = gridAgent.getGrid();
 
-        if(gridAgent.getGridStatus() == GridStatus.RECEIVE){
+        if (gridAgent.getGridStatus() == GridStatus.RECEIVE) {
             return;
         }
-        
+
         List<DistributionInstruction> distributionInstructions = grid.getDistributionInstructions();
 
-        log("Distribution Instructions: " + distributionInstructions);
-
-        for(DistributionInstruction distributionInstruction : distributionInstructions){
+        for (DistributionInstruction distributionInstruction : distributionInstructions) {
             distributionInstruction.removeFirstElement();
 
-            if(distributionInstruction.pathSize() != 0){
+            if (distributionInstruction.pathSize() != 0) {
+                // Forward the distribution instruction and the energy to the following node
                 String receiverName = distributionInstruction.getFirstReceiver();
                 double energyToDistribute = distributionInstruction.getEnergyToDistribute();
 
                 Cable cable = grid.getCable(receiverName);
                 double energyToDistributeWithLoss = cable.computeTransmittedPower(energyToDistribute);
                 distributionInstruction.setEnergyToDistribute(energyToDistributeWithLoss);
-                
+
                 Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, distributionInstruction);
                 grid.addExpectedConsumption(energyToDistribute);

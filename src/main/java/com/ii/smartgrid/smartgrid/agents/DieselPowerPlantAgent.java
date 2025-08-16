@@ -9,7 +9,6 @@ public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
         
     @Override
     public void setup(){
-        
         String dieselPowerPlantName = this.getLocalName();
 
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.DIESEL_POWERPLANTS_PATH, dieselPowerPlantName, DieselPowerPlant.class);
@@ -18,7 +17,7 @@ public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
         dieselPowerPlant.setOn(false);
 
         dieselPowerPlant.addConnectedAgentName(dieselPowerPlant.getGridName());
-        
+
         this.addBehaviour(new NonRenewablePowerPlantCoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new NonRenewablePowerPlantBehaviour(this));
         this.log("Setup completed");

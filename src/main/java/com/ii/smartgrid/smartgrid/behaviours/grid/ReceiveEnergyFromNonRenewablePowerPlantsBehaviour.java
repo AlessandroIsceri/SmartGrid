@@ -12,21 +12,21 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBehaviour{
+public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBehaviour {
 
     private int requestCont = 0;
     private boolean finished = false;
-    private int nonRenewableActivePowerPlantCount; 
+    private int nonRenewableActivePowerPlantCount;
     private GridAgent gridAgent;
 
-    public ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(GridAgent gridAgent){
+    public ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(GridAgent gridAgent) {
         super(gridAgent);
         Map<String, Boolean> nonRenewablePowerPlantActiveStatus = gridAgent.getGrid().getNonRenewablePowerPlantActiveStatus();
         nonRenewableActivePowerPlantCount = 0;
         this.gridAgent = gridAgent;
-    
-        for(boolean isActive : nonRenewablePowerPlantActiveStatus.values()){
-            if(isActive){
+
+        for (boolean isActive : nonRenewablePowerPlantActiveStatus.values()) {
+            if (isActive) {
                 nonRenewableActivePowerPlantCount++;
             }
         }
@@ -35,49 +35,48 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
 
     @Override
     public void action() {
-        if(nonRenewableActivePowerPlantCount == 0){
-            log("NO RENEWABLE PP TO WAIT FOR");
+        if (nonRenewableActivePowerPlantCount == 0) {
+            log("No active non renewable powerplant");
             this.finished = true;
             return;
         }
 
-		MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
+        // Create a message template to match all non renewable powerplants
+        MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
         Grid grid = gridAgent.getGrid();
         List<String> nonRenewablePowerPlantNames = grid.getNonRenewablePowerPlantNames();
 
         MessageTemplate mt;
-        if(nonRenewablePowerPlantNames.isEmpty()){
+        if (nonRenewablePowerPlantNames.isEmpty()) {
             mt = mt1;
-        }else{
+        } else {
             MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(nonRenewablePowerPlantNames.get(0), AID.ISLOCALNAME));
-            for(int i = 1; i < nonRenewablePowerPlantNames.size(); i++){
+            for (int i = 1; i < nonRenewablePowerPlantNames.size(); i++) {
                 String smartBuildingName = nonRenewablePowerPlantNames.get(i);
                 mt2 = MessageTemplate.or(mt2, MessageTemplate.MatchSender(new AID(smartBuildingName, AID.ISLOCALNAME)));
             }
-            mt = MessageTemplate.and(mt1, mt2); 
+            mt = MessageTemplate.and(mt1, mt2);
         }
 
-		ACLMessage receivedMsg = customAgent.receive(mt);
-		if (receivedMsg != null) {
-            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
+        ACLMessage receivedMsg = customAgent.receive(mt);
+        if (receivedMsg != null) {
             requestCont++;
-            
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
-            log("receivedEnergy: " + receivedEnergy);
-            
+            log("Received energy: " + receivedEnergy);
+
             grid.addExpectedProduction(receivedEnergy);
 
-            if(requestCont < nonRenewableActivePowerPlantCount){
+            if (requestCont < nonRenewableActivePowerPlantCount) {
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
-            }else{
+            } else {
                 finished = true;
             }
-		} else {
-			customAgent.blockBehaviourIfQueueIsEmpty(this);
-		}
+        } else {
+            customAgent.blockBehaviourIfQueueIsEmpty(this);
+        }
     }
 
     @Override
@@ -85,4 +84,3 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
         return finished;
     }
 }
-

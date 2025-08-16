@@ -4,7 +4,6 @@ import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 
 public class Cable {
 
-    //nel json basta passare cableSection, resistivity, voltage
     private double cableSection;
     private double resistivity;
     private double voltage;
@@ -48,7 +47,7 @@ public class Cable {
         double a = Math.pow(Math.sin(deltaLatitude / 2.0), 2) + Math.cos(latitudeFirstNodeRadians) * Math.cos(latitudeSecondNodeRadians) * Math.pow(Math.sin(deltaLongitude / 2.0), 2);
         double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
 
-        this.length = earthRadius * c; //metres
+        this.length = earthRadius * c; // Metres
     }
 
     public double computeTransmissionCost() {
@@ -90,7 +89,6 @@ public class Cable {
     public double getEnergyToSatisfyRequest(double requestedEnergyWH) {
         double requestedEnergy = requestedEnergyWH / TimeUtils.getTurnDurationHours(); //W
 
-        // neededEnergy = (+voltage^2 ± √(voltage^4 - 4 * cableResistance * voltage^2*requestedEnergy)) / (2*cableResistance)
         double den = 2.0 * cableResistance;
         double delta = Math.sqrt(Math.pow(voltage, 4) - 4.0 * cableResistance * Math.pow(voltage, 2) * requestedEnergy);
         double sol1 = (Math.pow(voltage, 2) - delta) / den;

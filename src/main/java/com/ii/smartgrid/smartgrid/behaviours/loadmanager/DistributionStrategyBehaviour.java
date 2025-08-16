@@ -34,12 +34,12 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
         loadManager = loadManagerAgent.getLoadManager();
 
         if(loadManager.areAllRequestsSatisfied()){
-            //No requests to be satisfied
+            // No requests to be satisfied
             log("There are no requests to be satisfied");
             return;
         }
 
-        // Get producers 
+        // Get all the producer nodes 
         producerNodes = this.getProducerNodes();
 
         if(producerNodes.isEmpty()){
@@ -47,36 +47,33 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
             return;
         }
 
-        log("producerNodes: " + producerNodes);
+        // Iterate through the consumer grids by priority
         for(Priority priority : Priority.values()){
-            // Get consumers 
+            // Get consumer nodes
             consumerNodes = loadManager.getConsumerNodesByPriority(priority);
-            log("consumerNodes: " + consumerNodes);
             double priorityRequestedEnergySum = loadManager.getRequestedEnergySum(producerNodes, consumerNodes);
 
-            // If energy request of current priority is too high, order consumers
+            // If the energy request for grid with current priority is too high, order consumers to satisfy as much requests as possible
             if(priorityRequestedEnergySum < 0){
                 consumerNodes.sort(Comparator.comparingDouble(EnergyTransaction::getEnergyTransactionValue));
             }
 
             Iterator<? extends EnergyTransaction> consumerNodesIterator = consumerNodes.iterator();
-
             while(consumerNodesIterator.hasNext()){
                 consumerNode = consumerNodesIterator.next();
                 while(consumerNode.getEnergyTransactionValue() > 0){
+                    // Find the shortest path to the nearest producer node
                     findPathToNearestProducer();
 
                     String nearestProducerNodeName = shortesPath.getSource();
-                    log("nearestProducerNodeName found: " + nearestProducerNodeName);
-                    log("shortest path: " + shortesPath);
                     nearestProducerNode = loadManager.getEnergyTransaction(nearestProducerNodeName);
                     
                     DistributionInstruction distributionInstruction = mainDistributionLogic();
-                    
-                    // Save the path
+        
+                    // Save the path and the energy to distribute for nearest producer node
                     loadManager.addDistributionInstructions(nearestProducerNodeName, distributionInstruction);
                     
-                    //If there are not energy producers, terminate the behaviour
+                    // If there are not any more energy producers, terminate the behaviour
                     if(producerNodes.isEmpty()){
                         return;
                     }

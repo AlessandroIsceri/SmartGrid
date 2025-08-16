@@ -38,20 +38,16 @@ public class EnergyUtil {
 
     private static void loadCables() {
         ObjectMapper objectMapper = new ObjectMapper();
-        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-        };
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
         Map<String, Object> fileContent;
         try {
             fileContent = objectMapper.readValue(new File(JsonUtil.CABLES_PATH), typeRef);
 
-            TypeReference<HashMap<String, Cable>> typeRefCables = new TypeReference<HashMap<String, Cable>>() {
-            };
+            TypeReference<HashMap<String, Cable>> typeRefCables = new TypeReference<HashMap<String, Cable>>() {};
             cableTypes = objectMapper.convertValue(fileContent.get("types"), typeRefCables);
 
-            TypeReference<ArrayList<Cable>> typeRefArrayList = new TypeReference<ArrayList<Cable>>() {
-            };
+            TypeReference<ArrayList<Cable>> typeRefArrayList = new TypeReference<ArrayList<Cable>>() {};
             links = objectMapper.convertValue(fileContent.get("links"), typeRefArrayList);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -74,8 +70,7 @@ public class EnergyUtil {
                 return null;
             }
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
             StringBuffer content = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
@@ -84,8 +79,7 @@ public class EnergyUtil {
             in.close();
             conn.disconnect();
 
-            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-            };
+            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> jsonObject = null;
             try {
@@ -100,7 +94,7 @@ public class EnergyUtil {
         return null;
     }
 
-
+    // Sets the initial value of electricity price based on the country
     public static double getMeanElectricityPriceFromCoordinates(double latitude, double longitude) {
         String country = getCountryFromCoordinates(latitude, longitude);
         String line;
@@ -120,7 +114,6 @@ public class EnergyUtil {
     }
 
     public static double randomWalk(double curPrice) {
-
         double variation = rand.nextGaussian() * priceVolatility + priceTrend;
         return curPrice * (1 + variation);
     }

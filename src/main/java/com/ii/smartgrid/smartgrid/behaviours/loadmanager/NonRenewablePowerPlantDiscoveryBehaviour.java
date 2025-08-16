@@ -38,6 +38,7 @@ public class NonRenewablePowerPlantDiscoveryBehaviour extends CustomBehaviour{
         LoadManager loadManager = loadManagerAgent.getLoadManager();
         List<String> nonRenewablePowerPlantNames = loadManager.getNonRenewablePowerPlantNames();
 
+        // Create a message template to match all non renewable powerplants
         MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
         MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(nonRenewablePowerPlantNames.get(0), AID.ISLOCALNAME));
         for(int i = 1; i < nonRenewablePowerPlantNames.size(); i++){
@@ -46,21 +47,20 @@ public class NonRenewablePowerPlantDiscoveryBehaviour extends CustomBehaviour{
         }
         MessageTemplate mt = MessageTemplate.and(mt1, mt2); 
 
-
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            log("Received a nonRenewablePP discovery msg from... " + receivedMsg.getSender().getLocalName());
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String nonRenewablePowerPlantName = receivedMsg.getSender().getLocalName();
             double maxTurnProduction = (double) jsonObject.get(MessageUtil.MAX_TURN_PRODUCTION);
             boolean on = (boolean) jsonObject.get(MessageUtil.ON); 
+
+            // Create and add non renewable powerplant info
             NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = new NonRenewablePowerPlantInfo(nonRenewablePowerPlantName, maxTurnProduction, on);
             loadManager.addNonRenewablePowerPlantInfo(nonRenewablePowerPlantInfo);
 
             if(requestCont < numberOfNonRenewablePowerPlants){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
-                log("done");
                 loadManager.sortNonRenewablePowerPlantInfo();
                 finished = true;
             }

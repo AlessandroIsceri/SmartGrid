@@ -28,14 +28,14 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
     @Override
     public void action() {
         SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding(); 
-        //richiede energia se serve (non ne ha abbastanza, attaccandosi alla rete)
-        //può rilasciare energia se ne ha troppa e non gli serve
+        // Checks the amount of energy produced and consumed during this turn
 		double expectedConsumption = smartBuilding.getExpectedConsumption();
         double availableEnergy = smartBuilding.getExpectedProduction();
-        TransactionType transactionType;
-        // Request energy from the grid
         String gridName = smartBuilding.getGridName();
+        TransactionType transactionType;
         double energy = Math.abs(expectedConsumption - availableEnergy);
+        // If the production is greater than consumption, send excess energy 
+        // Else, send a request containing the needed amount of energy to the grid
         if(availableEnergy >= expectedConsumption){
             transactionType = TransactionType.SEND;
             Cable cable = smartBuilding.getCable(gridName);

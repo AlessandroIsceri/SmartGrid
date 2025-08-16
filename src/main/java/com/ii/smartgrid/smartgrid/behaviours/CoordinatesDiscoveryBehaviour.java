@@ -33,7 +33,6 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
             return;
         }
 
-        //send messages
         switch (state) {
             case SENDING_MSGS:
                 sendCoordinates();
@@ -47,6 +46,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
     }
 
     private void sendCoordinates(){
+        // Send coordinates to connected agents
         log("Sending coordinates...");
         CustomObject referencedObject = customAgent.getReferencedObject();
         Map<String, Cable> connectedAgents = referencedObject.getConnectedAgents();
@@ -83,8 +83,8 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
                 String from = myAgentName;
                 String to = otherAgentName;
                 String cableType = cableInfo.getCableType();
+                // Initialize the cable with the information received
                 Cable cable = new Cable(cableSection, resistivity, voltage, myCoordinates, otherCoordinates, to, from, cableType);
-
                 customAgent.getReferencedObject().addCable(otherAgentName, cable);
             } else {
                 log("The received message is not a discovery");
@@ -94,10 +94,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
             if(requestCont < neighborsCont){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
-                log("Coordinates discovery done");
-                
                 sendInformationToLoadManager();
-                
                 state = Status.FINISHED;
             }
 		} else {
@@ -111,7 +108,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
     }
 
     protected void sendInformationToLoadManager(){
-        //This method will be implemented only by subclasses of CoordinatesDiscoveryBehaviour
+        // This method will be implemented only by subclasses of CoordinatesDiscoveryBehaviour
     }
 
 }

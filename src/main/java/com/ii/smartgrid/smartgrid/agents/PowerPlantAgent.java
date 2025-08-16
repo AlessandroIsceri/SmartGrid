@@ -1,6 +1,5 @@
 package com.ii.smartgrid.smartgrid.agents;
 
-public class PowerPlantAgent extends CustomAgent {
-
-}
+// Empty class, needed for mantaining a more logic structure
+public abstract class PowerPlantAgent extends CustomAgent {}
 

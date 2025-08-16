@@ -13,11 +13,9 @@ public class OwnerAgent extends CustomAgent{
 	@Override
     public void setup() {
         String owner = this.getLocalName();
-        log(JsonUtil.OWNERS_PATH);
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.OWNERS_PATH, owner, Owner.class);
         
-        this.log("Setup completed");
 		this.addBehaviour(new CheckOwnerMessagesBehaviour(this));
-		
+        this.log("Setup completed");
     }
 }

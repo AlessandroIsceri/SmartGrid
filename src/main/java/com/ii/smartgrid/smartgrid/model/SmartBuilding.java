@@ -34,20 +34,21 @@ public class SmartBuilding extends CustomObject {
     }
 
     public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus) {
-
         if (smartBuildingStatus != SmartBuildingStatus.BLACKOUT) {
             double turnDurationHours = TimeUtils.getTurnDurationHours();
             for (Task curTask : routine.getTasks()) {
+                // Get the start turn and end turn for current task
                 int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
                 int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
                 String applianceName = curTask.getApplianceName();
                 if (startTurn == curTurn) {
+                    // The appliance must be turned on this turn
                     // Find the object with the given name using stream
                     Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
                     curAppliance.setOn(true);
                     expectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
-
                 } else if (endTurn == curTurn) {
+                    // The appliance must be turned off this turn
                     Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
                     curAppliance.setOn(false);
                     expectedConsumption -= curAppliance.getHourlyConsumption() * turnDurationHours;

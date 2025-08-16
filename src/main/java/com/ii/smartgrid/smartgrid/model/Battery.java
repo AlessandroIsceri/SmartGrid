@@ -11,7 +11,7 @@ public class Battery {
     private double storedEnergy;
     private double dischargeCurrent;
     private double efficiency;
-    // double between 0 and 1 indicating the battery percentage
+    // State of Charge between 0 and 1 indicating the battery percentage
     private double stateOfCharge;
 
     public Battery() {
@@ -19,15 +19,12 @@ public class Battery {
     }
 
     public double fillBattery(double energyWH) {
-
-        //1000W -> 1 ora -> 1000WH
-        //1000 -> 0:15 min -> 1000*0.25 WH
-        double maxEnergyInTurn = getMaxEnergyInTurn(); //in Watts Hour
-
-        //maxEnergy = 500; energyWH = 800 -> 500
+        double maxEnergyInTurn = getMaxEnergyInTurn(); // WH
         double effectiveFillEnergy = Math.min(maxEnergyInTurn, energyWH);
         double residual = Math.max(0.0, energyWH - maxEnergyInTurn);
 
+        // If the energy is more than the amount that can be stored, store 
+        // the possible amount and return the exceeding energy
         if (storedEnergy + effectiveFillEnergy <= maxCapacityInWatt) {
             storedEnergy += effectiveFillEnergy;
             stateOfCharge = storedEnergy / maxCapacityInWatt;
@@ -81,7 +78,7 @@ public class Battery {
 
     @JsonIgnore
     public double getMaxEnergyInTurn() {
-        return voltage * dischargeCurrent * efficiency * TimeUtils.getTurnDurationHours(); //in Watts Hour
+        return voltage * dischargeCurrent * efficiency * TimeUtils.getTurnDurationHours(); // WH
     }
 
     public double getStateOfCharge() {
@@ -108,8 +105,9 @@ public class Battery {
         this.voltage = voltage;
     }
 
+    // Same as fillBattery but with energy discharge instead of charge
     public double requestEnergy(double requestedEnergyWH) {
-        double maxEnergyInTurn = getMaxEnergyInTurn(); //in Watts Hour
+        double maxEnergyInTurn = getMaxEnergyInTurn(); // WH
         double effectiveRequestedEnergy = Math.min(maxEnergyInTurn, requestedEnergyWH);
 
         double remainingEnergy = storedEnergy - effectiveRequestedEnergy;

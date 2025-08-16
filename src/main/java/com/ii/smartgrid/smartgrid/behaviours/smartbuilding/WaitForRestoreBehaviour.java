@@ -32,7 +32,6 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
 
     @Override
     public void action() {
-
         switch (state) {
             case UPDATING_INTERNAL_ENERGY:
                 updateInternalEnergy();
@@ -47,17 +46,13 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
 
     private void updateInternalEnergy(){
         SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
-		
 		double expectedProduction = smartBuilding.getExpectedProduction();
-        log("PV: expectedProduction: " + expectedProduction);
-		        
-		Battery battery = smartBuilding.getBattery();
-
+        String gridName = smartBuilding.getGridName();
+        Battery battery = smartBuilding.getBattery();
 		if(battery != null){
             Map<String, Object> content = new HashMap<>();
-            String gridName = smartBuilding.getGridName();
             if(smartBuilding.canBeRestored()){
-                log("Ho almeno metà batteria piena, provo a ripartire");
+                log("The building's battery reached 50% -> try to self restore");
                 smartBuilding.restorePower(expectedProduction);
                 smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
                 content.put(MessageUtil.BLACKOUT, false);
@@ -67,16 +62,15 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             }
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
 		}else{
-            log("Non ho una batteria, ma ho dei pannelli, rilascio l'energia in rete");
+            log("The building's doesn't have a battery -> Release PV energy to the grid");
             
             Map<String, Object> content = new HashMap<>();
-            String gridName = smartBuilding.getGridName();
             Cable cable = smartBuilding.getCable(gridName);
             double sendedEnergy = cable.computeTransmittedPower(expectedProduction);
             EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sendedEnergy, customAgent.getLocalName(), TransactionType.SEND);
             
             ObjectMapper objectMapper = customAgent.getObjectMapper();
-            JsonNode node = objectMapper.valueToTree(energyTransaction); // include @JsonTypeInfo
+            JsonNode node = objectMapper.valueToTree(energyTransaction);
             
             content.put(MessageUtil.ENERGY_TRANSACTION, node);
             content.put(MessageUtil.BLACKOUT, true);
@@ -93,20 +87,19 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
         MessageTemplate mt = MessageTemplate.or(mtOR, mtAND);
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
-            log("WAIT FOR RESTORE: HO RICEVUTO QUALCOSA: " + receivedMsg);
-           
+            SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();           
+            // Received a restore message from the grid
             if(receivedMsg.getPerformative() == ACLMessage.INFORM && receivedMsg.getConversationId().equals(MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + customAgent.getLocalName())){
                 Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-                log("Restore MSG received");
+                log("Received a restore message");
                 double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
                 if(receivedEnergy >= 0){
                     smartBuilding.restorePower(receivedEnergy);
                     smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
                 }
-            }else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
+            } else if (receivedMsg.getPerformative() == ACLMessage.AGREE) {
                 log("Energy consumed");
-            }else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
+            } else if (receivedMsg.getPerformative() == ACLMessage.REFUSE) {
                 log("Energy not consumed");
             }
             state = Status.FINISHED;
@@ -120,7 +113,5 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
     public boolean done() {
         return state == Status.FINISHED;
     }
-
-	
     
 }

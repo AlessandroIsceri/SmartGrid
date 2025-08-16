@@ -1,7 +1,6 @@
 package com.ii.smartgrid.smartgrid.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +39,7 @@ public class LoadManager extends CustomObject {
         gridsCables = new HashMap<>();
     }
 
+    // Add the nodes and edge (with its cost) to the graph
     public void addCommunicationCost(String from, String to, double cost) {
         graph.addVertex(from);
         graph.addVertex(to);
@@ -49,14 +49,14 @@ public class LoadManager extends CustomObject {
         }
     }
 
-    public void addDistributionInstructions(String nearestProducerNodeName, DistributionInstruction shortesPath) {
-        // "A" -> [["A", "B", 100], ["A", "B", "C", 300]]
-        List<DistributionInstruction> curNodeDistributionInstructions = distributionInstructions.get(nearestProducerNodeName);
+    public void addDistributionInstructions(String nodeName, DistributionInstruction shortesPath) {
+        // Add a DistributionInstruction
+        List<DistributionInstruction> curNodeDistributionInstructions = distributionInstructions.get(nodeName);
         if (curNodeDistributionInstructions == null) {
             curNodeDistributionInstructions = new ArrayList<>();
         }
         curNodeDistributionInstructions.add(shortesPath);
-        distributionInstructions.put(nearestProducerNodeName, curNodeDistributionInstructions);
+        distributionInstructions.put(nodeName, curNodeDistributionInstructions);
     }
 
     public void addGridCables(String gridName, List<Cable> cables) {
@@ -71,6 +71,7 @@ public class LoadManager extends CustomObject {
         nonRenewablePowerPlantInfos.add(nonRenewablePowerPlantInfo);
     }
 
+    // Check if all energy requests are already satisfied
     public boolean areAllRequestsSatisfied() {
         for (EnergyTransaction energyTransaction : gridRequestedEnergy.values()) {
             if (energyTransaction.getTransactionType() == TransactionType.RECEIVE && energyTransaction.getEnergyTransactionValue() > 0) {
@@ -81,7 +82,6 @@ public class LoadManager extends CustomObject {
     }
 
     public void computeDijkstraForAllNodes() {
-
         // Run Dijkstra's algorithm
         dijkstra = new DijkstraShortestPath<>(graph);
         for (String sourceGridName : gridNames) {
@@ -89,6 +89,7 @@ public class LoadManager extends CustomObject {
                 if (!sourceGridName.equals(targetGridName)) {
                     String key = targetGridName + "-" + sourceGridName;
                     if (shortestPaths.containsKey(key)) {
+                        // Inverse Shortest Path already exists
                         continue;
                     }
                     WeightedGraphPath shortestPath = initShortestPath(sourceGridName, targetGridName);
@@ -99,6 +100,7 @@ public class LoadManager extends CustomObject {
         System.out.println("shortestPaths: " + shortestPaths);
     }
 
+    // Compute all the energy lost during the transmission through the shortest path
     public double computeEnergyLoss(double powerSentWH, List<String> shortestPath) {
         double energyLossWH = 0;
         for (int i = 0; i < shortestPath.size() - 1; i++) {
@@ -113,6 +115,7 @@ public class LoadManager extends CustomObject {
         return energyLossWH;
     }
 
+    // Compute the energy required to satisfy a request taking into account the losses generated in the path
     public double computeEnergyToSatisfyRequest(double requestedEnergyWH, List<String> shortestPath) {
         for (int i = shortestPath.size() - 1; i > 0; i--) {
             String last = shortestPath.get(i);
@@ -122,19 +125,23 @@ public class LoadManager extends CustomObject {
         }
         return requestedEnergyWH;
     }
-
+    
+    // Computes and returns the required energy to charge all the batteries with a charge level < 25% to 75%
     public double getBatteryRequiredEnergy() {
         double batteryRequiredEnergy = 0;
         List<EnergyTransactionWithBattery> gridsWithBattery = getGridsWithBattery();
         for (EnergyTransactionWithBattery gridWithBattery : gridsWithBattery) {
-            double needed = gridWithBattery.getMissingEnergyForThreshold(0.75);
-            if (needed > 0) {
-                batteryRequiredEnergy += needed;
+            if(gridWithBattery.getStateOfCharge() < 0.25){
+                double needed = gridWithBattery.getMissingEnergyForThreshold(0.75);
+                if (needed > 0) {
+                    batteryRequiredEnergy += needed;
+                }
             }
         }
         return batteryRequiredEnergy;
     }
 
+    // Given two nodes, returns the cable that connects them
     public Cable getCableFromNodes(String node1, String node2) {
         List<Cable> cables = gridsCables.get(node1);
         for (Cable cable : cables) {
@@ -147,6 +154,7 @@ public class LoadManager extends CustomObject {
         return null;
     }
 
+    // Return all the consumer nodes with selectedPriority
     public List<EnergyTransaction> getConsumerNodesByPriority(Priority selectedPriority) {
         List<EnergyTransaction> nodesByPriority = new ArrayList<>();
         for (EnergyTransaction energyTransaction : gridRequestedEnergy.values()) {
@@ -218,6 +226,7 @@ public class LoadManager extends CustomObject {
         this.gridsCables = gridsCables;
     }
 
+    // Return all the grid with a battery
     public List<EnergyTransactionWithBattery> getGridsWithBattery() {
         List<EnergyTransactionWithBattery> gridsWithBattery = new ArrayList<>();
         for (EnergyTransaction request : gridRequestedEnergy.values()) {
@@ -244,6 +253,7 @@ public class LoadManager extends CustomObject {
         this.nonRenewablePowerPlantNames = nonRenewablePowerPlantNames;
     }
 
+    // Return the number of messages that each grid must receive during the follow routing instruction behaviour
     public int getNumberOfMessagesForGrid(String gridName) {
         int count = 0;
         for (String key : distributionInstructions.keySet()) {
@@ -269,6 +279,7 @@ public class LoadManager extends CustomObject {
         return producerNodes;
     }
 
+    // Sums all energy production and subtract the consumption of each transaction
     public double getRequestedEnergySum(List<? extends EnergyTransaction> producerNodes, List<? extends EnergyTransaction> consumerNodes) {
         double sum = 0;
         for (EnergyTransaction energyTransaction : producerNodes) {
@@ -284,8 +295,8 @@ public class LoadManager extends CustomObject {
         return sum;
     }
 
+    // Returns the shortest path from source to target
     public WeightedGraphPath getShortestPath(String source, String target) {
-        //Grid-3 - Grid-2 ->
         WeightedGraphPath path = shortestPaths.get(source + "-" + target);
         if (path == null) {
             path = new WeightedGraphPath(shortestPaths.get(target + "-" + source));
@@ -303,10 +314,8 @@ public class LoadManager extends CustomObject {
         this.shortestPaths = shortestPaths;
     }
 
+    // Returns the shortest path from source node to target node as a list of nodes, with its associated weight (cost)
     private WeightedGraphPath initShortestPath(String source, String target) {
-        /*
-         * ["grid-1", "grid-2", "grid-3"];
-         */
         GraphPath<String, DefaultWeightedEdge> shortestPath = dijkstra.getPath(source, target);
         if (shortestPath != null) {
             WeightedGraphPath weightedGraphPath = new WeightedGraphPath();

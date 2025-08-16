@@ -8,7 +8,7 @@ import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class HydroPowerPlantAgent extends RenewablePowerPlantAgent{
-    
+
     @Override
     public void setup(){
  

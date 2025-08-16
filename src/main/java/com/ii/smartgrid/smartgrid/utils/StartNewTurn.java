@@ -21,14 +21,14 @@ public class StartNewTurn extends CustomCyclicBehaviour {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
         ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
-            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
 			if(receivedMsg.getPerformative() == ACLMessage.INFORM) {
 				receivedAnswers++;
-                log("Received answers: " + receivedAnswers + " last sender: " + receivedMsg.getSender().getLocalName());
-				if(receivedAnswers == simulationSettingsAgent.getAgentNames().size()) {
+				int numberOfMessagesToReceive = simulationSettingsAgent.getAgentNames().size();
+                log("Received answers: " + receivedAnswers + "/" + numberOfMessagesToReceive + ", last sender: " + receivedMsg.getSender().getLocalName());
+				if(receivedAnswers == numberOfMessagesToReceive) {
 					receivedAnswers = 0;
 					if(simulationSettingsAgent.getSimulationStatus() == SimulationStatus.ON){
-            			//send new turn message
+            			// Send new turn message
 						simulationSettingsAgent.updateTurn();
 						System.out.println("\n\n\n");
 						log("Started new turn");

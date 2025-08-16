@@ -27,7 +27,7 @@ public class WindPowerPlant extends RenewablePowerPlant {
         double energyProd;
         double windSpeed;
         windSpeed = WeatherUtil.windSpeedAvg[curWindSpeed.ordinal()];
-        // conversion from km/h to m/s
+        // Conversion from km/h to m/s
         windSpeed = windSpeed / 3.6;
 
         rotorSweptArea = (Math.PI * (rotorDiameter / 2.0));

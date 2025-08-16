@@ -28,7 +28,6 @@ public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
         ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
             SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
-            log("RECEIVED A MESSAGE FROM " + receivedMsg.getSender().getLocalName());
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             String operation = (String) jsonObject.get(MessageUtil.OPERATION);
             double energy = (double) jsonObject.get(MessageUtil.REQUESTED_ENERGY);
@@ -36,6 +35,7 @@ public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
             double availableEnergy = smartBuilding.getExpectedProduction();
             double requestedEnergy = Math.abs(expectedConsumption - availableEnergy);
             double extraEnergy = energy - requestedEnergy;
+            // Agree -> The grid sent the needed amount of energy
             if(receivedMsg.getPerformative() == ACLMessage.AGREE){
                 if(operation.equals(MessageUtil.CONSUME)){
                     smartBuilding.fillBattery(extraEnergy);
@@ -44,9 +44,9 @@ public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
                     log("Error: invalid operation");
                 }
             } else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
-                //possible blackout 
+                // Refuse -> The grid couldn't sent the needed amount of energy
                 if(operation.equals(MessageUtil.CONSUME)){
-                    log("ATTENTION: Blackout soon");
+                    log("The grid couldn't satisfy the request (possible blackout incoming)");
                     smartBuildingAgent.getSmartBuilding().shutDown();
                     smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.BLACKOUT);
                 }else{
@@ -63,5 +63,4 @@ public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
     public boolean done() {
         return finished;
     }
-
 }

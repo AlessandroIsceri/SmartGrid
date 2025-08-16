@@ -9,8 +9,6 @@ import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
 
 public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehaviour{
 
-    //l'energia delle pp non è bastata per soddisfare tutte le richieste, quindi vengono usate le batterie fino a esaurimento
-
     public DistributeBatteryEnergyBehaviour(LoadManagerAgent loadManagerAgent){
         super(loadManagerAgent);
     }
@@ -18,16 +16,19 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
     @Override
     protected DistributionInstruction mainDistributionLogic() {
 
+        // The energy available from the grids was not enough to satisfy all the requests, so the batteries' energy is used to try to satisfy the remaining ones
+
         // Update energy request of current node
         double neededEnergy = consumerNode.getEnergyTransactionValue();
-
         neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortesPath.getGraphPath());
 
         double epsilon = 1.0;
         
+        // Compute the sendableEnergy
         double sendableEnergy = ((EnergyTransactionWithBattery) nearestProducerNode).sendBatteryEnergy(neededEnergy);
         DistributionInstruction distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), sendableEnergy);
 
+        // Compute the received energy after loss
         double lostEnergy = loadManager.computeEnergyLoss(sendableEnergy, shortesPath.getGraphPath());
         double receivedEnergy = sendableEnergy - lostEnergy;
 

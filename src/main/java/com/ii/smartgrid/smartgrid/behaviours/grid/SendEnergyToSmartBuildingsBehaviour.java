@@ -29,14 +29,14 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
     public void action() {
         Grid grid = gridAgent.getGrid();
 
-        //consumption: richieste da case in blackput 200 + richieste case 400 + energia inviata alle grid 300
-        //production: energia da pp/case + energia da altre grid +1000
-        // 1000-300 = 700
-        double buildingRequestedEnergy = grid.getBuildingRequestedEnergy();  //+400
+        // Energy sent to the grids must considerate the energy requested from the buildings
+        // Energy available must considerate the energy sent to the grids
+        double buildingRequestedEnergy = grid.getBuildingRequestedEnergy(); 
         double energySentToGrids = grid.getExpectedConsumption() - buildingRequestedEnergy;
         double availableEnergy = grid.getExpectedProduction() - energySentToGrids;
+        // The energy is sent following a priority scheme
         for(Priority priority : Priority.values()){
-            //blackout buildings before
+            // Send energy to buildings in blackout before
             List<EnergyTransaction> blackoutSmartBuildings = grid.getBlackoutSmartBuildingsEnergyRequestsByPriority(priority);
             for(EnergyTransaction blackoutSmartBuildingEnergyRequest : blackoutSmartBuildings){
                 double requestedEnergy = blackoutSmartBuildingEnergyRequest.getEnergyTransactionValue();
@@ -46,19 +46,19 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 double neededEnergy = cable.getEnergyToSatisfyRequest(requestedEnergy);
                 Map<String, Object> content = new HashMap<>();
                 if(neededEnergy < availableEnergy){
+                    // There is enough available energy to satisfy the current request
                     content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
                     availableEnergy -= neededEnergy;
                     customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
                     grid.removeSmartBuildingWithoutPower(smartBuildingName);
                 }else{
-                    content.put(MessageUtil.GIVEN_ENERGY, -1.0);
+                    // There is not enough available energy to satisfy the current request
+                    content.put(MessageUtil.GIVEN_ENERGY, -1.0); 
                     customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
                 }
             }
 
-
-
-
+            // Send energy to buildings not in blackout
             List<EnergyTransaction> smartBuildingsEnergyRequests = grid.getSmartBuildingsEnergyRequestsByPriority(priority);
             for(EnergyTransaction smartBuildingsEnergyRequest : smartBuildingsEnergyRequests){
                 double requestedEnergy = smartBuildingsEnergyRequest.getEnergyTransactionValue();
@@ -66,11 +66,6 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 
                 Cable cable = grid.getCable(smartBuildingName);
 
-                //loss:  x - cableResistance *  Math.pow(x / voltage, 2)) = requestedEnergy; 
-                // x = requestedEnergy + cableResistanze * x^2/voltage^2
-                // voltage^2*x = voltage^2*requestedEnergy + cableResistance * x^2 -> cableResistance* x^2 - voltage^2*x + voltage^2*requestedEnergy = 0
-                // x = (-b ± √(b² - 4ac)) / (2a)
-                // x = (+voltage^2 ± √(voltage^4 - 4 * cableResistance * voltage^2*requestedEnergy)) / (2*cableResistance)
                 double neededEnergy = cable.getEnergyToSatisfyRequest(requestedEnergy);
 
                 Map<String, Object> content = new HashMap<>();

@@ -24,12 +24,11 @@ public class CheckSimulationSettingsMessages extends CustomCyclicBehaviour{
 
         ACLMessage receivedMessage = customAgent.receive(mt);
 		if (receivedMessage != null) {
-            log(this.getBehaviourName() + " RECEIVED A MESSAGE FROM " + receivedMessage.getSender().getLocalName());
             if(receivedMessage.getConversationId().contains("resume")){
                 simulationSettingsAgent.setSimulationStatus(SimulationStatus.ON);
                 log("SimulationSettings resumed");
                 
-                //send new turn message
+                // Send new turn message
                 simulationSettingsAgent.updateTurn();
                 System.out.println("\n\n\n");
                 log("Started new turn");
@@ -38,7 +37,6 @@ public class CheckSimulationSettingsMessages extends CustomCyclicBehaviour{
             } else if(receivedMessage.getConversationId().contains("stop")){
                 simulationSettingsAgent.setSimulationStatus(SimulationStatus.OFF);
                 log("SimulationSettings blocked");
-                
             } else if(receivedMessage.getConversationId().contains("start")) {
 				simulationSettingsAgent.setSimulationStatus(SimulationStatus.ON);
 				simulationSettingsAgent.sendMessages();

@@ -24,7 +24,7 @@ public abstract class NonRenewablePowerPlantAgent extends PowerPlantAgent{
 
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
-            //se è attivo, invia l'energia prodotta
+            // If it is active, send the produced energy to the connected grid
             NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
             if(nonRenewablePowerPlant.isOn()){
                 sequentialTurnBehaviour.addSubBehaviour(new SendNonRenewableEnergyToGridBehaviour(nonRenewablePowerPlantAgent));

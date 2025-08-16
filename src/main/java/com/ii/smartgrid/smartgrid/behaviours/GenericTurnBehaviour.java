@@ -13,19 +13,19 @@ import jade.lang.acl.MessageTemplate;
 
 public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 
-	
 	protected GenericTurnBehaviour(CustomAgent agent) {
         super(agent);
     }
 
     @Override
 	public void action() {
+        // Receive the message for the new turn
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("turn-" + customAgent.getLocalName()),
 												 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
+            // Read curTurn and weather, windSpeed and electricityPrice for current turn
 			Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-			System.out.println("JSONOBJECT: " + jsonObject);
 			int curTurn = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
 			customAgent.setCurTurn(curTurn);
 			int weather = (int) jsonObject.get(MessageUtil.CURRENT_WEATHER);
@@ -38,6 +38,7 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 			SequentialBehaviour sequentialTurnBehaviour = new SequentialBehaviour(customAgent){
              	@Override
              	public int onEnd(){
+                    // Send a message indicating the end of the current agent's turn
 					customAgent.createAndSendReply(ACLMessage.INFORM, receivedMsg);
                     return 0;
                 }
@@ -51,5 +52,6 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 		}
 	}
 
+    // Abstract method that must be implemented for every Agent class
     protected abstract void executeTurn(SequentialBehaviour sequentialTurnBehaviour);
 }

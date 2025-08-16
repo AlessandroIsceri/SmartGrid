@@ -25,12 +25,12 @@ public class SimulationSettingsAgent extends CustomAgent{
     private static final String CONFIG_PATH = "src/main/resources/app.config";
     private static final String PACKAGE_PATH = CustomAgent.class.getPackage().getName();
 
-
 	private List<String> agentNames;
     private double[][] weatherTransitionProbabilities;
     private double[][] windSpeedTransitionProbabilities;
     private SimulationStatus simulationStatus;
     private Random generator;
+    private int intervalBetweenTurns; 
 	
 
 	@Override
@@ -42,6 +42,9 @@ public class SimulationSettingsAgent extends CustomAgent{
         } catch (Exception ex) {
             log("File app.config not found");
         }
+
+        intervalBetweenTurns = Integer.parseInt(prop.getProperty("interval_between_turns"));
+
         String turnDurationStr = prop.getProperty("turn_duration");
         TimeUtils.computeAndSetTurnDuration(turnDurationStr);
             
@@ -64,20 +67,17 @@ public class SimulationSettingsAgent extends CustomAgent{
         
         this.curTurn = 0;
         agentNames = JsonUtil.getAllAgentNames();
-        System.out.println("Current Working Directory: " + System.getProperty("user.dir"));
 
         try {
             ContainerController conC = this.getContainerController();
 
+            // Initialize every agent and populate the container
             for(String agentName : agentNames){
                 String className = agentName.split("-")[0]; 
                 Object[] params = null;
                 AgentController ac = conC.createNewAgent(agentName, PACKAGE_PATH + "." + className + "Agent", params);
                 ac.start();
-            }        
-            
-            //a inizio simulazione behaviour di customagent che manda mex a tutti i vicini e aspetta ogni risposta cosi da setuppare le coordinate dei cables
-                
+            }                        
         }
         catch (StaleProxyException e) {
             e.printStackTrace();
@@ -112,17 +112,19 @@ public class SimulationSettingsAgent extends CustomAgent{
         
         curElectricityPrice = EnergyUtil.getMeanElectricityPriceFromCoordinates(latitude, longitude);
 
-        this.log("Setup completed");
         addBehaviour(new StartNewTurn(this));  
         addBehaviour(new CheckSimulationSettingsMessages(this));  
+        this.log("Setup completed");
 	}
 
     public void sendMessages() {
 		try {
-			Thread.sleep(50);
+			Thread.sleep(intervalBetweenTurns);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+        // Prepares the messages for the next turn
 		Map<String, Object> content = new HashMap<>();
         content.put(MessageUtil.CURRENT_TURN, this.curTurn);
         content.put(MessageUtil.CURRENT_WEATHER, this.curWeather.ordinal());
@@ -132,6 +134,7 @@ public class SimulationSettingsAgent extends CustomAgent{
         this.log("Weather: " + this.curWeather);
         this.log("Wind speed: " + this.curWindSpeed);
 
+        // Send all the messages
 		for(int i = 0; i < agentNames.size(); i++) {
             this.createAndSend(ACLMessage.INFORM, agentNames.get(i), content, "turn-" + agentNames.get(i));
 		}
@@ -150,11 +153,13 @@ public class SimulationSettingsAgent extends CustomAgent{
     }
 
     public void updateTurn() {
+        // Update turn and weather
 		if(((this.curTurn + 1) % TimeUtils.getWeatherTurnDuration()) == 0) {
 			updateWeather();
             updateWindSpeed();
 			this.log("Weather updated: " + this.curWeather);
 		}
+        // Update electricity price
         curElectricityPrice = EnergyUtil.randomWalk(curElectricityPrice);
         this.curTurn++;
 	}

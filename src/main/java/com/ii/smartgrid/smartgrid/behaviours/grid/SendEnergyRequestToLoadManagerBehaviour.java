@@ -33,19 +33,20 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
         String loadManagerName = grid.getLoadManagerName();
         Map<String, Object> content = new HashMap<>();
         EnergyTransaction energyTransaction = null;
-        Battery battery = grid.getBattery();
 
         double energyTransactionValue = grid.getExpectedProduction() - grid.getExpectedConsumption();
         TransactionType energyTransactionType;
         if(energyTransactionValue >= 0){
-            //producer
+            // Sender (producer) node
             energyTransactionType = TransactionType.SEND;
             gridAgent.setGridStatus(GridStatus.SEND);
         }else{
+            // Receiver (consumer) node
             energyTransactionType = TransactionType.RECEIVE;
             gridAgent.setGridStatus(GridStatus.RECEIVE);
         }
 
+        Battery battery = grid.getBattery();
         if(battery != null){
             energyTransaction = new EnergyTransactionWithBattery(grid.getPriority(), Math.abs(energyTransactionValue), customAgent.getLocalName(), battery, energyTransactionType);
         }else{

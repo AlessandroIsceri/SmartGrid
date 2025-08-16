@@ -16,52 +16,56 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBehaviour{
+public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBehaviour {
 
     private boolean finished;
     private GridAgent gridAgent;
 
-    public ReceiveRoutingInstructionsFromLoadManagerBehaviour(GridAgent gridAgent){
+    public ReceiveRoutingInstructionsFromLoadManagerBehaviour(GridAgent gridAgent) {
         super(gridAgent);
         this.finished = false;
         this.gridAgent = gridAgent;
     }
 
-
     @Override
     public void action() {
         Grid grid = gridAgent.getGrid();
         String loadManagerName = grid.getLoadManagerName();
-        MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+        MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),       
                                                  MessageTemplate.MatchSender(new AID(loadManagerName, AID.ISLOCALNAME)));
         ACLMessage receivedMsg = customAgent.receive(mt);
-		if (receivedMsg != null) {
-            log("Received a message FROM " + receivedMsg.getSender().getLocalName()); 
+        if (receivedMsg != null) {
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
-            
-            List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ACTIVE_NON_RENEWABLE_POWERPLANTS), new TypeReference<List<NonRenewablePowerPlantInfo>>() {});
+
+            // Receive information about which non renewable powerplant was turned on this turn
+            List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = customAgent.readValueFromJson(
+                    jsonObject.get(MessageUtil.ACTIVE_NON_RENEWABLE_POWERPLANTS),
+                    new TypeReference<List<NonRenewablePowerPlantInfo>>() {}
+                );
 
             int numberOfMessagesToReceive = (int) jsonObject.get(MessageUtil.NUMBER_OF_MSGS_TO_RECEIVE);
 
-            if(gridAgent.getGridStatus() == GridStatus.SEND){
-                List<DistributionInstruction> distributionInstructions = customAgent.readValueFromJson(jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS), new TypeReference<List<DistributionInstruction>>() {});
+            if (gridAgent.getGridStatus() == GridStatus.SEND) {
+                // If Grid has energy to send, it will receive distribution instructions
+                List<DistributionInstruction> distributionInstructions = customAgent.readValueFromJson(
+                        jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS),
+                        new TypeReference<List<DistributionInstruction>>() {}
+                    );
                 grid.setDistributionInstructions(distributionInstructions);
-                log("Setting distributionInstructions to " + distributionInstructions);
             }
-            
+
+            // Update non renewable power plant status 
             grid.updateNonRenewablePowerPlantActiveStatus(nonRenewablePowerPlantInfos);
-            log("Number of msgs to receive: " + numberOfMessagesToReceive);
             grid.setNumberOfMessagesToReceive(numberOfMessagesToReceive);
             finished = true;
-		} else {
-			block();
-		}
+        } else {
+            block();
+        }
     }
 
     @Override
     public boolean done() {
         return finished;
     }
-
 
 }

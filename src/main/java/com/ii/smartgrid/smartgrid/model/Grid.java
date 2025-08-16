@@ -67,6 +67,7 @@ public class Grid extends CustomObject {
         this.battery = battery;
     }
 
+    // Gets the energy requests coming from blackout buildings
     public double getBlackoutEnergyRequest() {
         double sum = 0;
         for (EnergyTransaction energyTransaction : smartBuildingsWithoutPower.values()) {
@@ -75,6 +76,7 @@ public class Grid extends CustomObject {
         return sum;
     }
 
+    // Gets the blackout buildings in that priority group 
     public List<EnergyTransaction> getBlackoutSmartBuildingsEnergyRequestsByPriority(Priority priority) {
         List<EnergyTransaction> results = new ArrayList<>();
         for (EnergyTransaction energyTransaction : smartBuildingsWithoutPower.values()) {
@@ -85,6 +87,7 @@ public class Grid extends CustomObject {
         return results;
     }
 
+    // Gets the requested energy of the buildings
     public double getBuildingRequestedEnergy() {
         double sum = 0;
         for (EnergyTransaction energyTransaction : smartBuildingsEnergyRequests.values()) {
@@ -95,6 +98,7 @@ public class Grid extends CustomObject {
         return sum;
     }
 
+    // Get the list of cables of the connected grids
     public List<Cable> getConnectedGridsCables() {
         List<Cable> connectedGridsCables = new ArrayList<>();
         for (Cable cable : connectedAgents.values()) {
@@ -157,6 +161,7 @@ public class Grid extends CustomObject {
         return new ArrayList<>(nonRenewablePowerPlantActiveStatus.keySet());
     }
 
+    // Initialize all nonRenewablePowerPlants status
     public void setNonRenewablePowerPlantNames(List<String> nonRenewablePowerPlantNames) {
         for (String nonRenewablePowerPlantName : nonRenewablePowerPlantNames) {
             nonRenewablePowerPlantActiveStatus.put(nonRenewablePowerPlantName, false);
@@ -207,6 +212,7 @@ public class Grid extends CustomObject {
         this.smartBuildingsEnergyRequests = smartBuildingsEnergyRequests;
     }
 
+    // Get SmartBuilding requests with that priority
     public List<EnergyTransaction> getSmartBuildingsEnergyRequestsByPriority(Priority priority) {
         List<EnergyTransaction> results = new ArrayList<>();
         for (EnergyTransaction energyTransaction : smartBuildingsEnergyRequests.values()) {
@@ -257,6 +263,7 @@ public class Grid extends CustomObject {
         }
     }
 
+    // Update the nonRenewablePowerPlant status
     public void updateNonRenewablePowerPlantActiveStatus(List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos) {
         for (NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos) {
             String name = nonRenewablePowerPlantInfo.getName();

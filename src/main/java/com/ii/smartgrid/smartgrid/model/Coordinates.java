@@ -8,12 +8,10 @@ public class Coordinates {
         super();
     }
 
-
     public Coordinates(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
-
 
     public double getLatitude() {
         return latitude;

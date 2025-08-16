@@ -24,13 +24,6 @@ public class CheckOwnerMessagesBehaviour extends CustomCyclicBehaviour {
 		ACLMessage receivedMsg = customAgent.receive();
 		if (receivedMsg != null) {
 			if (receivedMsg.getPerformative() == ACLMessage.REQUEST) {
-				/**
-				 * {
-				 * 		"operation": "add"/"remove"
-				 * 		"smartBuilding": smartBuildingAID.getName()
-				 * 		"tasks": task[] sempre JSON 
-				 * }
-				 */
 				Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
 				String buildingName = (String) jsonObject.get(MessageUtil.SMART_BUILDING);
                 customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
@@ -40,17 +33,16 @@ public class CheckOwnerMessagesBehaviour extends CustomCyclicBehaviour {
                 for (String curName : smartBuildingsNames) {
                     if (curName.equals(buildingName)) {
                         jsonObject.remove(MessageUtil.SMART_BUILDING);
+                        // Send the request to update the smartbuilding routine 
                         customAgent.createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
                     }
                 }
                 log("Sent Update Routine Request");
 				
 			}else if(receivedMsg.getPerformative() == ACLMessage.AGREE){
-				//owner -> manda msg request -> smartBuilding riceve, manda agree ed esegue -> inform è andata bene
-				log("RECEIVED AGREE FOR " + receivedMsg.getConversationId());
+				log("Received agree for " + receivedMsg.getConversationId());
 			}else if(receivedMsg.getPerformative() == ACLMessage.INFORM){
-				//msg fatto da noi avrà un conversationId -> che viene mantenuto tra i msg
-				log("INFORM RECEIVED FOR " + receivedMsg.getConversationId());
+				log("Received inform for " + receivedMsg.getConversationId());
 			}
 		}else {
 			block();

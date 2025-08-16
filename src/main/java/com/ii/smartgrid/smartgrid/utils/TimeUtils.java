@@ -31,7 +31,6 @@ public class TimeUtils {
         int[] tmp = TimeUtils.splitTime(duration);
         int hours = tmp[0];
         int minutes = tmp[1];
-        //24:00 = 1440 minutes
         return hours * 60 + minutes;
     }
 
@@ -40,7 +39,7 @@ public class TimeUtils {
     }
 
     public static int getCurrentDayFromTurn(int curTurn) {
-        return ((curTurn * turnDuration) / 1440) + 1;
+        return ((curTurn * turnDuration) / MINUTES_IN_A_DAY) + 1;
     }
 
     public static double getTurnDurationHours() {
@@ -57,7 +56,7 @@ public class TimeUtils {
 
     private static int[] splitTime(String time) {
         String[] tmp = time.split(":");
-        //returns the array: [hours, minutes]
+        // Returns the array: [hours, minutes]
         return new int[]{Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1])};
     }
 
@@ -66,15 +65,13 @@ public class TimeUtils {
         int hours = tmp[0];
         int minutes = tmp[1];
         int timeMinutes = hours * 60 + minutes;
-        // 12:30; 00:30 -> 25
         return timeMinutes / turnDuration;
     }
 
     public static String convertTurnToTime(int turn) {
-
         turn = turn % TimeUtils.getDailyTurnsNumber();
 
-        int turnInMinutes = turn * turnDuration;
+        int turnInMinutes = getMinutesFromTurn(turn);
         int hours = turnInMinutes / 60;
         int minutes = turnInMinutes % 60;
         String formattedHours = "";

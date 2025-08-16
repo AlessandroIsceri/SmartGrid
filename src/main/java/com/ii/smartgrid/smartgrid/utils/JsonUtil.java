@@ -61,8 +61,8 @@ public class JsonUtil {
     }
 
     public static List<String> getAllAgentNames() {
-        List<String> agentNames = new ArrayList<>();
         String[] pathsToSkip = {CABLES_PATH, OWNERS_PATH};
+        List<String> agentNames = new ArrayList<>();
         File dir = new File(BASE_PATH);
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {
@@ -77,8 +77,7 @@ public class JsonUtil {
                 }
                 if (!skip) {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-                    };
+                    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
                     Map<String, Object> fileContent;
                     try {
                         fileContent = objectMapper.readValue(child, typeRef);
