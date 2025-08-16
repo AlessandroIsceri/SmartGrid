@@ -3,9 +3,9 @@ package com.ii.smartgrid.smartgrid.behaviours.loadmanager;
 import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
-import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
+import com.ii.smartgrid.smartgrid.model.routing.DistributionInstruction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransactionWithBattery;
 
 public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehaviour{
 

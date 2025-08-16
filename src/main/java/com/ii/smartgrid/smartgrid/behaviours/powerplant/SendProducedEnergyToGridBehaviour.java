@@ -6,7 +6,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.agents.RenewablePowerPlantAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 

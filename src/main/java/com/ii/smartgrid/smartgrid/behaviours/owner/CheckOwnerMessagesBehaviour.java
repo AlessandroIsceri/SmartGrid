@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.OwnerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
-import com.ii.smartgrid.smartgrid.model.Owner;
+import com.ii.smartgrid.smartgrid.model.entities.Owner;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

@@ -1,7 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours.powerplant;
 
 import com.ii.smartgrid.smartgrid.agents.HydroPowerPlantAgent;
-import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.RenewablePowerPlant;
 
 public class SendProducedHydroEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 

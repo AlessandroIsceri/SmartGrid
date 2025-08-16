@@ -1,9 +1,14 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
+import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.model.building.Appliance;
+import com.ii.smartgrid.smartgrid.model.building.BuildingPhotovoltaicSystem;
+import com.ii.smartgrid.smartgrid.model.building.Routine;
+import com.ii.smartgrid.smartgrid.model.building.Task;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 

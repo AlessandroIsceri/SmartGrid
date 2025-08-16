@@ -7,7 +7,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.model.entities.Grid;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

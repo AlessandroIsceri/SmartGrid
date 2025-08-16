@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.utils;
+package com.ii.smartgrid.smartgrid.agents;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -7,7 +7,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import com.ii.smartgrid.smartgrid.agents.CustomAgent;
+import com.ii.smartgrid.smartgrid.behaviours.simulationsettings.CheckSimulationSettingsMessagesBehaviour;
+import com.ii.smartgrid.smartgrid.behaviours.simulationsettings.StartNewTurnBehaviour;
+import com.ii.smartgrid.smartgrid.utils.EnergyUtil;
+import com.ii.smartgrid.smartgrid.utils.JsonUtil;
+import com.ii.smartgrid.smartgrid.utils.MessageUtil;
+import com.ii.smartgrid.smartgrid.utils.TimeUtils;
+import com.ii.smartgrid.smartgrid.utils.WeatherUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 
@@ -23,7 +29,6 @@ public class SimulationSettingsAgent extends CustomAgent{
     public enum SimulationStatus {ON, OFF}
     
     private static final String CONFIG_PATH = "src/main/resources/app.config";
-    private static final String PACKAGE_PATH = CustomAgent.class.getPackage().getName();
 
 	private List<String> agentNames;
     private double[][] weatherTransitionProbabilities;
@@ -70,12 +75,13 @@ public class SimulationSettingsAgent extends CustomAgent{
 
         try {
             ContainerController conC = this.getContainerController();
+            String packagePath = this.getClass().getPackage().getName();
 
             // Initialize every agent and populate the container
             for(String agentName : agentNames){
                 String className = agentName.split("-")[0]; 
                 Object[] params = null;
-                AgentController ac = conC.createNewAgent(agentName, PACKAGE_PATH + "." + className + "Agent", params);
+                AgentController ac = conC.createNewAgent(agentName, packagePath + "." + className + "Agent", params);
                 ac.start();
             }                        
         }
@@ -112,8 +118,8 @@ public class SimulationSettingsAgent extends CustomAgent{
         
         curElectricityPrice = EnergyUtil.getMeanElectricityPriceFromCoordinates(latitude, longitude);
 
-        addBehaviour(new StartNewTurn(this));  
-        addBehaviour(new CheckSimulationSettingsMessages(this));  
+        addBehaviour(new StartNewTurnBehaviour(this));  
+        addBehaviour(new CheckSimulationSettingsMessagesBehaviour(this));  
         this.log("Setup completed");
 	}
 

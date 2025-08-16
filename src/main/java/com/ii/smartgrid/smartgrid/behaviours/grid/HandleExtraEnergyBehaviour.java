@@ -2,7 +2,7 @@ package com.ii.smartgrid.smartgrid.behaviours.grid;
 
 import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
-import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.model.entities.Grid;
 
 public class HandleExtraEnergyBehaviour extends CustomOneShotBehaviour {
 

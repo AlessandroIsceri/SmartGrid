@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;

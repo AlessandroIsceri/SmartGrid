@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ii.smartgrid.smartgrid.model.CustomObject;
+import com.ii.smartgrid.smartgrid.model.entities.CustomObject;
 import com.ii.smartgrid.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WindSpeedStatus;

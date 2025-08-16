@@ -1,6 +1,6 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.routing;
 
-import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
+import com.ii.smartgrid.smartgrid.model.entities.CustomObject.Priority;
 
 public class EnergyTransactionWithoutBattery extends EnergyTransaction {
 

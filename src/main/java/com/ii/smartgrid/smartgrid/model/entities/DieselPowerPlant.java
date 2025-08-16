@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 public class DieselPowerPlant extends NonRenewablePowerPlant {
 

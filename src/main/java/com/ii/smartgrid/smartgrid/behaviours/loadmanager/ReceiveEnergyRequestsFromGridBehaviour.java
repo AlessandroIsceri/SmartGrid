@@ -4,9 +4,9 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.LoadManager;
+import com.ii.smartgrid.smartgrid.model.entities.LoadManager;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction.TransactionType;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

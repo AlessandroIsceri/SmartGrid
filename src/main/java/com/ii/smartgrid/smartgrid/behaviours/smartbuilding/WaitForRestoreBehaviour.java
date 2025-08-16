@@ -10,10 +10,10 @@ import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
-import com.ii.smartgrid.smartgrid.model.SmartBuilding;
+import com.ii.smartgrid.smartgrid.model.entities.SmartBuilding;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransactionWithoutBattery;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction.TransactionType;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

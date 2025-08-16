@@ -8,8 +8,8 @@ import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Cable;
-import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
-import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.model.entities.Grid;
+import com.ii.smartgrid.smartgrid.model.routing.DistributionInstruction;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

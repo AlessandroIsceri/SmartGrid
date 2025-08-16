@@ -1,11 +1,16 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.model.Cable;
+import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
+import com.ii.smartgrid.smartgrid.model.routing.DistributionInstruction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction.TransactionType;
 
 public class Grid extends CustomObject {
 

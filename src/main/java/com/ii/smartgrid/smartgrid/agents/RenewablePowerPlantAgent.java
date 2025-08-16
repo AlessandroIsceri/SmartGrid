@@ -2,7 +2,7 @@ package com.ii.smartgrid.smartgrid.agents;
 
 import com.ii.smartgrid.smartgrid.behaviours.GenericTurnBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
-import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.RenewablePowerPlant;
 
 import jade.core.behaviours.SequentialBehaviour;
 

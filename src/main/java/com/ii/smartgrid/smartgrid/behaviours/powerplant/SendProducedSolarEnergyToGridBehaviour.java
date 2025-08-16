@@ -1,7 +1,7 @@
 package com.ii.smartgrid.smartgrid.behaviours.powerplant;
 
 import com.ii.smartgrid.smartgrid.agents.SolarPowerPlantAgent;
-import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.WeatherUtil.WeatherStatus;
 
 public class SendProducedSolarEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{

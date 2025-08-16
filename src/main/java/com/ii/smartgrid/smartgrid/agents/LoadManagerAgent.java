@@ -8,8 +8,8 @@ import com.ii.smartgrid.smartgrid.behaviours.loadmanager.DistributeGridEnergyBeh
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.NonRenewablePowerPlantDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ReceiveEnergyRequestsFromGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.SendInstructionsToGridsBehaviour;
+import com.ii.smartgrid.smartgrid.model.entities.LoadManager;
 import com.ii.smartgrid.smartgrid.behaviours.loadmanager.ChangeNonRenewablePowerPlantsInfo;
-import com.ii.smartgrid.smartgrid.model.LoadManager;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 import jade.core.behaviours.SequentialBehaviour;

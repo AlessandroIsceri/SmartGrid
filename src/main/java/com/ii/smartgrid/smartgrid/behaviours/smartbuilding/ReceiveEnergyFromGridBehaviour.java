@@ -5,7 +5,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
-import com.ii.smartgrid.smartgrid.model.SmartBuilding;
+import com.ii.smartgrid.smartgrid.model.entities.SmartBuilding;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

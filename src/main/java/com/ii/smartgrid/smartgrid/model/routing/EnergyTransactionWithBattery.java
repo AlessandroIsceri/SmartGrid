@@ -1,7 +1,8 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.routing;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
+import com.ii.smartgrid.smartgrid.model.Battery;
+import com.ii.smartgrid.smartgrid.model.entities.CustomObject.Priority;
 
 public class EnergyTransactionWithBattery extends EnergyTransaction {
 

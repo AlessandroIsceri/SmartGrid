@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.smartgrid.agents.NonRenewablePowerPlantAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomBehaviour;
-import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

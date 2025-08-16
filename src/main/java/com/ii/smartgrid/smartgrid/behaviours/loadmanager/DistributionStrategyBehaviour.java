@@ -7,11 +7,11 @@ import java.util.List;
 
 import com.ii.smartgrid.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
-import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
-import com.ii.smartgrid.smartgrid.model.DistributionInstruction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
-import com.ii.smartgrid.smartgrid.model.LoadManager;
-import com.ii.smartgrid.smartgrid.model.WeightedGraphPath;
+import com.ii.smartgrid.smartgrid.model.entities.LoadManager;
+import com.ii.smartgrid.smartgrid.model.entities.CustomObject.Priority;
+import com.ii.smartgrid.smartgrid.model.routing.DistributionInstruction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.WeightedGraphPath;
 
 public abstract class DistributionStrategyBehaviour extends CustomOneShotBehaviour{
 

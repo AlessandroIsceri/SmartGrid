@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 import java.util.ArrayList;
 import java.util.List;

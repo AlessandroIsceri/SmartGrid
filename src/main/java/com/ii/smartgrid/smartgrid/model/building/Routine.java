@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.building;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

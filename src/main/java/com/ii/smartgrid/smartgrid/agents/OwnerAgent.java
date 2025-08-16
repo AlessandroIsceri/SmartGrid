@@ -1,7 +1,7 @@
 package com.ii.smartgrid.smartgrid.agents;
 
 import com.ii.smartgrid.smartgrid.behaviours.owner.CheckOwnerMessagesBehaviour;
-import com.ii.smartgrid.smartgrid.model.Owner;
+import com.ii.smartgrid.smartgrid.model.entities.Owner;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class OwnerAgent extends CustomAgent{

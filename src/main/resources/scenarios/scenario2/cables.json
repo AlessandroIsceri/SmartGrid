@@ -1,0 +1,46 @@
+{
+    "types" : {
+        "copperHigh2.5": {
+            "cableSection": 2.5e-6,
+            "resistivity": 1.68e-8,
+            "voltage": 11000.0
+        },
+        "copperLow2.5": {
+            "cableSection": 2.5e-6,
+            "resistivity": 1.68e-8,
+            "voltage": 230.0
+        }
+    },
+    "links": [
+        {
+            "from" : "SmartBuilding-1",
+            "to" : "Grid-1",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "WindPowerPlant-1",
+            "to" : "Grid-1",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "Grid-1",
+            "to" : "Grid-2",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "Grid-2",
+            "to" : "SmartBuilding-2",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "Grid-2",
+            "to" : "Grid-3",
+            "cableType" : "copperHigh2.5"
+        },
+        {
+            "from" : "Grid-3",
+            "to" : "SmartBuilding-3",
+            "cableType" : "copperLow2.5"
+        }
+    ]
+}

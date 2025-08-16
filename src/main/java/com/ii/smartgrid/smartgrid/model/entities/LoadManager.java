@@ -1,4 +1,4 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,7 +12,13 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedPseudograph;
 
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.smartgrid.model.Cable;
+import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlantInfo;
+import com.ii.smartgrid.smartgrid.model.routing.DistributionInstruction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransactionWithBattery;
+import com.ii.smartgrid.smartgrid.model.routing.WeightedGraphPath;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction.TransactionType;
 
 
 public class LoadManager extends CustomObject {

@@ -7,9 +7,9 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
-import com.ii.smartgrid.smartgrid.model.Routine;
-import com.ii.smartgrid.smartgrid.model.SmartBuilding;
-import com.ii.smartgrid.smartgrid.model.Task;
+import com.ii.smartgrid.smartgrid.model.building.Routine;
+import com.ii.smartgrid.smartgrid.model.building.Task;
+import com.ii.smartgrid.smartgrid.model.entities.SmartBuilding;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

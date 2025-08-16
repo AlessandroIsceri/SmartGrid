@@ -6,7 +6,7 @@ import java.util.Map;
 import com.ii.smartgrid.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.Coordinates;
-import com.ii.smartgrid.smartgrid.model.CustomObject;
+import com.ii.smartgrid.smartgrid.model.entities.CustomObject;
 import com.ii.smartgrid.smartgrid.utils.EnergyUtil;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 

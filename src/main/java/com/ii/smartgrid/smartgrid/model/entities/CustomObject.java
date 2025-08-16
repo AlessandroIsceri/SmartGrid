@@ -1,10 +1,12 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.entities;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ii.smartgrid.smartgrid.model.Cable;
+import com.ii.smartgrid.smartgrid.model.Coordinates;
 
 public abstract class CustomObject {
 

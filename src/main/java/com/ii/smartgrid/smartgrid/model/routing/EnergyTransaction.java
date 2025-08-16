@@ -1,11 +1,11 @@
-package com.ii.smartgrid.smartgrid.model;
+package com.ii.smartgrid.smartgrid.model.routing;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.ii.smartgrid.smartgrid.model.CustomObject.Priority;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.ii.smartgrid.smartgrid.model.entities.CustomObject.Priority;
 
 @JsonTypeInfo(
         use = Id.NAME,

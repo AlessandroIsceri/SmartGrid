@@ -1,8 +1,8 @@
 package com.ii.smartgrid.smartgrid.agents;
 
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.NonRenewablePowerPlantCoordinatesDiscoveryBehaviour;
-import com.ii.smartgrid.smartgrid.model.DieselPowerPlant;
-import com.ii.smartgrid.smartgrid.model.NonRenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.DieselPowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.NonRenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{

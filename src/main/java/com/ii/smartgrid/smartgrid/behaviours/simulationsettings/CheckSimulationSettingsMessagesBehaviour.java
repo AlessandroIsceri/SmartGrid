@@ -1,16 +1,17 @@
-package com.ii.smartgrid.smartgrid.utils;
+package com.ii.smartgrid.smartgrid.behaviours.simulationsettings;
 
+import com.ii.smartgrid.smartgrid.agents.SimulationSettingsAgent;
+import com.ii.smartgrid.smartgrid.agents.SimulationSettingsAgent.SimulationStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomCyclicBehaviour;
-import com.ii.smartgrid.smartgrid.utils.SimulationSettingsAgent.SimulationStatus;
 
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class CheckSimulationSettingsMessages extends CustomCyclicBehaviour{
+public class CheckSimulationSettingsMessagesBehaviour extends CustomCyclicBehaviour{
 
     private SimulationSettingsAgent simulationSettingsAgent;
 
-    public CheckSimulationSettingsMessages(SimulationSettingsAgent simulationSettingsAgent){
+    public CheckSimulationSettingsMessagesBehaviour(SimulationSettingsAgent simulationSettingsAgent){
         super(simulationSettingsAgent);
         this.simulationSettingsAgent = simulationSettingsAgent;
     }

@@ -11,7 +11,7 @@ import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveEnergyRequestsFromSmart
 import com.ii.smartgrid.smartgrid.behaviours.grid.ReceiveRoutingInstructionsFromLoadManagerBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyRequestToLoadManagerBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.grid.SendEnergyToSmartBuildingsBehaviour;
-import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.model.entities.Grid;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 import jade.core.behaviours.SequentialBehaviour;

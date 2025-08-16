@@ -9,11 +9,11 @@ import com.ii.smartgrid.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.smartgrid.agents.GridAgent.GridStatus;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.smartgrid.model.Battery;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction;
-import com.ii.smartgrid.smartgrid.model.EnergyTransaction.TransactionType;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithBattery;
-import com.ii.smartgrid.smartgrid.model.EnergyTransactionWithoutBattery;
-import com.ii.smartgrid.smartgrid.model.Grid;
+import com.ii.smartgrid.smartgrid.model.entities.Grid;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransactionWithBattery;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransactionWithoutBattery;
+import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction.TransactionType;
 import com.ii.smartgrid.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;

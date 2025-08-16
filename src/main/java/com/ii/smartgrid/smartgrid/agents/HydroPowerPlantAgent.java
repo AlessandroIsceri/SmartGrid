@@ -3,8 +3,8 @@ package com.ii.smartgrid.smartgrid.agents;
 import com.ii.smartgrid.smartgrid.behaviours.CoordinatesDiscoveryBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedEnergyToGridBehaviour;
 import com.ii.smartgrid.smartgrid.behaviours.powerplant.SendProducedHydroEnergyToGridBehaviour;
-import com.ii.smartgrid.smartgrid.model.HydroPowerPlant;
-import com.ii.smartgrid.smartgrid.model.RenewablePowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.HydroPowerPlant;
+import com.ii.smartgrid.smartgrid.model.entities.RenewablePowerPlant;
 import com.ii.smartgrid.smartgrid.utils.JsonUtil;
 
 public class HydroPowerPlantAgent extends RenewablePowerPlantAgent{
