@@ -61,18 +61,19 @@ public class BuildingPhotovoltaicSystem {
         }
 
         int cloudCover = WeatherUtil.cloudCoverageAvg[curWeather.ordinal()];
+        
         double declinationAngle = Math.toRadians(23.45 * Math.sin(Math.toRadians((360.0 / 365.0) * (dayOfTheYear - 81.0))));
         double latitudeInRadians = Math.toRadians(latitude);
 
-        double x = Math.toRadians(360.0 / 365.0 * (dayOfTheYear - 1.0));
+        double x = Math.toRadians(360.0 / 365.0 * (dayOfTheYear - 81.0));
         double equationOfTime = 9.87 * Math.sin(2.0 * x) - 7.53 * Math.cos(x) - 1.5 * Math.sin(x);
 
         double solarTimeInMinutes = curTimeInMinutes + (standardMeridian - longitude) * 4.0 + equationOfTime;
         double solarTimeInHours = solarTimeInMinutes / 60.0;
 
-        double w = Math.toRadians((solarTimeInHours - 12.0) * 15.0); // Degrees -> to radians
+        double hourAngle = Math.toRadians((solarTimeInHours - 12.0) * 15.0); //degrees -> to radians
 
-        double cosZenithAngle = Math.cos(latitudeInRadians) * Math.cos(declinationAngle) * Math.cos(w) + Math.sin(latitudeInRadians) * Math.sin(declinationAngle);
+        double cosZenithAngle = Math.cos(latitudeInRadians) * Math.cos(declinationAngle) * Math.cos(hourAngle) + Math.sin(latitudeInRadians) * Math.sin(declinationAngle);
 
         double zenithAngle = Math.acos(cosZenithAngle);
         double sinZenithAngle = Math.sin(zenithAngle);
@@ -81,44 +82,44 @@ public class BuildingPhotovoltaicSystem {
         double ghiClear = iZero * 0.7 * cosZenithAngle;
 
         double ghi = ghiClear * (1.0 - 0.75 * Math.pow(cloudCover / 8.0, 3.4));
-        double kT = ghi / (iZero * Math.max(0.065, cosZenithAngle));
+        double kt = ghi / (iZero * Math.max(0.065, cosZenithAngle));
 
         double dhi;
-        if (kT > 0.8) {
+        if (kt > 0.8) {
             dhi = ghi * 0.165;
-        } else if (kT >= 0.22) {
-            dhi = ghi * (0.951 - 0.16 * kT + 4.388 * Math.pow(kT, 2) - 16.64 * Math.pow(kT, 3) + 12.34 * Math.pow(kT, 4));
-        } else if (kT >= 0) {
-            dhi = (1.0 - 0.09 * kT) * ghi;
+        } else if (kt >= 0.22) {
+            dhi = ghi * (0.951 - 0.16 * kt + 4.388 * Math.pow(kt, 2) - 16.64 * Math.pow(kt, 3) + 12.34 * Math.pow(kt, 4));
+        } else if (kt >= 0) {
+            dhi = (1.0 - 0.09 * kt) * ghi;
         } else {
-            System.out.println("An error occurred while calculating kT in BuildingPhotovoltaic. " + kT);
+            System.out.println("An error occurred while calculating Kt in BuildingPhotovoltaic. " + kt);
             return 0;
         }
 
         double dni = (ghi - dhi) / cosZenithAngle;
 
         // ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
-        double cosAzimuth = (Math.sin(declinationAngle) * Math.cos(latitudeInRadians) - Math.cos(w) * Math.cos(declinationAngle) * Math.sin(latitudeInRadians)) / Math.sin(zenithAngle);
+        double cosAzimuthAngle = (Math.sin(declinationAngle) * Math.cos(latitudeInRadians) - Math.cos(hourAngle) * Math.cos(declinationAngle) * Math.sin(latitudeInRadians)) / Math.sin(zenithAngle);
 
         double tiltAngleInRadians = Math.toRadians(tiltAngle);
 
-        double incidenceCosine = cosZenithAngle * Math.cos(tiltAngleInRadians) + sinZenithAngle * Math.sin(tiltAngleInRadians) * cosAzimuth;
+        double cosIncidenceAngle = cosZenithAngle * Math.cos(tiltAngleInRadians) + sinZenithAngle * Math.sin(tiltAngleInRadians) * cosAzimuthAngle;
 
-        if (incidenceCosine < -1.0) {
-            incidenceCosine = -1.0;
-        } else if (incidenceCosine > 1.0) {
-            incidenceCosine = 1.0;
+        if (cosIncidenceAngle < -1.0) {
+            cosIncidenceAngle = -1.0;
+        } else if (cosIncidenceAngle > 1.0) {
+            cosIncidenceAngle = 1.0;
         }
 
-        double incidenceAngle = Math.acos(incidenceCosine);
+        double incidenceAngle = Math.acos(cosIncidenceAngle);
 
-        double gBeamPoa = dni * Math.cos(incidenceAngle);
-        double gDiffusePoa = dhi * ((1.0 + Math.cos(tiltAngleInRadians)) / 2.0);
-        double gGroundPoa = ghi * ALBEDO * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
+        double eBeamPoa = dni * Math.cos(incidenceAngle);
+        double eDiffusePoa = dhi * ((1.0 + Math.cos(tiltAngleInRadians)) / 2.0);
+        double eGroundPoa = ghi * ALBEDO * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
 
-        double gPoa = gBeamPoa + gDiffusePoa + gGroundPoa;
+        double ePoa = eBeamPoa + eDiffusePoa + eGroundPoa;
 
-        return efficiency * area * gPoa;
+        return efficiency * area * ePoa;
     }
 
     public double getLatitude() {
