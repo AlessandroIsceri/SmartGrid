@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.smartgrid.agents.SmartBuildingAgent;
 import com.ii.smartgrid.smartgrid.behaviours.CustomOneShotBehaviour;
+import com.ii.smartgrid.smartgrid.model.Battery;
 import com.ii.smartgrid.smartgrid.model.Cable;
 import com.ii.smartgrid.smartgrid.model.entities.SmartBuilding;
 import com.ii.smartgrid.smartgrid.model.routing.EnergyTransaction;
@@ -34,9 +35,18 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
         String gridName = smartBuilding.getGridName();
         TransactionType transactionType;
         double energy = Math.abs(expectedConsumption - availableEnergy);
-        // If the production is greater than consumption, send excess energy 
+        // If the production is greater than consumption, send excess energy
         // Else, send a request containing the needed amount of energy to the grid
         if(availableEnergy >= expectedConsumption){
+            Battery battery = smartBuilding.getBattery();
+            // If the battery is less than 80%, charge it.
+            // Otherwise, send the energy to the grid.
+            if(battery != null && battery.getStateOfCharge() < 0.80){
+                // Charge the battery
+                double excess = battery.fillBattery(energy);
+                // Send excess energy
+                energy = excess;
+            }
             transactionType = TransactionType.SEND;
             Cable cable = smartBuilding.getCable(gridName);
             energy = cable.computeTransmittedPower(energy);
