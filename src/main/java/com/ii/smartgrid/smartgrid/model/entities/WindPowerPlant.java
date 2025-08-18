@@ -30,7 +30,11 @@ public class WindPowerPlant extends RenewablePowerPlant {
         // Conversion from km/h to m/s
         windSpeed = windSpeed / 3.6;
 
-        rotorSweptArea = (Math.PI * (rotorDiameter / 2.0));
+        if(windSpeed < minWindSpeed || windSpeed > maxWindSpeed){
+            return 0;
+        }
+
+        rotorSweptArea = (Math.PI * Math.pow((rotorDiameter / 2.0), 2));
         energyProd = 0.5 * airDensity * rotorSweptArea * Math.pow(windSpeed, 3) * PRESSURE_COEFFICIENT;
         return energyProd;
     }
