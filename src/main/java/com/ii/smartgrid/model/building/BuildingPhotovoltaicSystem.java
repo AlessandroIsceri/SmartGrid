@@ -2,6 +2,7 @@ package com.ii.smartgrid.model.building;
 
 import java.time.LocalTime;
 
+import com.ii.smartgrid.model.Coordinates;
 import com.ii.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.utils.WeatherUtil;
 import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
@@ -14,8 +15,7 @@ public class BuildingPhotovoltaicSystem {
     private double albedo;
     private double azimuthAngleArray; // Default 0
     private double tiltAngle; // Default 30
-    private double latitude;
-    private double longitude;
+    private Coordinates coordinates;
 
     public BuildingPhotovoltaicSystem() {
         super();
@@ -71,11 +71,12 @@ public class BuildingPhotovoltaicSystem {
         int cloudCover = WeatherUtil.cloudCoverageAvg[curWeather.ordinal()];
         
         double declinationAngle = Math.toRadians(23.45 * Math.sin(Math.toRadians((360.0 / 365.0) * (dayOfTheYear - 81.0))));
-        double latitudeInRadians = Math.toRadians(latitude);
+        double latitudeInRadians = coordinates.getRadiansLatitude();
 
         double x = Math.toRadians(360.0 / 365.0 * (dayOfTheYear - 81.0));
         double equationOfTime = 9.87 * Math.sin(2.0 * x) - 7.53 * Math.cos(x) - 1.5 * Math.sin(x);
 
+        double longitude = coordinates.getLongitude();
         double solarTimeInMinutes = curTimeInMinutes + (standardMeridian - longitude) * 4.0 + equationOfTime;
         double solarTimeInHours = solarTimeInMinutes / 60.0;
 
@@ -130,20 +131,12 @@ public class BuildingPhotovoltaicSystem {
         return efficiency * area * ePoa;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
     }
 
     public double getTiltAngle() {
@@ -153,6 +146,5 @@ public class BuildingPhotovoltaicSystem {
     public void setTiltAngle(double tiltAngle) {
         this.tiltAngle = tiltAngle;
     }
-
 
 }
