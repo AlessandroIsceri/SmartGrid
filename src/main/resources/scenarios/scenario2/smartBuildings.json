@@ -31,6 +31,7 @@
             "latitude": 2.8250926770202165,
             "longitude": 104.16364967701783,
             "azimuthAngleArray": 0.0,
+            "albedo" : 0.33,
             "tiltAngle": 30.0
         },
         "gridName": "Grid-1",
@@ -93,6 +94,7 @@
             "latitude": 2.8250926770207165,
             "longitude": 104.20501610019711,
             "azimuthAngleArray": 0.0,
+            "albedo" : 0.33,
             "tiltAngle": 30.0
         },
         "gridName": "Grid-2",

@@ -9,9 +9,9 @@ import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
 public class BuildingPhotovoltaicSystem {
 
     private static final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2
-    private static final double ALBEDO = 0.33; // Coefficient of the surface where panels are installed (red tiles)
-    private double efficiency; 
+    private double efficiency;
     private double area; // m^2
+    private double albedo;
     private double azimuthAngleArray; // Default 0
     private double tiltAngle; // Default 30
     private double latitude;
@@ -19,6 +19,14 @@ public class BuildingPhotovoltaicSystem {
 
     public BuildingPhotovoltaicSystem() {
         super();
+    }
+
+    public double getAlbedo() {
+        return albedo;
+    }
+
+    public void setAlbedo(double albedo) {
+        this.albedo = albedo;
     }
 
     public double getArea() {
@@ -115,7 +123,7 @@ public class BuildingPhotovoltaicSystem {
 
         double eBeamPoa = dni * Math.cos(incidenceAngle);
         double eDiffusePoa = dhi * ((1.0 + Math.cos(tiltAngleInRadians)) / 2.0);
-        double eGroundPoa = ghi * ALBEDO * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
+        double eGroundPoa = ghi * albedo * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
 
         double ePoa = eBeamPoa + eDiffusePoa + eGroundPoa;
 

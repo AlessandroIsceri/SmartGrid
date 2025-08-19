@@ -9,11 +9,19 @@ import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
 public class SolarPowerPlant extends RenewablePowerPlant {
 
     private static final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2
-    private static final double ALBEDO = 0.33; // Coefficient of the surface where panels are installed (red tiles)
     private double efficiency;
+    private double albedo;
     private double area; // m^2
     private double azimuthAngleArray; 
     private double tiltAngle; // default 30
+
+    public double getAlbedo() {
+        return albedo;
+    }
+
+    public void setAlbedo(double albedo) {
+        this.albedo = albedo;
+    }
 
     public double getArea() {
         return area;
@@ -114,7 +122,7 @@ public class SolarPowerPlant extends RenewablePowerPlant {
 
         double eBeamPoa = dni * Math.cos(incidenceAngle);
         double eDiffusePoa = dhi * ((1.0 + Math.cos(tiltAngleInRadians)) / 2.0);
-        double eGroundPoa = ghi * ALBEDO * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
+        double eGroundPoa = ghi * albedo * ((1.0 - Math.cos(tiltAngleInRadians)) / 2.0);
 
         double ePoa = eBeamPoa + eDiffusePoa + eGroundPoa;
 
