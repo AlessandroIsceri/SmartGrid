@@ -6,19 +6,11 @@ import com.ii.smartgrid.utils.WeatherUtil.WindSpeedStatus;
 public class WindPowerPlant extends RenewablePowerPlant {
 
     private static final double PRESSURE_COEFFICIENT = 0.4;
+    private static final double AIR_DENSITY = 1.225;
     private double minWindSpeed;  // m/s
     private double maxWindSpeed;  // m/s
-    private double airDensity;    // kg/m3
     private double rotorDiameter; // m
     private double rotorSweptArea; // m^2
-
-    public double getAirDensity() {
-        return airDensity;
-    }
-
-    public void setAirDensity(double airDensity) {
-        this.airDensity = airDensity;
-    }
 
     @Override
     public double getHourlyProduction(Object... weatherConditions) {
@@ -35,7 +27,7 @@ public class WindPowerPlant extends RenewablePowerPlant {
         }
 
         rotorSweptArea = (Math.PI * Math.pow((rotorDiameter / 2.0), 2));
-        energyProd = 0.5 * airDensity * rotorSweptArea * Math.pow(windSpeed, 3) * PRESSURE_COEFFICIENT;
+        energyProd = 0.5 * AIR_DENSITY * rotorSweptArea * Math.pow(windSpeed, 3) * PRESSURE_COEFFICIENT;
         return energyProd;
     }
 
