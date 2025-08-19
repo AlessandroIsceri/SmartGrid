@@ -28,20 +28,15 @@
         "buildingPhotovoltaicSystem":{
             "efficiency": 0.1,
             "area": 40.0,
-            "latitude": 2.8250926770202165,
-            "longitude": 104.16364967701783,
+            "coordinates": {
+                "latitude": 2.8250926770202165,
+                "longitude": 104.16364967701783
+            },
             "azimuthAngleArray": 0.0,
             "albedo" : 0.33,
             "tiltAngle": 30.0
         },
         "gridName": "Grid-1",
-        "battery": {
-            "maxCapacityInWatt": 5120,
-            "storedEnergy": 0.0,
-            "dischargeCurrent": 200.0,
-            "efficiency": 0.9,
-            "voltage" : 25.6
-        },
         "routine":{
             "tasks":[
                 {
@@ -91,20 +86,15 @@
         "buildingPhotovoltaicSystem":{
             "efficiency": 0.1,
             "area": 40.0,
-            "latitude": 2.8250926770207165,
-            "longitude": 104.20501610019711,
+            "coordinates": {
+                "latitude": 2.8250926770207165,
+                "longitude": 104.20501610019711
+            },
             "azimuthAngleArray": 0.0,
             "albedo" : 0.33,
             "tiltAngle": 30.0
         },
         "gridName": "Grid-2",
-        "battery": {
-            "maxCapacityInWatt": 5120,
-            "storedEnergy": 0.0,
-            "dischargeCurrent": 200.0,
-            "efficiency": 0.9,
-            "voltage" : 25.6
-        },
         "routine": {
             "tasks": [
                 {
@@ -140,13 +130,6 @@
             }
         ],
         "gridName": "Grid-3",
-        "battery": {
-            "maxCapacityInWatt": 5120,
-            "storedEnergy": 0.0,
-            "dischargeCurrent": 200.0,
-            "efficiency": 0.9,
-            "voltage" : 25.6
-        },
         "routine": {
             "tasks": [
                 {
