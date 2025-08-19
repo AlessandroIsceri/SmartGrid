@@ -72,7 +72,7 @@ public class EnergyUtil {
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
-            StringBuffer content = new StringBuffer();
+            StringBuilder content = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
                 content.append(inputLine);
             }
@@ -81,7 +81,7 @@ public class EnergyUtil {
 
             TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> jsonObject = null;
+            Map<String, Object> jsonObject;
             try {
                 jsonObject = objectMapper.readValue(content.toString(), typeRef);
                 return (String) jsonObject.get("name");

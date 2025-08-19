@@ -19,9 +19,9 @@ public class MessageUtil {
     public static final String CABLE_COSTS = "cableCosts";
     public static final String MAX_TURN_PRODUCTION = "maxTurnProduction";
     public static final String ON = "on";
-    public static final String NUMBER_OF_MSGS_TO_RECEIVE = "numberOfMsgsToReceive";
+    public static final String NUMBER_OF_MESSAGES_TO_RECEIVE = "numberOfMessagesToReceive";
     public static final String DISTRIBUTION_INSTRUCTIONS = "distributionInstructions";
-    public static final String ACTIVE_NON_RENEWABLE_POWERPLANTS = "activeNonRenewablePowerPlantss";
+    public static final String ACTIVE_NON_RENEWABLE_POWER_PLANTS = "activeNonRenewablePowerPlants";
     public static final String SMART_BUILDING = "smartBuilding";
     public static final String TASKS = "tasks";
     public static final String RESULT = "result";

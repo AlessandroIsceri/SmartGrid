@@ -44,7 +44,7 @@ public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
                     log("Error: invalid operation");
                 }
             } else if(receivedMsg.getPerformative() == ACLMessage.REFUSE){
-                // Refuse -> The grid couldn't sent the needed amount of energy
+                // Refuse -> The grid couldn't send the needed amount of energy
                 if(operation.equals(MessageUtil.CONSUME)){
                     log("The grid couldn't satisfy the request (possible blackout incoming)");
                     smartBuildingAgent.getSmartBuilding().shutDown();

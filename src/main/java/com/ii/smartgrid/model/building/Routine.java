@@ -57,7 +57,7 @@ public class Routine {
         LocalTime start = TimeUtils.getLocalTimeFromString(task.getStartTime());
         LocalTime end = TimeUtils.getLocalTimeFromString(task.getEndTime());
         if (start.isAfter(end)) {
-            // Task is running during midnight -> has to be split into two sub tasks
+            // Task is running during midnight -> has to be split into two sub-tasks
             return TaskStatus.TO_SPLIT;
         } else if (start.equals(end)) {
             // Useless task
@@ -72,7 +72,7 @@ public class Routine {
             Task curTask = tasksIterator.next();
             TaskStatus curTaskStatus = checkTask(curTask);
             if (curTaskStatus == TaskStatus.TO_SPLIT) {
-                // The task has to be split into two sub tasks
+                // The task has to be split into two sub-tasks
                 Task task1 = new Task(curTask.getApplianceName(), curTask.getStartTime(), "00:00");
                 Task task2 = new Task(curTask.getApplianceName(), "00:00", curTask.getEndTime());
                 tasksIterator.add(task1);

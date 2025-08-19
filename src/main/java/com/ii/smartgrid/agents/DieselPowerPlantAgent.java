@@ -11,7 +11,7 @@ public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
     public void setup(){
         String dieselPowerPlantName = this.getLocalName();
 
-        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.DIESEL_POWERPLANTS_PATH, dieselPowerPlantName, DieselPowerPlant.class);
+        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.DIESEL_POWER_PLANTS_PATH, dieselPowerPlantName, DieselPowerPlant.class);
         
         NonRenewablePowerPlant dieselPowerPlant = getNonRenewablePowerPlant();
         dieselPowerPlant.setOn(false);

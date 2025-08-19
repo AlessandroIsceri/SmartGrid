@@ -17,7 +17,7 @@ import jade.lang.acl.MessageTemplate;
 public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBehaviour{
     private int requestCont = 0;
     private boolean finished = false;
-    private int smartBuildingsCount = 0;
+    private int smartBuildingsCount;
     private GridAgent gridAgent;
 
     public ReceiveEnergyRequestsFromSmartBuildingsBehaviour(GridAgent gridAgent){
@@ -34,7 +34,7 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
             return;
         }
 
-		// Requests are sent from non-blackout buldings
+		// Requests are sent from non-blackout buildings
         // Informs are sent from blackout buildings
         MessageTemplate mt1 = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), 
                                                 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
@@ -66,14 +66,14 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
                 EnergyTransaction energyTransaction  = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
                 TransactionType transactionType = energyTransaction.getTransactionType();
                 if(transactionType == TransactionType.RECEIVE) {
-                    // The smartbuilding has requested energy
+                    // The smart building has requested energy
                     double requestedEnergy = energyTransaction.getEnergyTransactionValue();
                     grid.addExpectedConsumption(requestedEnergy);
                     grid.addEnergyRequest(sender, energyTransaction);
                     grid.updateGridPriority(energyTransaction.getPriority());
                     log("Requested Energy: " + requestedEnergy);
                 } else {
-                    // The smartbuilding has released energy
+                    // The smart building has released energy
                     double releasedEnergy = energyTransaction.getEnergyTransactionValue();
                     log("Released Energy: " + releasedEnergy);
                     grid.addExpectedProduction(releasedEnergy);

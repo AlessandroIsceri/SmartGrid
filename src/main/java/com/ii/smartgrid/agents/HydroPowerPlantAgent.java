@@ -13,7 +13,7 @@ public class HydroPowerPlantAgent extends RenewablePowerPlantAgent{
     public void setup(){
  
         String hydroPowerPlantName = this.getLocalName();
-        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.HYDRO_POWERPLANTS_PATH, hydroPowerPlantName, HydroPowerPlant.class);
+        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.HYDRO_POWER_PLANTS_PATH, hydroPowerPlantName, HydroPowerPlant.class);
         
         RenewablePowerPlant hydroPowerPlant = getRenewablePowerPlant();
 

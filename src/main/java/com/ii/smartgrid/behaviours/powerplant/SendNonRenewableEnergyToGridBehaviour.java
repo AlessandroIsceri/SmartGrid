@@ -23,7 +23,7 @@ public class SendNonRenewableEnergyToGridBehaviour extends CustomOneShotBehaviou
 
     @Override
     public void action() {
-        // The energy produced by Non Renewable Powerplants is sent to the grids
+        // The energy produced by Non-Renewable Power plants is sent to the grids
         NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
 
         double givenEnergy = nonRenewablePowerPlant.getHourlyProduction() * TimeUtils.getTurnDurationHours();

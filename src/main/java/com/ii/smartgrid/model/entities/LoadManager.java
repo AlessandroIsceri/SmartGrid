@@ -55,13 +55,13 @@ public class LoadManager extends CustomObject {
         }
     }
 
-    public void addDistributionInstructions(String nodeName, DistributionInstruction shortesPath) {
+    public void addDistributionInstructions(String nodeName, DistributionInstruction shortestPath) {
         // Add a DistributionInstruction
         List<DistributionInstruction> curNodeDistributionInstructions = distributionInstructions.get(nodeName);
         if (curNodeDistributionInstructions == null) {
             curNodeDistributionInstructions = new ArrayList<>();
         }
-        curNodeDistributionInstructions.add(shortesPath);
+        curNodeDistributionInstructions.add(shortestPath);
         distributionInstructions.put(nodeName, curNodeDistributionInstructions);
     }
 

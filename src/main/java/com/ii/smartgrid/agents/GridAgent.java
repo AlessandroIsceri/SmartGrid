@@ -54,12 +54,12 @@ public class GridAgent extends CustomAgent{
         @Override
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             // 1. Receives energy requests from SmartBuildings (a SmartBuilding can request or release energy to grid) 
-            // 2. Receives energy produced by Renewable Powerplants
-            // 3. Receives energy produced by Non Renewable Powerplants (if active)
+            // 2. Receives energy produced by Renewable Power plants
+            // 3. Receives energy produced by Non-Renewable Power plants (if active)
             // 4. Sends the energy requested/available to the LoadManager in order to receive routing instructions
-            // 5. Receive the Distributiom Instructions from LoadManager
+            // 5. Receive the Distribution Instructions from LoadManager
             // 6. Forward routing messages following the protocol given by LoadManager to other grids
-            // 7. Follow the instructions given by the loadmanager for handling the energy
+            // 7. Follow the instructions given by the load manager for handling the energy
             // 8. Send the energy to SmartBuilding (Following a priority protocol)
             // 9. Handle the excess energy (by storing the extra energy into its battery)
             sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyRequestsFromSmartBuildingsBehaviour(gridAgent));

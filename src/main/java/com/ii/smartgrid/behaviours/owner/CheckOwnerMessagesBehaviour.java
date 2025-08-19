@@ -33,7 +33,7 @@ public class CheckOwnerMessagesBehaviour extends CustomCyclicBehaviour {
                 for (String curName : smartBuildingsNames) {
                     if (curName.equals(buildingName)) {
                         jsonObject.remove(MessageUtil.SMART_BUILDING);
-                        // Send the request to update the smartbuilding routine 
+                        // Send the request to update the smart building routine
                         customAgent.createAndSend(ACLMessage.REQUEST, curName, jsonObject, receivedMsg.getConversationId());
                     }
                 }

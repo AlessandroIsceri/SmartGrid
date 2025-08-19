@@ -32,7 +32,7 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
         Grid grid = gridAgent.getGrid();
         String loadManagerName = grid.getLoadManagerName();
         Map<String, Object> content = new HashMap<>();
-        EnergyTransaction energyTransaction = null;
+        EnergyTransaction energyTransaction;
 
         double energyTransactionValue = grid.getExpectedProduction() - grid.getExpectedConsumption();
         TransactionType energyTransactionType;

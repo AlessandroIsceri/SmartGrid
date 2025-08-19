@@ -33,7 +33,7 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
             return;
         }
 
-        // Create a message template to match all renewable powerplants
+        // Create a message template to match all renewable power plants
         MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
         Grid grid = gridAgent.getGrid();

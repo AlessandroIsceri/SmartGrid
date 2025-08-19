@@ -47,7 +47,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                     continue;
                 }
                 double minCost = Double.MAX_VALUE;
-                WeightedGraphPath shortesPath = null;
+                WeightedGraphPath shortestPath = null;
 
                 Iterator<EnergyTransactionWithBattery> gridsWithBatteryIterator = gridsWithBattery.iterator();
 
@@ -64,11 +64,11 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                     double curCost = path.getTotalCost();
                     if(curCost < minCost){
                         minCost = curCost;
-                        shortesPath = path;
+                        shortestPath = path;
                     }
                 }
 
-                if(shortesPath == null){
+                if(shortestPath == null){
                     // No grids with battery found -> empty distribution instructions for current producer
                     List<String> path = new ArrayList<>();
                     path.add(producerNode.getNodeName());
@@ -77,23 +77,23 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                     continue;
                 }
 
-                String nearestGridWithBatteryName = shortesPath.getTarget();
+                String nearestGridWithBatteryName = shortestPath.getTarget();
                 EnergyTransactionWithBattery nearestGridWithBattery = (EnergyTransactionWithBattery) loadManager.getEnergyTransaction(nearestGridWithBatteryName);
 
                 // Compute available energy and maxSendableEnergy
                 double availableEnergy = producerNode.getEnergyTransactionValue();
-                DistributionInstruction distributionInstruction = null;
+                DistributionInstruction distributionInstruction;
                 double epsilon = 1.0;
                 double maxSendableEnergy = nearestGridWithBattery.getMissingEnergyForThreshold(EnergyTransactionWithBattery.FULL_BATTERY);
                  
-                maxSendableEnergy = loadManager.computeEnergyToSatisfyRequest(maxSendableEnergy, shortesPath.getGraphPath());
+                maxSendableEnergy = loadManager.computeEnergyToSatisfyRequest(maxSendableEnergy, shortestPath.getGraphPath());
 
                 if(maxSendableEnergy > availableEnergy){
-                    // All energy can be sended
-                    distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), availableEnergy);
+                    // All energy can be sent
+                    distributionInstruction = new DistributionInstruction(shortestPath.getGraphPath(), availableEnergy);
                     producerNode.sendEnergy(availableEnergy);
 
-                    double lostEnergy = loadManager.computeEnergyLoss(availableEnergy, shortesPath.getGraphPath());
+                    double lostEnergy = loadManager.computeEnergyLoss(availableEnergy, shortestPath.getGraphPath());
                     double receivedEnergy = availableEnergy - lostEnergy;
                     nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
                     
@@ -101,10 +101,10 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                     producerNodesIterator.remove();
                 }else{
                     // Send maxSendableEnergy 
-                    distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), maxSendableEnergy);
+                    distributionInstruction = new DistributionInstruction(shortestPath.getGraphPath(), maxSendableEnergy);
                     producerNode.sendEnergy(maxSendableEnergy);
 
-                    double lostEnergy = loadManager.computeEnergyLoss(maxSendableEnergy, shortesPath.getGraphPath());
+                    double lostEnergy = loadManager.computeEnergyLoss(maxSendableEnergy, shortestPath.getGraphPath());
                     double receivedEnergy = maxSendableEnergy - lostEnergy;
                     nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
                     
@@ -117,7 +117,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
                 // Save the path
                 loadManager.addDistributionInstructions(producerNode.getNodeName(), distributionInstruction);
                 
-                // If there are not energy producers, terminate the behaviour
+                // If there are no energy producers, terminate the behaviour
                 if(producerNodes.isEmpty()){
                     return;
                 }

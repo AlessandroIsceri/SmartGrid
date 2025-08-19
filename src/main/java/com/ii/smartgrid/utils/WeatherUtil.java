@@ -24,14 +24,14 @@ public class WeatherUtil {
     public static List<String> sunriseHours = new ArrayList<>();
     public static List<String> sunsetHours = new ArrayList<>();
 
-    private static String getResultFromHTTPRequest(double latitude, double longitude, String startDate, String endDate, String frequence, String requestedParameter) {
+    private static String getResultFromHTTPRequest(double latitude, double longitude, String startDate, String endDate, String frequency, String requestedParameter) {
         try {
             Map<String, String> parameters = new HashMap<>();
             parameters.put("latitude", "" + latitude);
             parameters.put("longitude", "" + longitude);
             parameters.put("start_date", startDate);
             parameters.put("end_date", endDate);
-            parameters.put(frequence, requestedParameter);
+            parameters.put(frequency, requestedParameter);
 
             // Set TimeZone
             String timeZone = TimeUtils.getTimeZone();
@@ -73,7 +73,7 @@ public class WeatherUtil {
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             // Read the API output
-            StringBuffer content = new StringBuffer();
+            StringBuilder content = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
                 content.append(inputLine);
             }

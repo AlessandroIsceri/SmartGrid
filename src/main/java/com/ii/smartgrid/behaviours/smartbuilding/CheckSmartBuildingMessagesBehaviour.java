@@ -37,10 +37,10 @@ public class CheckSmartBuildingMessagesBehaviour extends CustomCyclicBehaviour{
             
             Routine routine = smartBuilding.getRoutine();
             
-            // Correctly received the new routine, send an agree
+            // Correctly received the new routine, send an "agree"
 			customAgent.createAndSendReply(ACLMessage.AGREE, receivedMsg);
             
-            boolean result = true;
+            boolean result;
             // Update the routine
 			if(operation.equals(MessageUtil.ADD)) {
                 result = routine.addTasks(tasks, smartBuilding.getAppliances());

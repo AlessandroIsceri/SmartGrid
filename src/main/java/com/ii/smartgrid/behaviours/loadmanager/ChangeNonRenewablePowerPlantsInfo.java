@@ -25,9 +25,9 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
     public void action() {
         LoadManager loadManager = loadManagerAgent.getLoadManager();
 
-        // Turn on non renewable powerplants until the system reaches enough energy 
+        // Turn on non-renewable power plants until the system reaches enough energy
         // Compute the difference between the effective production and the needed energy
-        // When the effective production is greater than required energy, turn off the powerplants that are no longer required
+        // When the effective production is greater than required energy, turn off the power plants that are no longer required
          
         // The required energy is the amount needed to charge all batteries to 75% if they have less than 25%
         double requiredEnergy = loadManager.getBatteryRequiredEnergy();
@@ -45,7 +45,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
             }
         }
 
-        // The first i non renewable powerplants are "on" --> turn off the ones that are not needed 
+        // The first i non-renewable power plants are "on" --> turn off the ones that are not needed
         for(int j = pos - 1; j > 0; j--){
             NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = nonRenewablePowerPlantInfos.get(j);
             double ppMaxTurnProduction = nonRenewablePowerPlantInfo.getMaxTurnProduction();
@@ -55,7 +55,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
             }
         }
 
-        // Send messages containing the information about non renewable powerplants that were activated this turn
+        // Send messages containing the information about non-renewable power plants that were activated this turn
         for(NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos){
             Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.ON, nonRenewablePowerPlantInfo.isOn());

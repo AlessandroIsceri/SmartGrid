@@ -13,7 +13,7 @@ public class SolarPowerPlantAgent extends RenewablePowerPlantAgent{
     public void setup(){
         String solarPowerPlantName = this.getLocalName();
 
-        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.SOLAR_POWERPLANTS_PATH, solarPowerPlantName, SolarPowerPlant.class);
+        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.SOLAR_POWER_PLANTS_PATH, solarPowerPlantName, SolarPowerPlant.class);
         
         RenewablePowerPlant solarPowerPlant = getRenewablePowerPlant();
         solarPowerPlant.addConnectedAgentName(solarPowerPlant.getGridName());

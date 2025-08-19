@@ -16,19 +16,19 @@ public class DistributeGridEnergyBehaviour extends DistributionStrategyBehaviour
     protected DistributionInstruction mainDistributionLogic() {
         // Update energy request of current node
         double neededEnergy = consumerNode.getEnergyTransactionValue();
-        neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortesPath.getGraphPath());
+        neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortestPath.getGraphPath());
 
-        DistributionInstruction distributionInstruction = null;
+        DistributionInstruction distributionInstruction;
         double availableEnergy = nearestProducerNode.getEnergyTransactionValue();
         
         double epsilon = 1.0;
         if(availableEnergy > neededEnergy){
             // Enough energy for satisfying current consumer request
-            distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), neededEnergy);
+            distributionInstruction = new DistributionInstruction(shortestPath.getGraphPath(), neededEnergy);
             nearestProducerNode.sendEnergy(neededEnergy);
 
             // Compute energy loss
-            double lostEnergy = loadManager.computeEnergyLoss(neededEnergy, shortesPath.getGraphPath());
+            double lostEnergy = loadManager.computeEnergyLoss(neededEnergy, shortestPath.getGraphPath());
             double receivedEnergy = neededEnergy - lostEnergy;
             consumerNode.receiveEnergy(receivedEnergy);
             
@@ -38,11 +38,11 @@ public class DistributeGridEnergyBehaviour extends DistributionStrategyBehaviour
             }
         } else {
             // Missing energy for satisfying current consumer request, sends what the producer can provide 
-            distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), availableEnergy);
+            distributionInstruction = new DistributionInstruction(shortestPath.getGraphPath(), availableEnergy);
             nearestProducerNode.sendEnergy(availableEnergy);
 
             // Compute energy loss
-            double lostEnergy = loadManager.computeEnergyLoss(availableEnergy, shortesPath.getGraphPath());
+            double lostEnergy = loadManager.computeEnergyLoss(availableEnergy, shortestPath.getGraphPath());
             double receivedEnergy = availableEnergy - lostEnergy;
 
             consumerNode.receiveEnergy(receivedEnergy);

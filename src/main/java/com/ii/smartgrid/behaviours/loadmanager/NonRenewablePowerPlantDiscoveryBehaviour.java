@@ -38,7 +38,7 @@ public class NonRenewablePowerPlantDiscoveryBehaviour extends CustomBehaviour{
         LoadManager loadManager = loadManagerAgent.getLoadManager();
         List<String> nonRenewablePowerPlantNames = loadManager.getNonRenewablePowerPlantNames();
 
-        // Create a message template to match all non renewable powerplants
+        // Create a message template to match all non-renewable power plants
         MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
         MessageTemplate mt2 = MessageTemplate.MatchSender(new AID(nonRenewablePowerPlantNames.get(0), AID.ISLOCALNAME));
         for(int i = 1; i < nonRenewablePowerPlantNames.size(); i++){
@@ -54,7 +54,7 @@ public class NonRenewablePowerPlantDiscoveryBehaviour extends CustomBehaviour{
             double maxTurnProduction = (double) jsonObject.get(MessageUtil.MAX_TURN_PRODUCTION);
             boolean on = (boolean) jsonObject.get(MessageUtil.ON); 
 
-            // Create and add non renewable powerplant info
+            // Create and add non-renewable power plant info
             NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = new NonRenewablePowerPlantInfo(nonRenewablePowerPlantName, maxTurnProduction, on);
             loadManager.addNonRenewablePowerPlantInfo(nonRenewablePowerPlantInfo);
 

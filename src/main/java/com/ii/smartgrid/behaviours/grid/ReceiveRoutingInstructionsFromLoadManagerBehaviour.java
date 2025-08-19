@@ -37,13 +37,13 @@ public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBe
         if (receivedMsg != null) {
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
 
-            // Receive information about which non renewable powerplant was turned on this turn
+            // Receive information about which non-renewable power plant was turned on this turn
             List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = customAgent.readValueFromJson(
-                    jsonObject.get(MessageUtil.ACTIVE_NON_RENEWABLE_POWERPLANTS),
+                    jsonObject.get(MessageUtil.ACTIVE_NON_RENEWABLE_POWER_PLANTS),
                     new TypeReference<List<NonRenewablePowerPlantInfo>>() {}
                 );
 
-            int numberOfMessagesToReceive = (int) jsonObject.get(MessageUtil.NUMBER_OF_MSGS_TO_RECEIVE);
+            int numberOfMessagesToReceive = (int) jsonObject.get(MessageUtil.NUMBER_OF_MESSAGES_TO_RECEIVE);
 
             if (gridAgent.getGridStatus() == GridStatus.SEND) {
                 // If Grid has energy to send, it will receive distribution instructions
@@ -54,7 +54,7 @@ public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBe
                 grid.setDistributionInstructions(distributionInstructions);
             }
 
-            // Update non renewable power plant status 
+            // Update non-renewable power plant status
             grid.updateNonRenewablePowerPlantActiveStatus(nonRenewablePowerPlantInfos);
             grid.setNumberOfMessagesToReceive(numberOfMessagesToReceive);
             finished = true;

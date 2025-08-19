@@ -28,8 +28,8 @@ public class SendInstructionsToGridsBehaviour extends CustomOneShotBehaviour{
             // Iterate through the grids and send corresponding distribution instructions
             Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.DISTRIBUTION_INSTRUCTIONS, loadManager.getDistributionInstructionsForGrid(gridName));
-            content.put(MessageUtil.ACTIVE_NON_RENEWABLE_POWERPLANTS, loadManager.getNonRenewablePowerPlantInfos());
-            content.put(MessageUtil.NUMBER_OF_MSGS_TO_RECEIVE, loadManager.getNumberOfMessagesForGrid(gridName));
+            content.put(MessageUtil.ACTIVE_NON_RENEWABLE_POWER_PLANTS, loadManager.getNonRenewablePowerPlantInfos());
+            content.put(MessageUtil.NUMBER_OF_MESSAGES_TO_RECEIVE, loadManager.getNumberOfMessagesForGrid(gridName));
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
         }
         loadManager.removeAllDistributionInstructions();

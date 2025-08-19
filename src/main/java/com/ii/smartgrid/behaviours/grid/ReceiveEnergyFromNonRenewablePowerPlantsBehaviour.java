@@ -36,13 +36,13 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
     @Override
     public void action() {
         if (nonRenewableActivePowerPlantCount == 0) {
-            log("No active non renewable powerplant");
+            log("No active non-renewable power plant");
             this.finished = true;
             return;
         }
 
 
-        // Create a message template to match all non renewable powerplants
+        // Create a message template to match all non-renewable power plants
         MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
         Grid grid = gridAgent.getGrid();

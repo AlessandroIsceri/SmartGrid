@@ -21,7 +21,7 @@ import jade.lang.acl.MessageTemplate;
 
 public class WaitForRestoreBehaviour extends CustomBehaviour{
 
-    private enum Status {UPDATING_INTERNAL_ENERGY, RECEIVING_MSGS, FINISHED}
+    private enum Status {UPDATING_INTERNAL_ENERGY, RECEIVING_MESSAGES, FINISHED}
     private Status state = Status.UPDATING_INTERNAL_ENERGY;
     private SmartBuildingAgent smartBuildingAgent;
     
@@ -36,8 +36,8 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             case UPDATING_INTERNAL_ENERGY:
                 updateInternalEnergy();
                 break;
-            case RECEIVING_MSGS:
-                receiveMsgs();
+            case RECEIVING_MESSAGES:
+                receiveMessages();
                 break;
             default:
                 break;
@@ -60,7 +60,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             }else{
                 battery.fillBattery(expectedProduction);
                 content.put(MessageUtil.BLACKOUT, true);
-                state = Status.RECEIVING_MSGS;
+                state = Status.RECEIVING_MESSAGES;
             }
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
 		}else{
@@ -68,8 +68,8 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             
             Map<String, Object> content = new HashMap<>();
             Cable cable = smartBuilding.getCable(gridName);
-            double sendedEnergy = cable.computeTransmittedPower(expectedProduction);
-            EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sendedEnergy, customAgent.getLocalName(), TransactionType.SEND);
+            double sentEnergy = cable.computeTransmittedPower(expectedProduction);
+            EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sentEnergy, customAgent.getLocalName(), TransactionType.SEND);
             
             ObjectMapper objectMapper = customAgent.getObjectMapper();
             JsonNode node = objectMapper.valueToTree(energyTransaction);
@@ -77,11 +77,11 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             content.put(MessageUtil.ENERGY_TRANSACTION, node);
             content.put(MessageUtil.BLACKOUT, true);
             customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
-            state = Status.RECEIVING_MSGS;
+            state = Status.RECEIVING_MESSAGES;
         }
     }
 
-    private void receiveMsgs() {
+    private void receiveMessages() {
         MessageTemplate mtOR = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.AGREE), 
                                                   MessageTemplate.MatchPerformative(ACLMessage.REFUSE));
         MessageTemplate mtAND = MessageTemplate.and(MessageTemplate.MatchConversationId(MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + customAgent.getLocalName()),

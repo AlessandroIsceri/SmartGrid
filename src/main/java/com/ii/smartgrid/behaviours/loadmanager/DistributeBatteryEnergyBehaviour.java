@@ -20,16 +20,16 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
 
         // Update energy request of current node
         double neededEnergy = consumerNode.getEnergyTransactionValue();
-        neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortesPath.getGraphPath());
+        neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortestPath.getGraphPath());
 
         
         
         // Compute the sendableEnergy
         double sendableEnergy = ((EnergyTransactionWithBattery) nearestProducerNode).sendBatteryEnergy(neededEnergy);
-        DistributionInstruction distributionInstruction = new DistributionInstruction(shortesPath.getGraphPath(), sendableEnergy);
+        DistributionInstruction distributionInstruction = new DistributionInstruction(shortestPath.getGraphPath(), sendableEnergy);
 
         // Compute the received energy after loss
-        double lostEnergy = loadManager.computeEnergyLoss(sendableEnergy, shortesPath.getGraphPath());
+        double lostEnergy = loadManager.computeEnergyLoss(sendableEnergy, shortestPath.getGraphPath());
         double receivedEnergy = sendableEnergy - lostEnergy;
 
         consumerNode.receiveEnergy(receivedEnergy);

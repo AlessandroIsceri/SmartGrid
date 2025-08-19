@@ -14,7 +14,7 @@ import com.ii.smartgrid.model.routing.WeightedGraphPath;
 
 public abstract class DistributionStrategyBehaviour extends CustomOneShotBehaviour{
 
-    protected WeightedGraphPath shortesPath;
+    protected WeightedGraphPath shortestPath;
     protected LoadManager loadManager;
     protected EnergyTransaction consumerNode;
     protected EnergyTransaction nearestProducerNode;
@@ -24,7 +24,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
 
     protected DistributionStrategyBehaviour(LoadManagerAgent loadManagerAgent) {
         super(loadManagerAgent);
-        shortesPath = null;
+        shortestPath = null;
         this.loadManagerAgent = loadManagerAgent;
     }
 
@@ -52,7 +52,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
             consumerNodes = loadManager.getConsumerNodesByPriority(priority);
             double priorityRequestedEnergySum = loadManager.getRequestedEnergySum(producerNodes, consumerNodes);
 
-            // If the energy request for grid with current priority is too high, order consumers to satisfy as much requests as possible
+            // If the energy request for grid with current priority is too high, order consumers to satisfy as many requests as possible
             if(priorityRequestedEnergySum < 0){
                 consumerNodes.sort(Comparator.comparingDouble(EnergyTransaction::getEnergyTransactionValue));
             }
@@ -64,7 +64,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
                     // Find the shortest path to the nearest producer node
                     findPathToNearestProducer();
 
-                    String nearestProducerNodeName = shortesPath.getSource();
+                    String nearestProducerNodeName = shortestPath.getSource();
                     nearestProducerNode = loadManager.getEnergyTransaction(nearestProducerNodeName);
                     
                     DistributionInstruction distributionInstruction = mainDistributionLogic();
@@ -95,7 +95,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
             double curCost = path.getTotalCost();  
             if(curCost < minCost){
                 minCost = curCost; 
-                shortesPath = path;
+                shortestPath = path;
             }
         }
     }

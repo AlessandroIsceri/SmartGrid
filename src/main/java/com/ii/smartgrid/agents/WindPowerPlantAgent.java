@@ -13,7 +13,7 @@ public class WindPowerPlantAgent extends RenewablePowerPlantAgent{
     public void setup(){
         String windPowerPlantName = this.getLocalName();
 
-        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.WIND_POWERPLANTS_PATH, windPowerPlantName, WindPowerPlant.class);
+        this.referencedObject = JsonUtil.readJsonFile(JsonUtil.WIND_POWER_PLANTS_PATH, windPowerPlantName, WindPowerPlant.class);
 
         RenewablePowerPlant windPowerPlant = getRenewablePowerPlant();
         windPowerPlant.addConnectedAgentName(windPowerPlant.getGridName());

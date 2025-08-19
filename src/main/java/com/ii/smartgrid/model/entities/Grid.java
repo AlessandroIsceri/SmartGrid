@@ -40,8 +40,8 @@ public class Grid extends CustomObject {
         this.priority = Priority.LOW;
     }
 
-    public void addEnergyRequest(String smartmeBuildingName, EnergyTransaction request) {
-        smartBuildingsEnergyRequests.put(smartmeBuildingName, request);
+    public void addEnergyRequest(String smartBuildingName, EnergyTransaction request) {
+        smartBuildingsEnergyRequests.put(smartBuildingName, request);
     }
 
     public void addExpectedConsumption(double energy) {
