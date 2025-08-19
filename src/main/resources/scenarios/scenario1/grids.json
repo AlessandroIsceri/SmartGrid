@@ -33,7 +33,7 @@
         },
         "battery" : {
             "voltage" : 400.0,
-            "maxCapacityInAmp": 10800.0,
+            "maxCapacityInAmpHour": 10800.0,
             "dischargeCurrent": 700.0,
             "efficiency": 0.9,
             "storedEnergy": 0.0

@@ -29,7 +29,7 @@ public class SmartBuilding extends CustomObject {
     }
 
     public boolean canBeRestored() {
-        return this.battery.getMaxCapacityInWatt() * 0.5 < this.battery.getStoredEnergy() + this.expectedProduction;
+        return this.battery.getMaxCapacityInWattHour() * 0.5 < this.battery.getStoredEnergy() + this.expectedProduction;
     }
 
     public void fillBattery(double extraEnergy) {

@@ -38,7 +38,7 @@
         },
         "gridName": "Grid-1",
         "battery": {
-            "maxCapacityInWatt": 5120,
+            "maxCapacityInWattHour": 5120,
             "storedEnergy": 0.0,
             "dischargeCurrent": 200.0,
             "efficiency": 0.9,
@@ -103,7 +103,7 @@
         },
         "gridName": "Grid-2",
         "battery": {
-            "maxCapacityInWatt": 5120,
+            "maxCapacityInWattHour": 5120,
             "storedEnergy": 200.0,
             "dischargeCurrent": 200.0,
             "efficiency": 0.9,
@@ -145,7 +145,7 @@
         ],
         "gridName": "Grid-3",
         "battery": {
-            "maxCapacityInWatt": 5120,
+            "maxCapacityInWattHour": 5120,
             "storedEnergy": 200.0,
             "dischargeCurrent": 200.0,
             "efficiency": 0.9,

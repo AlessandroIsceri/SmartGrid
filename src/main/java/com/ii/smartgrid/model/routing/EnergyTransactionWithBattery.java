@@ -34,7 +34,7 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
 
     // Compute and returns the amount of energy needed to reach the given threshold of charge
     public double getMissingEnergyForThreshold(double threhsoldPercentage) {
-        double energyRequired = battery.getMaxCapacityInWatt() * threhsoldPercentage - battery.getStoredEnergy();
+        double energyRequired = battery.getMaxCapacityInWattHour() * threhsoldPercentage - battery.getStoredEnergy();
         double maxEnergyInTurn = battery.getMaxEnergyInTurn() - curTurnReceivedEnergy;
 
         return Math.min(energyRequired, maxEnergyInTurn);

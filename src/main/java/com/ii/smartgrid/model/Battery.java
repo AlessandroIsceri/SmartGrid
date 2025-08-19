@@ -6,8 +6,8 @@ import com.ii.smartgrid.utils.TimeUtils;
 public class Battery {
 
     private double voltage;
-    private double maxCapacityInWatt;
-    private double maxCapacityInAmp;
+    private double maxCapacityInWattHour;
+    private double maxCapacityInAmpHour;
     private double storedEnergy;
     private double dischargeCurrent;
     private double efficiency;
@@ -25,13 +25,13 @@ public class Battery {
 
         // If the energy is more than the amount that can be stored, store 
         // the possible amount and return the exceeding energy
-        if (storedEnergy + effectiveFillEnergy <= maxCapacityInWatt) {
+        if (storedEnergy + effectiveFillEnergy <= maxCapacityInWattHour) {
             storedEnergy += effectiveFillEnergy;
-            stateOfCharge = storedEnergy / maxCapacityInWatt;
+            stateOfCharge = storedEnergy / maxCapacityInWattHour;
             return residual;
         } else {
-            double excess = storedEnergy + effectiveFillEnergy - maxCapacityInWatt;
-            storedEnergy = maxCapacityInWatt;
+            double excess = storedEnergy + effectiveFillEnergy - maxCapacityInWattHour;
+            storedEnergy = maxCapacityInWattHour;
             stateOfCharge = 1.0;
             return residual + excess;
         }
@@ -58,22 +58,22 @@ public class Battery {
         this.efficiency = efficiency;
     }
 
-    public double getMaxCapacityInAmp() {
-        return maxCapacityInAmp;
+    public double getMaxCapacityInAmpHour() {
+        return maxCapacityInAmpHour;
     }
 
-    public void setMaxCapacityInAmp(double maxCapacityInAmp) {
-        this.maxCapacityInAmp = maxCapacityInAmp;
-        this.maxCapacityInWatt = maxCapacityInAmp * voltage;
+    public void setMaxCapacityInAmpHour(double maxCapacityInAmpHour) {
+        this.maxCapacityInAmpHour = maxCapacityInAmpHour;
+        this.maxCapacityInWattHour = maxCapacityInAmpHour * voltage;
     }
 
-    public double getMaxCapacityInWatt() {
-        return maxCapacityInWatt;
+    public double getMaxCapacityInWattHour() {
+        return maxCapacityInWattHour;
     }
 
-    public void setMaxCapacityInWatt(double maxCapacityInWatt) {
-        this.maxCapacityInWatt = maxCapacityInWatt;
-        this.maxCapacityInAmp = maxCapacityInWatt / voltage;
+    public void setMaxCapacityInWattHour(double maxCapacityInWattHour) {
+        this.maxCapacityInWattHour = maxCapacityInWattHour;
+        this.maxCapacityInAmpHour = maxCapacityInWattHour / voltage;
     }
 
     @JsonIgnore
@@ -114,7 +114,7 @@ public class Battery {
 
         if (remainingEnergy >= 0) {
             storedEnergy -= effectiveRequestedEnergy;
-            stateOfCharge = storedEnergy / maxCapacityInWatt;
+            stateOfCharge = storedEnergy / maxCapacityInWattHour;
             return effectiveRequestedEnergy;
         } else {
             double oldStored = storedEnergy;
@@ -126,8 +126,8 @@ public class Battery {
 
     @Override
     public String toString() {
-        return "Battery [voltage=" + voltage + ", maxCapacityInWatt=" + maxCapacityInWatt + ", maxCapacityInAmp="
-                + maxCapacityInAmp + ", storedEnergy=" + storedEnergy + ", dischargeCurrent=" + dischargeCurrent
+        return "Battery [voltage=" + voltage + ", maxCapacityInWattHour=" + maxCapacityInWattHour + ", maxCapacityInAmpHour="
+                + maxCapacityInAmpHour + ", storedEnergy=" + storedEnergy + ", dischargeCurrent=" + dischargeCurrent
                 + ", efficiency=" + efficiency + ", stateOfCharge=" + stateOfCharge + "]";
     }
 
