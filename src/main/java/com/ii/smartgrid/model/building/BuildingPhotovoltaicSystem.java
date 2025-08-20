@@ -107,12 +107,11 @@ public class BuildingPhotovoltaicSystem {
 
         double dni = (ghi - dhi) / cosZenithAngle;
 
-        // ASSUMPTION: PV ARRAY directed at north, so the last piece of formula can be replaced with only cos of the azimuth since the azimutAngle of the array is 0.
         double cosAzimuthAngle = (Math.sin(declinationAngle) * Math.cos(latitudeInRadians) - Math.cos(hourAngle) * Math.cos(declinationAngle) * Math.sin(latitudeInRadians)) / Math.sin(zenithAngle);
-
+        double azimuthAngle = Math.acos(cosAzimuthAngle);
+        double azimuthAngleOfArrayInRadians = Math.toRadians(azimuthAngleArray);
         double tiltAngleInRadians = Math.toRadians(tiltAngle);
-
-        double cosIncidenceAngle = cosZenithAngle * Math.cos(tiltAngleInRadians) + sinZenithAngle * Math.sin(tiltAngleInRadians) * cosAzimuthAngle;
+        double cosIncidenceAngle = cosZenithAngle * Math.cos(tiltAngleInRadians) + sinZenithAngle * Math.sin(tiltAngleInRadians) * Math.cos(azimuthAngle - azimuthAngleOfArrayInRadians);
 
         if (cosIncidenceAngle < -1.0) {
             cosIncidenceAngle = -1.0;
