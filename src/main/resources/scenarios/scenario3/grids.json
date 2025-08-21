@@ -1,0 +1,101 @@
+{
+  "Grid-Tekek": {
+    "smartBuildingNames": [
+      "SmartBuilding-1", "SmartBuilding-2", "SmartBuilding-3", "SmartBuilding-4", "SmartBuilding-5"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-AirBatang", "Grid-Juara", "Grid-Bunut", "Grid-Mukut"],
+    "nonRenewablePowerPlantNames": ["DieselPowerPlant-1"],
+    "renewablePowerPlantNames": ["SolarPowerPlant-1"],
+    "coordinates": {
+      "latitude": 2.823847438209252,
+      "longitude": 104.16354506562476
+    },
+    "battery": {
+      "voltage": 400.0,
+      "maxCapacityInAmpHour": 10800,
+      "dischargeCurrent": 700.0,
+      "efficiency": 0.90,
+      "storedEnergy": 3456000.0,
+      "stateOfCharge": 0.8
+    }
+  },
+  "Grid-Juara": {
+    "smartBuildingNames": [
+      "SmartBuilding-6", "SmartBuilding-7", "SmartBuilding-8", "SmartBuilding-9", "SmartBuilding-10", "SmartBuilding-11", "SmartBuilding-12"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-Tekek", "Grid-Mukut"],
+    "nonRenewablePowerPlantNames": [],
+    "renewablePowerPlantNames": ["HydroPowerPlant-1"],
+    "coordinates": {
+      "latitude": 2.796110387446461,
+      "longitude": 104.2020387357403
+    }
+  },
+  "Grid-Salang": {
+    "smartBuildingNames": [
+      "SmartBuilding-13", "SmartBuilding-14", "SmartBuilding-15"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-AirBatang"],
+    "nonRenewablePowerPlantNames": [],
+    "renewablePowerPlantNames": [],
+    "coordinates": {
+      "latitude": 2.87576165040307,
+      "longitude": 104.15522440231217
+    }
+  },
+  "Grid-Paya": {
+    "smartBuildingNames": [
+      "SmartBuilding-16", "SmartBuilding-17", "SmartBuilding-18", "SmartBuilding-19"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-Bunut"],
+    "nonRenewablePowerPlantNames": [],
+    "renewablePowerPlantNames": [],
+    "coordinates": {
+      "latitude": 2.785087203077264,
+      "longitude": 104.12236905628009 
+    }
+  },
+  "Grid-Bunut": {
+    "smartBuildingNames": [
+      "SmartBuilding-20", "SmartBuilding-21", "SmartBuilding-22", "SmartBuilding-23", "SmartBuilding-24"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-Paya", "Grid-Tekek"],
+    "nonRenewablePowerPlantNames": [],
+    "renewablePowerPlantNames": ["WindPowerPlant-1"],
+    "coordinates": {
+      "latitude": 2.8073871646512747,
+      "longitude": 104.1411802927122
+    }
+  },
+  "Grid-AirBatang": {
+    "smartBuildingNames": [
+      "SmartBuilding-25", "SmartBuilding-26", "SmartBuilding-27", "SmartBuilding-28"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-Salang", "Grid-Tekek"],
+    "nonRenewablePowerPlantNames": [],
+    "renewablePowerPlantNames": [],
+    "coordinates": {
+      "latitude": 2.843440407813142,
+      "longitude": 104.16050103578226
+    }
+  },
+  "Grid-Mukut": {
+    "smartBuildingNames": [
+      "SmartBuilding-29", "SmartBuilding-30", "SmartBuilding-31"
+    ],
+    "loadManagerName": "LoadManager-1",
+    "gridNames": ["Grid-Juara", "Grid-Tekek"],
+    "nonRenewablePowerPlantNames": [],
+    "renewablePowerPlantNames": [],
+    "coordinates": {
+      "latitude": 2.7200740560802235,
+      "longitude": 104.17846894020494
+    }
+  }
+}

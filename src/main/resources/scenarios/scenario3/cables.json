@@ -1,0 +1,253 @@
+{
+    "types" : {
+        "copperHigh2.5": {
+            "cableSection": 2.5e-6,
+            "resistivity": 1.68e-8,
+            "voltage": 110000.0
+        },
+        "copperLow2.5": {
+            "cableSection": 2.5e-6,
+            "resistivity": 1.68e-8,
+            "voltage": 30000.0
+        }
+    },
+    "links": [
+        {
+           "from": "Grid-Tekek",
+           "to": "Grid-AirBatang",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Tekek",
+           "to": "Grid-Juara",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Tekek",
+           "to": "Grid-Bunut",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Tekek",
+           "to": "Grid-Mukut",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Juara",
+           "to": "Grid-Mukut",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Salang",
+           "to": "Grid-AirBatang",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Paya",
+           "to": "Grid-Bunut",
+           "cableType": "copperHigh2.5"
+        },
+
+
+
+        
+        {
+           "from": "Grid-Tekek",
+           "to": "SolarPowerPlant-1",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Tekek",
+           "to": "DieselPowerPlant-1",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Juara",
+           "to": "HydroPowerPlant-1",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Bunut",
+           "to": "WindPowerPlant-1",
+           "cableType": "copperHigh2.5"
+        },
+
+
+
+
+
+        {
+            "from" : "SmartBuilding-1",
+            "to" : "Grid-Tekek",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-2",
+            "to" : "Grid-Tekek",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-3",
+            "to" : "Grid-Tekek",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-4",
+            "to" : "Grid-Tekek",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-5",
+            "to" : "Grid-Tekek",
+            "cableType" : "copperLow2.5"
+        },
+
+
+        {
+            "from" : "SmartBuilding-6",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-7",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-8",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-9",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-10",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-11",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-12",
+            "to" : "Grid-Juara",
+            "cableType" : "copperLow2.5"
+        },
+
+
+        {
+            "from" : "SmartBuilding-13",
+            "to" : "Grid-Salang",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-14",
+            "to" : "Grid-Salang",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-15",
+            "to" : "Grid-Salang",
+            "cableType" : "copperLow2.5"
+        },
+
+
+        
+        {
+            "from" : "SmartBuilding-16",
+            "to" : "Grid-Paya",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-17",
+            "to" : "Grid-Paya",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-18",
+            "to" : "Grid-Paya",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-19",
+            "to" : "Grid-Paya",
+            "cableType" : "copperLow2.5"
+        },
+
+
+        
+        {
+            "from" : "SmartBuilding-20",
+            "to" : "Grid-Bunut",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-21",
+            "to" : "Grid-Bunut",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-22",
+            "to" : "Grid-Bunut",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-23",
+            "to" : "Grid-Bunut",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-24",
+            "to" : "Grid-Bunut",
+            "cableType" : "copperLow2.5"
+        },
+        
+
+
+        {
+            "from" : "SmartBuilding-25",
+            "to" : "Grid-AirBatang",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-26",
+            "to" : "Grid-AirBatang",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-27",
+            "to" : "Grid-AirBatang",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-28",
+            "to" : "Grid-AirBatang",
+            "cableType" : "copperLow2.5"
+        },
+
+
+
+
+        {
+            "from" : "SmartBuilding-29",
+            "to" : "Grid-Mukut",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-30",
+            "to" : "Grid-Mukut",
+            "cableType" : "copperLow2.5"
+        },
+        {
+            "from" : "SmartBuilding-31",
+            "to" : "Grid-Mukut",
+            "cableType" : "copperLow2.5"
+        }
+        
+    ]
+}
