@@ -11,9 +11,10 @@ public class TimeUtils {
     private static final int MINUTES_IN_A_DAY = 1440;
 
     private static int turnDuration;
-    private static int weatherTurnDuration;
+    private static int weatherIntervalInTurns;
     private static long simulationStartDateInMillis;
     private static String timeZone;
+    private static int saveIntervalInTurns;
 
     private TimeUtils() {
 
@@ -23,8 +24,12 @@ public class TimeUtils {
         turnDuration = convertDurationInMinutes(newTurnDuration);
     }
 
-    public static void computeAndSetWeatherTurnDuration(String newWeatherTurnDuration) {
-        weatherTurnDuration = convertDurationInMinutes(newWeatherTurnDuration);
+    public static void computeAndSetWeatherTurnDuration(String weatherTurnDuration) {
+        weatherIntervalInTurns = convertTimeToTurn(weatherTurnDuration);
+    }
+
+    public static void computeAndSetSaveTurnDuration(String saveTurnDuration) {
+        saveIntervalInTurns = convertTimeToTurn(saveTurnDuration);
     }
 
     private static int convertDurationInMinutes(String duration) {
@@ -90,8 +95,8 @@ public class TimeUtils {
         return formattedHours + ":" + formattedMinutes;
     }
 
-    public static int getWeatherTurnDuration() {
-        return weatherTurnDuration;
+    public static int getWeatherIntervalInTurns() {
+        return weatherIntervalInTurns;
     }
 
     public static int getMinutesFromTurn(int turn) {
@@ -118,6 +123,10 @@ public class TimeUtils {
 
     public static int getHoursFromMillis(int millis) {
         return millis / 1000 / 60 / 60;
+    }
+
+    public static int getSaveIntervalInTurns() {
+        return saveIntervalInTurns;
     }
 
     public static void setSimulationStartDate(String simulationStartDate) {

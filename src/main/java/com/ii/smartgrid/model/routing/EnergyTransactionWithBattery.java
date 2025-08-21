@@ -15,6 +15,7 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
     public EnergyTransactionWithBattery() {
         super();
         this.batteryAvailable = true;
+        curTurnReceivedEnergy = 0;
     }
 
     public EnergyTransactionWithBattery(Priority priority, double energyTransactionValue, String nodeName, Battery battery, TransactionType transactionType) {
@@ -39,11 +40,6 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
 
         return Math.min(energyRequired, maxEnergyInTurn);
     }
-
-    @JsonIgnore
-    public double getStateOfCharge() {
-        return battery.getStateOfCharge();
-	}
 
     public boolean hasReachedLimit() {
         return curTurnReceivedEnergy >= battery.getMaxEnergyInTurn() - 0.01;

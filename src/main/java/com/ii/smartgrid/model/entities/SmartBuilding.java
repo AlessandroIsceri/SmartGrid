@@ -39,24 +39,36 @@ public class SmartBuilding extends CustomObject {
     }
 
     public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus) {
+        expectedConsumption = 0;
+        
         if (smartBuildingStatus != SmartBuildingStatus.BLACKOUT) {
+
             double turnDurationHours = TimeUtils.getTurnDurationHours();
+
+            for(Appliance appliance : appliances){
+                if(appliance.isAlwaysOn()){
+                    expectedConsumption += appliance.getHourlyConsumption() * turnDurationHours;
+                }
+            }
+
             for (Task curTask : routine.getTasks()) {
                 // Get the start turn and end turn for current task
                 int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
                 int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
                 String applianceName = curTask.getApplianceName();
+                curTurn = curTurn % TimeUtils.getDailyTurnsNumber();
+                // Find the appliance with the given name using stream
+                Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
+                if (endTurn == curTurn) {
+                    // The appliance must be turned off this turn
+                    curAppliance.setOn(false);
+                }
                 if (startTurn == curTurn) {
                     // The appliance must be turned on this turn
-                    // Find the object with the given name using stream
-                    Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
                     curAppliance.setOn(true);
+                } 
+                if(curAppliance.isOn() && !curAppliance.isAlwaysOn()){
                     expectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
-                } else if (endTurn == curTurn) {
-                    // The appliance must be turned off this turn
-                    Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
-                    curAppliance.setOn(false);
-                    expectedConsumption -= curAppliance.getHourlyConsumption() * turnDurationHours;
                 }
             }
         }
@@ -140,7 +152,6 @@ public class SmartBuilding extends CustomObject {
         for (Appliance appliance : appliances) {
             if (appliance.isAlwaysOn()) {
                 appliance.setOn(true);
-                expectedConsumption += appliance.getHourlyConsumption() * TimeUtils.getTurnDurationHours();
             }
         }
     }

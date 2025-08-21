@@ -100,6 +100,11 @@ public class Grid extends CustomObject {
                 sum += energyTransaction.getEnergyTransactionValue();
             }
         }
+        for (EnergyTransaction energyTransaction : smartBuildingsWithoutPower.values()) {
+            if (energyTransaction.getTransactionType() == TransactionType.RECEIVE) {
+                sum += energyTransaction.getEnergyTransactionValue();
+            }
+        }
         return sum;
     }
 
@@ -277,6 +282,10 @@ public class Grid extends CustomObject {
                 nonRenewablePowerPlantActiveStatus.put(name, status);
             }
         }
+    }
+
+    public void removeExpectedConsumption(double energyTransactionValue) {
+        expectedConsumption -= energyTransactionValue;
     }
 
 }

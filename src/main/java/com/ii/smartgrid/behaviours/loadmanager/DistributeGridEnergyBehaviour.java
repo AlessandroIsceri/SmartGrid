@@ -14,13 +14,18 @@ public class DistributeGridEnergyBehaviour extends DistributionStrategyBehaviour
 
     @Override
     protected DistributionInstruction mainDistributionLogic() {
-        // Update energy request of current node
-        double neededEnergy = consumerNode.getEnergyTransactionValue();
-        neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortestPath.getGraphPath());
 
         DistributionInstruction distributionInstruction;
         double availableEnergy = nearestProducerNode.getEnergyTransactionValue();
         
+        // Update energy request of current node
+        double neededEnergy = consumerNode.getEnergyTransactionValue();
+        neededEnergy = loadManager.computeEnergyToSatisfyRequest(neededEnergy, shortestPath.getGraphPath());
+
+        
+        
+        
+
         double epsilon = 1.0;
         if(availableEnergy > neededEnergy){
             // Enough energy for satisfying current consumer request

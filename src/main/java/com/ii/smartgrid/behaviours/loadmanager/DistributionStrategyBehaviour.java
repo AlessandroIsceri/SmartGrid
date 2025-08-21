@@ -50,6 +50,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
         for(Priority priority : Priority.values()){
             // Get consumer nodes
             consumerNodes = loadManager.getConsumerNodesByPriority(priority);
+
             double priorityRequestedEnergySum = loadManager.getRequestedEnergySum(producerNodes, consumerNodes);
 
             // If the energy request for grid with current priority is too high, order consumers to satisfy as many requests as possible
@@ -59,8 +60,18 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
 
             Iterator<? extends EnergyTransaction> consumerNodesIterator = consumerNodes.iterator();
             while(consumerNodesIterator.hasNext()){
+
                 consumerNode = consumerNodesIterator.next();
-                while(consumerNode.getEnergyTransactionValue() > 0){
+
+                // Remove all consumer nodes that are producer nodes (i.e., those that have a battery and can send energy)
+                if(producerNodes.contains(consumerNode)){
+                    log("Consumer node " + consumerNode.getNodeName() + " is also a producer node, skipping it.");
+                    continue;
+                }
+
+                double epsilon = 0.1;
+                while(consumerNode.getEnergyTransactionValue() > epsilon){
+
                     // Find the shortest path to the nearest producer node
                     findPathToNearestProducer();
 

@@ -1,5 +1,6 @@
 package com.ii.smartgrid.behaviours.grid;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,15 +45,17 @@ public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBe
                 );
 
             int numberOfMessagesToReceive = (int) jsonObject.get(MessageUtil.NUMBER_OF_MESSAGES_TO_RECEIVE);
-
-            if (gridAgent.getGridStatus() == GridStatus.SEND) {
-                // If Grid has energy to send, it will receive distribution instructions
-                List<DistributionInstruction> distributionInstructions = customAgent.readValueFromJson(
-                        jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS),
-                        new TypeReference<List<DistributionInstruction>>() {}
-                    );
-                grid.setDistributionInstructions(distributionInstructions);
+        
+            List<DistributionInstruction> distributionInstructions = customAgent.readValueFromJson(
+                    jsonObject.get(MessageUtil.DISTRIBUTION_INSTRUCTIONS),
+                    new TypeReference<List<DistributionInstruction>>() {}
+                );
+            
+            if(distributionInstructions == null){
+                distributionInstructions = new ArrayList<>();
             }
+
+            grid.setDistributionInstructions(distributionInstructions);
 
             // Update non-renewable power plant status
             grid.updateNonRenewablePowerPlantActiveStatus(nonRenewablePowerPlantInfos);

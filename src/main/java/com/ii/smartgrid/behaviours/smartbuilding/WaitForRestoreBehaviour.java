@@ -10,10 +10,12 @@ import com.ii.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.Cable;
+import com.ii.smartgrid.model.building.BuildingPhotovoltaicSystem;
 import com.ii.smartgrid.model.entities.SmartBuilding;
 import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;
@@ -62,21 +64,38 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 content.put(MessageUtil.BLACKOUT, true);
                 state = Status.RECEIVING_MESSAGES;
             }
+            EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addBuildingEnergyProduction(expectedProduction, smartBuildingAgent.getCurTurn());
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
 		}else{
-            log("The building's doesn't have a battery -> Release PV energy to the grid");
             
             Map<String, Object> content = new HashMap<>();
-            Cable cable = smartBuilding.getCable(gridName);
-            double sentEnergy = cable.computeTransmittedPower(expectedProduction);
-            EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sentEnergy, customAgent.getLocalName(), TransactionType.SEND);
-            
-            ObjectMapper objectMapper = customAgent.getObjectMapper();
-            JsonNode node = objectMapper.valueToTree(energyTransaction);
-            
-            content.put(MessageUtil.ENERGY_TRANSACTION, node);
-            content.put(MessageUtil.BLACKOUT, true);
-            customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
+            BuildingPhotovoltaicSystem buildingPhotovoltaicSystem = smartBuilding.getBuildingPhotovoltaicSystem();
+            if(buildingPhotovoltaicSystem == null){
+                log("The building's doesn't have neither a battery or a PV system -> Wait for energy from " + smartBuilding.getGridName());
+                content.put(MessageUtil.BLACKOUT, true);
+
+                EnergyMonitorUtil.addBuildingEnergyProduction(0, smartBuildingAgent.getCurTurn());
+                EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
+                customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
+            }else{
+                log("The building's doesn't have a battery -> Release PV energy to " + smartBuilding.getGridName());
+                
+                Cable cable = smartBuilding.getCable(gridName);
+                double sentEnergy = cable.computeTransmittedPower(expectedProduction);
+
+                EnergyMonitorUtil.addBuildingEnergyProduction(expectedProduction, smartBuildingAgent.getCurTurn());
+                EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
+
+                EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sentEnergy, customAgent.getLocalName(), TransactionType.SEND);
+                
+                ObjectMapper objectMapper = customAgent.getObjectMapper();
+                JsonNode node = objectMapper.valueToTree(energyTransaction);
+                
+                content.put(MessageUtil.ENERGY_TRANSACTION, node);
+                content.put(MessageUtil.BLACKOUT, true);
+                customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
+            }
             state = Status.RECEIVING_MESSAGES;
         }
     }

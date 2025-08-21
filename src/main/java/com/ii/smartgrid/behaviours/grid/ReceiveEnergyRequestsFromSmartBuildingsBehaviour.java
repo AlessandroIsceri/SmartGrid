@@ -81,6 +81,7 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
                         // If the release was sent from a blackout building, that building it not in blackout anymore (blackout=false)	
                         boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                         if(!blackout){
+                            grid.removeExpectedConsumption(grid.getSmartBuildingsWithoutPower().get(sender).getEnergyTransactionValue());
                             grid.removeSmartBuildingWithoutPower(sender);
                         }
                     }
@@ -89,6 +90,7 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
                 // Message received from blackout building, checks if that building is still in blackout
                 boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                 if(!blackout){
+                    grid.removeExpectedConsumption(grid.getSmartBuildingsWithoutPower().get(sender).getEnergyTransactionValue());
                     grid.removeSmartBuildingWithoutPower(sender);
                 }
             }

@@ -30,7 +30,7 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
         // When the effective production is greater than required energy, turn off the power plants that are no longer required
          
         // The required energy is the amount needed to charge all batteries to 75% if they have less than 25%
-        double requiredEnergy = loadManager.getBatteryRequiredEnergy();
+        double requiredEnergy = loadManager.getBatteryRequiredEnergy(loadManagerAgent.getCurTurn());
         double producedEnergy = 0;
         List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = loadManager.getNonRenewablePowerPlantInfos();
         int pos = 0;

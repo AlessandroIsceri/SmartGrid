@@ -8,6 +8,7 @@ import com.ii.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.model.Cable;
 import com.ii.smartgrid.model.entities.NonRenewablePowerPlant;
 import com.ii.smartgrid.utils.MessageUtil;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.TimeUtils;
 
 import jade.lang.acl.ACLMessage;
@@ -26,7 +27,10 @@ public class SendNonRenewableEnergyToGridBehaviour extends CustomOneShotBehaviou
         // The energy produced by Non-Renewable Power plants is sent to the grids
         NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
 
-        double givenEnergy = nonRenewablePowerPlant.getHourlyProduction() * TimeUtils.getTurnDurationHours();
+        double curTurnProduction = nonRenewablePowerPlant.getHourlyProduction();
+        EnergyMonitorUtil.addNonRenewableEnergyProduction(curTurnProduction, nonRenewablePowerPlantAgent.getCurTurn());
+
+        double givenEnergy = curTurnProduction * TimeUtils.getTurnDurationHours();
 
         Map<String, Object> content = new HashMap<>();
         String gridName = nonRenewablePowerPlant.getGridName();

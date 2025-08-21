@@ -9,6 +9,7 @@ import java.util.Random;
 
 import com.ii.smartgrid.behaviours.simulationsettings.CheckSimulationSettingsMessagesBehaviour;
 import com.ii.smartgrid.behaviours.simulationsettings.StartNewTurnBehaviour;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.EnergyUtil;
 import com.ii.smartgrid.utils.JsonUtil;
 import com.ii.smartgrid.utils.MessageUtil;
@@ -48,11 +49,14 @@ public class SimulationSettingsAgent extends CustomAgent{
             log("File app.config not found");
         }
 
-        intervalBetweenTurns = Integer.parseInt(prop.getProperty("interval_between_turns"));
-
         String turnDurationStr = prop.getProperty("turn_duration");
         TimeUtils.computeAndSetTurnDuration(turnDurationStr);
             
+        intervalBetweenTurns = Integer.parseInt(prop.getProperty("interval_between_turns"));
+        String saveInterval = prop.getProperty("save_interval");
+
+        TimeUtils.computeAndSetSaveTurnDuration(saveInterval);
+
         double latitude = Double.parseDouble(prop.getProperty("latitude"));
         double longitude = Double.parseDouble(prop.getProperty("longitude"));
                 
@@ -67,8 +71,10 @@ public class SimulationSettingsAgent extends CustomAgent{
         String weatherTurnDurationStr = prop.getProperty("weather_turn_duration");
         TimeUtils.computeAndSetWeatherTurnDuration(weatherTurnDurationStr);
 
+
         String scenarioName = prop.getProperty("scenario_name");
         JsonUtil.setUpScenario(scenarioName);
+        EnergyMonitorUtil.setUpScenario(scenarioName);
         
         this.curTurn = 0;
         agentNames = JsonUtil.getAllAgentNames();
@@ -159,8 +165,14 @@ public class SimulationSettingsAgent extends CustomAgent{
     }
 
     public void updateTurn() {
-        // Update turn and weather
-		if(((this.curTurn + 1) % TimeUtils.getWeatherTurnDuration()) == 0) {
+        if(((this.curTurn + 1) % TimeUtils.getSaveIntervalInTurns()) == 0){
+            // Save monitor arrays
+            EnergyMonitorUtil.saveData();
+        }
+            
+        
+		if(((this.curTurn + 1) % TimeUtils.getWeatherIntervalInTurns()) == 0) {
+            // Update turn and weather
 			updateWeather();
             updateWindSpeed();
 			this.log("Weather updated: " + this.curWeather);

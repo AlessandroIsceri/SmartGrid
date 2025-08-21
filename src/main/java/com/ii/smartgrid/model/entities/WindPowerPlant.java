@@ -11,6 +11,7 @@ public class WindPowerPlant extends RenewablePowerPlant {
     private double maxWindSpeed;  // m/s
     private double rotorDiameter; // m
     private double rotorSweptArea; // m^2
+    private int numberOfTurbines;
 
     @Override
     public double getHourlyProduction(Object... weatherConditions) {
@@ -27,7 +28,7 @@ public class WindPowerPlant extends RenewablePowerPlant {
         }
 
         rotorSweptArea = (Math.PI * Math.pow((rotorDiameter / 2.0), 2));
-        energyProd = 0.5 * AIR_DENSITY * rotorSweptArea * Math.pow(windSpeed, 3) * PRESSURE_COEFFICIENT;
+        energyProd = 0.5 * AIR_DENSITY * rotorSweptArea * Math.pow(windSpeed, 3) * PRESSURE_COEFFICIENT * numberOfTurbines;
         return energyProd;
     }
 
@@ -61,6 +62,14 @@ public class WindPowerPlant extends RenewablePowerPlant {
 
     public void setRotorSweptArea(double rotorSweptArea) {
         this.rotorSweptArea = rotorSweptArea;
+    }
+
+    public int getNumberOfTurbines() {
+        return numberOfTurbines;
+    }
+
+    public void setNumberOfTurbines(int numberOfTurbines) {
+        this.numberOfTurbines = numberOfTurbines;
     }
 
 }

@@ -14,6 +14,7 @@ import com.ii.smartgrid.model.entities.SmartBuilding;
 import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;
@@ -50,8 +51,12 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
             transactionType = TransactionType.SEND;
             Cable cable = smartBuilding.getCable(gridName);
             energy = cable.computeTransmittedPower(energy);
+            EnergyMonitorUtil.addBuildingEnergyProduction(availableEnergy - expectedConsumption, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
         } else {
             transactionType = TransactionType.RECEIVE; 
+            EnergyMonitorUtil.addTotalEnergyDemand(expectedConsumption - availableEnergy, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addBuildingEnergyProduction(0, smartBuildingAgent.getCurTurn());
         }
         EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), energy, customAgent.getLocalName(), transactionType);
         Map<String, Object> content = new HashMap<>();

@@ -27,10 +27,6 @@ public class InitRoutingInstructionsBehaviour extends CustomOneShotBehaviour {
     public void action() {
         Grid grid = gridAgent.getGrid();
 
-        if (gridAgent.getGridStatus() == GridStatus.RECEIVE) {
-            return;
-        }
-
         List<DistributionInstruction> distributionInstructions = grid.getDistributionInstructions();
 
         for (DistributionInstruction distributionInstruction : distributionInstructions) {

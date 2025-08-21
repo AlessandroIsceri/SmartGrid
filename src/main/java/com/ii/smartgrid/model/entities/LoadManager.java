@@ -18,6 +18,7 @@ import com.ii.smartgrid.model.routing.DistributionInstruction;
 import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransactionWithBattery;
 import com.ii.smartgrid.model.routing.WeightedGraphPath;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
 
 
@@ -32,6 +33,7 @@ public class LoadManager extends CustomObject {
     private Map<String, List<DistributionInstruction>> distributionInstructions;
     private List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos;
     private Map<String, List<Cable>> gridsCables;
+    private Map<String, Double> gridWithChargingBattery;
 
     public LoadManager() {
         super();
@@ -43,6 +45,7 @@ public class LoadManager extends CustomObject {
         nonRenewablePowerPlantNames = new ArrayList<>();
         gridNames = new ArrayList<>();
         gridsCables = new HashMap<>();
+        gridWithChargingBattery = new HashMap<>();
     }
 
     // Add the nodes and edge (with its cost) to the graph
@@ -133,16 +136,26 @@ public class LoadManager extends CustomObject {
     }
     
     // Computes and returns the required energy to charge all the batteries with a charge level < 25% to 75%
-    public double getBatteryRequiredEnergy() {
+    public double getBatteryRequiredEnergy(int turn) {
         double batteryRequiredEnergy = 0;
         List<EnergyTransactionWithBattery> gridsWithBattery = getGridsWithBattery();
+
         for (EnergyTransactionWithBattery gridWithBattery : gridsWithBattery) {
-            if(gridWithBattery.getStateOfCharge() < 0.25){
+            String gridName = gridWithBattery.getNodeName();
+            EnergyMonitorUtil.addBatteryStoredEnergy(gridWithBattery.getBattery().getStoredEnergy(), turn);
+
+            if(gridWithBattery.getBattery().getStateOfCharge() > 0.75 && gridWithChargingBattery.containsKey(gridName)){
+                gridWithChargingBattery.remove(gridName);
+            } else if(gridWithChargingBattery.containsKey(gridName)){
+                batteryRequiredEnergy += gridWithChargingBattery.get(gridName);
+            } else if(gridWithBattery.getBattery().getStateOfCharge() < 0.25){
                 double needed = gridWithBattery.getMissingEnergyForThreshold(0.75);
                 if (needed > 0) {
                     batteryRequiredEnergy += needed;
+                    gridWithChargingBattery.put(gridName, needed);
                 }
             }
+
         }
         return batteryRequiredEnergy;
     }
@@ -233,13 +246,23 @@ public class LoadManager extends CustomObject {
     }
 
     // Return all the grid with a battery
+    public List<EnergyTransactionWithBattery> getGridsWithBatteryCharged() {
+        List<EnergyTransactionWithBattery> gridsWithBattery = new ArrayList<>();
+        for (EnergyTransaction request : gridRequestedEnergy.values()) {
+            if (request.isBatteryAvailable()) {
+                if(((EnergyTransactionWithBattery) request).getBattery().getStateOfCharge() > 0.01){
+                    gridsWithBattery.add((EnergyTransactionWithBattery) request);
+                }   
+            }
+        }
+        return gridsWithBattery;
+    }
+
     public List<EnergyTransactionWithBattery> getGridsWithBattery() {
         List<EnergyTransactionWithBattery> gridsWithBattery = new ArrayList<>();
         for (EnergyTransaction request : gridRequestedEnergy.values()) {
             if (request.isBatteryAvailable()) {
-                if(((EnergyTransactionWithBattery) request).getStateOfCharge() > 0.01){
-                    gridsWithBattery.add((EnergyTransactionWithBattery) request);
-                }   
+                gridsWithBattery.add((EnergyTransactionWithBattery) request);
             }
         }
         return gridsWithBattery;

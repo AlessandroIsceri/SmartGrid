@@ -14,7 +14,7 @@ import jade.lang.acl.ACLMessage;
 
 public abstract class SendProducedEnergyToGridBehaviour extends CustomOneShotBehaviour{
 
-    private RenewablePowerPlantAgent renewablePowerPlantAgent;
+    protected RenewablePowerPlantAgent renewablePowerPlantAgent;
 
     protected SendProducedEnergyToGridBehaviour(RenewablePowerPlantAgent renewablePowerPlantAgent){
         super(renewablePowerPlantAgent);

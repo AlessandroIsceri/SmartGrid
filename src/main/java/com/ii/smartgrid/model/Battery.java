@@ -112,7 +112,7 @@ public class Battery {
 
         double remainingEnergy = storedEnergy - effectiveRequestedEnergy;
 
-        if (remainingEnergy >= 0) {
+        if (remainingEnergy >= 0.01) {
             storedEnergy -= effectiveRequestedEnergy;
             stateOfCharge = storedEnergy / maxCapacityInWattHour;
             return effectiveRequestedEnergy;

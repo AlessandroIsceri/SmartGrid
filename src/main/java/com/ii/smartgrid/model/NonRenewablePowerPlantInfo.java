@@ -39,5 +39,12 @@ public class NonRenewablePowerPlantInfo {
         this.on = on;
     }
 
+    @Override
+    public String toString() {
+        return "NonRenewablePowerPlantInfo [name=" + name + ", maxTurnProduction=" + maxTurnProduction + ", on=" + on
+                + "]";
+    }
+
+    
 
 }

@@ -2,6 +2,7 @@ package com.ii.smartgrid.behaviours.powerplant;
 
 import com.ii.smartgrid.agents.HydroPowerPlantAgent;
 import com.ii.smartgrid.model.entities.RenewablePowerPlant;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 
 public class SendProducedHydroEnergyToGridBehaviour extends SendProducedEnergyToGridBehaviour{
 
@@ -11,7 +12,9 @@ public class SendProducedHydroEnergyToGridBehaviour extends SendProducedEnergyTo
     
     @Override
     protected double getHourlyProduction(RenewablePowerPlant hydroPowerPlant){
-        return hydroPowerPlant.getHourlyProduction();
+        double curTurnProduction = hydroPowerPlant.getHourlyProduction();
+        EnergyMonitorUtil.addHydroRenewableEnergyProduction(curTurnProduction, renewablePowerPlantAgent.getCurTurn());
+        return curTurnProduction;
     }
     
 }

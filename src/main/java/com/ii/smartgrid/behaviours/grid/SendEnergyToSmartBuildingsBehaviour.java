@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ii.smartgrid.agents.GridAgent;
 import com.ii.smartgrid.behaviours.CustomOneShotBehaviour;
+import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.Cable;
 import com.ii.smartgrid.model.entities.Grid;
 import com.ii.smartgrid.model.entities.CustomObject.Priority;
@@ -34,6 +35,10 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
         double buildingRequestedEnergy = grid.getBuildingRequestedEnergy(); 
         double energySentToGrids = grid.getExpectedConsumption() - buildingRequestedEnergy;
         double availableEnergy = grid.getExpectedProduction() - energySentToGrids;
+        
+        
+        Battery battery = grid.getBattery();
+
         // The energy is sent following a priority scheme
         for(Priority priority : Priority.values()){
             // Send energy to buildings in blackout before
@@ -51,7 +56,13 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                     availableEnergy -= neededEnergy;
                     customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
                     grid.removeSmartBuildingWithoutPower(smartBuildingName);
-                }else{
+                }else if(battery != null && battery.getAvailableEnergy() > neededEnergy){
+                    content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
+                    battery.requestEnergy(neededEnergy);
+                    customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
+                    grid.removeSmartBuildingWithoutPower(smartBuildingName);
+                }
+                else {
                     // There is not enough available energy to satisfy the current request
                     content.put(MessageUtil.GIVEN_ENERGY, -1.0); 
                     customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
@@ -71,11 +82,15 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
                 content.put(MessageUtil.REQUESTED_ENERGY, requestedEnergy);
-                
+        
                 if(availableEnergy >= neededEnergy){
                     availableEnergy -= neededEnergy;
                     customAgent.createAndSend(ACLMessage.AGREE, smartBuildingName, content);
-                }else{
+                }else if(battery != null && battery.getAvailableEnergy() > neededEnergy){
+                    battery.requestEnergy(neededEnergy);
+                    customAgent.createAndSend(ACLMessage.AGREE, smartBuildingName, content);
+                }
+                else{
                     customAgent.createAndSend(ACLMessage.REFUSE, smartBuildingName, content);
                     EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuildingsEnergyRequest.getPriority(), neededEnergy, smartBuildingName, TransactionType.RECEIVE);
                     grid.addSmartBuildingWithoutPower(smartBuildingName, energyTransaction);
