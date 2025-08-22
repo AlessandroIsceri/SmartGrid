@@ -32,6 +32,6 @@ public class SendInstructionsToGridsBehaviour extends CustomOneShotBehaviour{
             content.put(MessageUtil.NUMBER_OF_MESSAGES_TO_RECEIVE, loadManager.getNumberOfMessagesForGrid(gridName));
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
         }
-        loadManager.removeAllDistributionInstructions();
+        loadManager.resetValues();
     }
 }

@@ -65,33 +65,46 @@ public class ReceiveEnergyRequestsFromSmartBuildingsBehaviour extends CustomBeha
                 // Message received from non-blackout building
                 EnergyTransaction energyTransaction  = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
                 TransactionType transactionType = energyTransaction.getTransactionType();
+                double nextTurnExpectedConsumption = (double) jsonObject.get(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION);
                 if(transactionType == TransactionType.RECEIVE) {
                     // The smart building has requested energy
                     double requestedEnergy = energyTransaction.getEnergyTransactionValue();
                     grid.addExpectedConsumption(requestedEnergy);
                     grid.addEnergyRequest(sender, energyTransaction);
                     grid.updateGridPriority(energyTransaction.getPriority());
+                    grid.addNextTurnExpectedConsumption(nextTurnExpectedConsumption);
                     log("Requested Energy: " + requestedEnergy);
                 } else {
                     // The smart building has released energy
                     double releasedEnergy = energyTransaction.getEnergyTransactionValue();
                     log("Released Energy: " + releasedEnergy);
                     grid.addExpectedProduction(releasedEnergy);
+                    boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
+
+                    if(!blackout){
+                        grid.addNextTurnExpectedConsumption(nextTurnExpectedConsumption);
+                    }
+
                     if(grid.containsSmartBuildingWithoutPower(sender)){
                         // If the release was sent from a blackout building, that building it not in blackout anymore (blackout=false)	
-                        boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
                         if(!blackout){
                             grid.removeExpectedConsumption(grid.getSmartBuildingsWithoutPower().get(sender).getEnergyTransactionValue());
                             grid.removeSmartBuildingWithoutPower(sender);
+                        }else{
+                            grid.updateSmartBuildingsWithoutPower(sender, nextTurnExpectedConsumption);
                         }
                     }
                 }
             } else if(receivedMsg.getPerformative() == ACLMessage.INFORM){
                 // Message received from blackout building, checks if that building is still in blackout
                 boolean blackout = (boolean) jsonObject.get(MessageUtil.BLACKOUT);
+                double nextTurnExpectedConsumption = (double) jsonObject.get(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION);
                 if(!blackout){
                     grid.removeExpectedConsumption(grid.getSmartBuildingsWithoutPower().get(sender).getEnergyTransactionValue());
                     grid.removeSmartBuildingWithoutPower(sender);
+                    grid.addNextTurnExpectedConsumption(nextTurnExpectedConsumption);
+                }else{
+                    grid.updateSmartBuildingsWithoutPower(sender, nextTurnExpectedConsumption);
                 }
             }
             if(requestCont < this.smartBuildingsCount){

@@ -30,7 +30,9 @@ public class UpdateNonRenewableStatusBehaviour extends CustomBehaviour{
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             boolean on = (boolean) jsonObject.get(MessageUtil.ON);
             NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
+            double requiredEnergy = (double) jsonObject.get(MessageUtil.REQUIRED_ENERGY);
             nonRenewablePowerPlant.setOn(on);
+            nonRenewablePowerPlant.setTurnRequest(requiredEnergy);
             finished = true;
 		} else {
 			block();

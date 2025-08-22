@@ -59,6 +59,7 @@ public class ReceiveEnergyFromRenewablePowerPlantsBehaviour extends CustomBehavi
             log("Received energy: " + receivedEnergy);
 
             grid.addExpectedProduction(receivedEnergy);
+            grid.addExpectedRenewableProduction(receivedEnergy);
 
             if (requestCont < renewablePowerPlantCount) {
                 customAgent.blockBehaviourIfQueueIsEmpty(this);

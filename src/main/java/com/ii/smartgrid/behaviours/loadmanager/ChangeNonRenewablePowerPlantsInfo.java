@@ -9,6 +9,7 @@ import com.ii.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.model.entities.LoadManager;
 import com.ii.smartgrid.utils.MessageUtil;
+import com.ii.smartgrid.utils.TimeUtils;
 
 import jade.lang.acl.ACLMessage;
 
@@ -30,27 +31,32 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
         // When the effective production is greater than required energy, turn off the power plants that are no longer required
          
         // The required energy is the amount needed to charge all batteries to 75% if they have less than 25%
-        double requiredEnergy = loadManager.getBatteryRequiredEnergy(loadManagerAgent.getCurTurn());
-        double producedEnergy = 0;
-        List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = loadManager.getNonRenewablePowerPlantInfos();
-        int pos = 0;
-        for(int i = 0; i < nonRenewablePowerPlantInfos.size(); i++){
-            NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = nonRenewablePowerPlantInfos.get(i);
-            if(requiredEnergy > producedEnergy){
-                producedEnergy += nonRenewablePowerPlantInfo.getMaxTurnProduction();
-                nonRenewablePowerPlantInfo.setOn(true);
-                pos = i;
-            } else {
-                nonRenewablePowerPlantInfo.setOn(false);
-            }
+
+        double batteryRequiredEnergy = loadManager.getBatteryRequiredEnergy(loadManagerAgent.getCurTurn());
+        double surplusEnergy = loadManager.getSurplusEnergy();
+        
+        if(batteryRequiredEnergy == 0){
+            surplusEnergy += (loadManager.getCurTurnEnergyProduction());
         }
 
-        // The first i non-renewable power plants are "on" --> turn off the ones that are not needed
-        for(int j = pos - 1; j > 0; j--){
-            NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = nonRenewablePowerPlantInfos.get(j);
-            double ppMaxTurnProduction = nonRenewablePowerPlantInfo.getMaxTurnProduction();
-            if(producedEnergy - ppMaxTurnProduction > requiredEnergy){
-                producedEnergy -= ppMaxTurnProduction;
+        double nextTurnExpectedConsumption = Math.max(loadManager.getNextTurnExpectedConsumption() - surplusEnergy * 0.9, 0);
+        
+        double totalRequiredEnergy = batteryRequiredEnergy + nextTurnExpectedConsumption;
+        List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = loadManager.getNonRenewablePowerPlantInfos();
+        double producedEnergy = 0;
+        for(int i = 0; i < nonRenewablePowerPlantInfos.size(); i++){
+            NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo = nonRenewablePowerPlantInfos.get(i);
+            double maxProducibleEnergy = nonRenewablePowerPlantInfo.getMaxTurnProduction();
+            double remaining = totalRequiredEnergy - producedEnergy;
+            if(remaining > maxProducibleEnergy){
+                producedEnergy += nonRenewablePowerPlantInfo.getMaxTurnProduction();
+                nonRenewablePowerPlantInfo.setLastTurnProduction(maxProducibleEnergy);
+                nonRenewablePowerPlantInfo.setOn(true);
+            } else if(remaining > 0.1){
+                nonRenewablePowerPlantInfo.setLastTurnProduction(remaining);
+                producedEnergy += remaining;
+                nonRenewablePowerPlantInfo.setOn(true);
+            } else{
                 nonRenewablePowerPlantInfo.setOn(false);
             }
         }
@@ -59,9 +65,11 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
         for(NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos){
             Map<String, Object> content = new HashMap<>();
             content.put(MessageUtil.ON, nonRenewablePowerPlantInfo.isOn());
+            content.put(MessageUtil.REQUIRED_ENERGY, nonRenewablePowerPlantInfo.getLastTurnProduction() / TimeUtils.getTurnDurationHours());
             customAgent.createAndSend(ACLMessage.INFORM, nonRenewablePowerPlantInfo.getName(), content);
         }
         
+
     }
 
 }

@@ -32,7 +32,7 @@ public class GridAgent extends CustomAgent{
         grid.addConnectedAgentNames(grid.getNonRenewablePowerPlantNames());
         grid.addConnectedAgentNames(grid.getRenewablePowerPlantNames());
         grid.addConnectedAgentNames(grid.getGridNames());
-
+        grid.turnOnAllNonRenewablePowerPlants();
         this.addBehaviour(new GridCoordinatesDiscoveryBehaviour(this));
         this.addBehaviour(new GridBehaviour(this));
         this.log("Setup completed");        

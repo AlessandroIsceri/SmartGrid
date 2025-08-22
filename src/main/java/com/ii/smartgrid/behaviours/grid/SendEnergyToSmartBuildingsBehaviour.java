@@ -13,8 +13,10 @@ import com.ii.smartgrid.model.entities.CustomObject.Priority;
 import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransactionWithoutBattery;
 import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.MessageUtil;
 
+import com.ii.smartgrid.utils.TimeUtils;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
@@ -35,8 +37,10 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
         double buildingRequestedEnergy = grid.getBuildingRequestedEnergy(); 
         double energySentToGrids = grid.getExpectedConsumption() - buildingRequestedEnergy;
         double availableEnergy = grid.getExpectedProduction() - energySentToGrids;
-        
-        
+
+        // Setup basic consumption for energy tracking
+        EnergyMonitorUtil.addBatteryProduction(0, gridAgent.getCurTurn());
+
         Battery battery = grid.getBattery();
 
         // The energy is sent following a priority scheme
@@ -59,6 +63,7 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 }else if(battery != null && battery.getAvailableEnergy() > neededEnergy){
                     content.put(MessageUtil.GIVEN_ENERGY, neededEnergy);
                     battery.requestEnergy(neededEnergy);
+                    EnergyMonitorUtil.addBatteryProduction(neededEnergy / TimeUtils.getTurnDurationHours(), gridAgent.getCurTurn());
                     customAgent.createAndSend(ACLMessage.INFORM, smartBuildingName, content, MessageUtil.CONVERSATION_ID_RESTORE_BUILDING + "-" + smartBuildingName);
                     grid.removeSmartBuildingWithoutPower(smartBuildingName);
                 }
@@ -82,12 +87,12 @@ public class SendEnergyToSmartBuildingsBehaviour extends CustomOneShotBehaviour{
                 Map<String, Object> content = new HashMap<>();
                 content.put(MessageUtil.OPERATION, MessageUtil.CONSUME);
                 content.put(MessageUtil.REQUESTED_ENERGY, requestedEnergy);
-        
                 if(availableEnergy >= neededEnergy){
                     availableEnergy -= neededEnergy;
                     customAgent.createAndSend(ACLMessage.AGREE, smartBuildingName, content);
                 }else if(battery != null && battery.getAvailableEnergy() > neededEnergy){
                     battery.requestEnergy(neededEnergy);
+                    EnergyMonitorUtil.addBatteryProduction(neededEnergy / TimeUtils.getTurnDurationHours(), gridAgent.getCurTurn());
                     customAgent.createAndSend(ACLMessage.AGREE, smartBuildingName, content);
                 }
                 else{

@@ -47,7 +47,7 @@ public class Battery {
     }
 
     public void setDischargeCurrent(double dischargeCurrent) {
-        this.dischargeCurrent = dischargeCurrent;
+        this.dischargeCurrent = dischargeCurrent / 2;
     }
 
     public double getEfficiency() {

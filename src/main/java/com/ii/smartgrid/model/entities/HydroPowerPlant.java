@@ -40,7 +40,7 @@ public class HydroPowerPlant extends RenewablePowerPlant {
 
 
     @Override
-    public double getHourlyProduction(Object... weatherConditions) {
+    public double getHourlyProduction(Object... parameters) {
         return efficiency * WATER_DENSITY * GRAVITATIONAL_ACCELERATION * flowRate * headHeight;
     }
 

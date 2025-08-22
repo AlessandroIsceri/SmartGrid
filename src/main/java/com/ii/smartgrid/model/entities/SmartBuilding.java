@@ -20,6 +20,7 @@ public class SmartBuilding extends CustomObject {
     private Routine routine;
     private double expectedConsumption;
     private double expectedProduction;
+    private double nextTurnExpectedConsumption;
     private String gridName;
     private Priority priority;
 
@@ -40,36 +41,32 @@ public class SmartBuilding extends CustomObject {
 
     public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus) {
         expectedConsumption = 0;
-        
-        if (smartBuildingStatus != SmartBuildingStatus.BLACKOUT) {
+        double turnDurationHours = TimeUtils.getTurnDurationHours();
 
-            double turnDurationHours = TimeUtils.getTurnDurationHours();
-
-            for(Appliance appliance : appliances){
-                if(appliance.isAlwaysOn()){
-                    expectedConsumption += appliance.getHourlyConsumption() * turnDurationHours;
-                }
+        for(Appliance appliance : appliances){
+            if(appliance.isAlwaysOn()){
+                expectedConsumption += appliance.getHourlyConsumption() * turnDurationHours;
             }
+        }
 
-            for (Task curTask : routine.getTasks()) {
-                // Get the start turn and end turn for current task
-                int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
-                int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
-                String applianceName = curTask.getApplianceName();
-                curTurn = curTurn % TimeUtils.getDailyTurnsNumber();
-                // Find the appliance with the given name using stream
-                Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
-                if (endTurn == curTurn) {
-                    // The appliance must be turned off this turn
-                    curAppliance.setOn(false);
-                }
-                if (startTurn == curTurn) {
-                    // The appliance must be turned on this turn
-                    curAppliance.setOn(true);
-                } 
-                if(curAppliance.isOn() && !curAppliance.isAlwaysOn()){
-                    expectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
-                }
+        for (Task curTask : routine.getTasks()) {
+            // Get the start turn and end turn for current task
+            int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
+            int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
+            String applianceName = curTask.getApplianceName();
+            curTurn = curTurn % TimeUtils.getDailyTurnsNumber();
+            // Find the appliance with the given name using stream
+            Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
+            if (endTurn == curTurn) {
+                // The appliance must be turned off this turn
+                curAppliance.setOn(false);
+            }
+            if (startTurn == curTurn) {
+                // The appliance must be turned on this turn
+                curAppliance.setOn(true);
+            } 
+            if(curAppliance.isOn() && !curAppliance.isAlwaysOn()){
+                expectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
             }
         }
         expectedProduction = 0;
@@ -80,6 +77,33 @@ public class SmartBuilding extends CustomObject {
             expectedProduction = expectedProduction + battery.getAvailableEnergy();
         }
     }
+
+    public void predictNextTurnConsumptionRoutine(int nextTurn, SmartBuildingStatus smartBuildingStatus) {
+        nextTurnExpectedConsumption = 0;
+        
+        double turnDurationHours = TimeUtils.getTurnDurationHours();
+
+        for(Appliance appliance : appliances){
+            if(appliance.isAlwaysOn()){
+                nextTurnExpectedConsumption += appliance.getHourlyConsumption() * turnDurationHours;
+            }
+        }
+
+        for (Task curTask : routine.getTasks()) {
+            // Get the start turn and end turn for current task
+            int startTurn = TimeUtils.convertTimeToTurn(curTask.getStartTime());
+            int endTurn = TimeUtils.convertTimeToTurn(curTask.getEndTime());
+            String applianceName = curTask.getApplianceName();
+            nextTurn = nextTurn % TimeUtils.getDailyTurnsNumber();
+            // Find the appliance with the given name using stream
+            Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
+            
+            if(startTurn <= nextTurn && endTurn > nextTurn){
+                nextTurnExpectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
+            }
+        }
+    }
+
 
     public List<Appliance> getAppliances() {
         return appliances;
@@ -161,6 +185,14 @@ public class SmartBuilding extends CustomObject {
             appliance.setOn(false);
         }
         expectedConsumption = 0;
+    }
+
+    public double getNextTurnExpectedConsumption() {
+        return nextTurnExpectedConsumption;
+    }
+
+    public void setNextTurnExpectedConsumption(double nextTurnExpectedConsumption) {
+        this.nextTurnExpectedConsumption = nextTurnExpectedConsumption;
     }
 
     @Override

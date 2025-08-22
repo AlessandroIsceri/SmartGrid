@@ -20,7 +20,7 @@ public abstract class DistributionStrategyBehaviour extends CustomOneShotBehavio
     protected EnergyTransaction nearestProducerNode;
     protected List<? extends EnergyTransaction> producerNodes;
     protected List<? extends EnergyTransaction> consumerNodes;    
-    private LoadManagerAgent loadManagerAgent;
+    protected LoadManagerAgent loadManagerAgent;
 
     protected DistributionStrategyBehaviour(LoadManagerAgent loadManagerAgent) {
         super(loadManagerAgent);

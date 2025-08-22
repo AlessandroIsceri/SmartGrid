@@ -6,6 +6,8 @@ import com.ii.smartgrid.agents.LoadManagerAgent;
 import com.ii.smartgrid.model.routing.DistributionInstruction;
 import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransactionWithBattery;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
+import com.ii.smartgrid.utils.TimeUtils;
 
 public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehaviour{
 
@@ -25,6 +27,7 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
         // Compute the sendableEnergy
         double sendableEnergy = ((EnergyTransactionWithBattery) nearestProducerNode).sendBatteryEnergy(neededEnergy);
         DistributionInstruction distributionInstruction = new DistributionInstruction(shortestPath.getGraphPath(), sendableEnergy);
+        EnergyMonitorUtil.addBatteryProduction(sendableEnergy / TimeUtils.getTurnDurationHours(), loadManagerAgent.getCurTurn());
 
         // Compute the received energy after loss
         double lostEnergy = loadManager.computeEnergyLoss(sendableEnergy, shortestPath.getGraphPath());
@@ -34,7 +37,7 @@ public class DistributeBatteryEnergyBehaviour extends DistributionStrategyBehavi
         
         // Remove producer if it has not enough energy left 
         double epsilon = 0.01;
-        if(((EnergyTransactionWithBattery) nearestProducerNode).getBattery().getStateOfCharge() < epsilon){
+        if(((EnergyTransactionWithBattery) nearestProducerNode).getBattery().getStateOfCharge() < epsilon || ((EnergyTransactionWithBattery) nearestProducerNode).hasReachedLimit()){
             producerNodes.remove(nearestProducerNode);
         }
         return distributionInstruction;

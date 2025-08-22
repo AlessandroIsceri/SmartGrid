@@ -1,6 +1,6 @@
 {
     "LoadManager-1": {
         "gridNames": ["Grid-Tekek", "Grid-Juara", "Grid-Salang", "Grid-Paya", "Grid-Bunut", "Grid-AirBatang", "Grid-Mukut"],
-        "nonRenewablePowerPlantNames": ["DieselPowerPlant-1"]
+        "nonRenewablePowerPlantNames": ["DieselPowerPlant-1", "DieselPowerPlant-2", "DieselPowerPlant-3", "DieselPowerPlant-4"]
     }
 }

@@ -8,5 +8,35 @@
             "latitude": 2.82431943118895,
             "longitude": 104.16497639061139
         }
+    },
+    "DieselPowerPlant-2": {
+        "gridName" : "Grid-Tekek",
+        "loadManagerName" : "LoadManager-1",
+        "enginePower": 500000.0,
+        "efficiency": 0.9,
+        "coordinates":{
+            "latitude": 2.82431543118895,
+            "longitude": 104.16492639061139
+        }
+    },
+    "DieselPowerPlant-3": {
+        "gridName" : "Grid-Tekek",
+        "loadManagerName" : "LoadManager-1",
+        "enginePower": 500000.0,
+        "efficiency": 0.9,
+        "coordinates":{
+            "latitude": 2.82431243118895,
+            "longitude": 104.16497239061139
+        }
+    },
+    "DieselPowerPlant-4": {
+        "gridName" : "Grid-Tekek",
+        "loadManagerName" : "LoadManager-1",
+        "enginePower": 500000.0,
+        "efficiency": 0.9,
+        "coordinates":{
+            "latitude": 2.82431443118895,
+            "longitude": 104.16493639061139
+        }
     }
 }

@@ -51,6 +51,7 @@ public class SmartBuildingAgent extends CustomAgent{
             SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
             // Compute the expected production and consumption based on the current routine
             smartBuilding.followRoutine(curTurn, curWeather, buildingStatus);
+            smartBuilding.predictNextTurnConsumptionRoutine((curTurn + 1), buildingStatus);
             if(buildingStatus == SmartBuildingStatus.BLACKOUT){
                 log("Blackout");
                 // If a SmartBuilding is in blackout status, it waits for a restore message from the grid

@@ -17,11 +17,13 @@ public class EnergyMonitorUtil {
     private static List<Double> buildingEnergyProduction = new ArrayList<>(); 
     private static List<Double> totalEnergyDemand = new ArrayList<>();
     private static List<Double> storedBatteryEnergy = new ArrayList<>();
+    private static List<Double> batteryProduction = new ArrayList<>();
+
     private static String BASE_PATH = "src/main/resources/output/";
     private static int firstTurn = 0;
     private static int lastTurn = 0;
 
-    private static void addValue(List<Double> list, double value, int turn) {
+    private static synchronized void addValue(List<Double> list, double value, int turn) {
 
         turn = turn % TimeUtils.getDailyTurnsNumber();
             
@@ -62,6 +64,10 @@ public class EnergyMonitorUtil {
         addValue(storedBatteryEnergy, value, turn);
     }
 
+    public static void addBatteryProduction(double value, int turn){
+        addValue(batteryProduction, value, turn);
+    }
+
     public static void saveData() {
         Map<String, List<Double>> content = new HashMap<>();
         content.put("solarRenewableEnergyProduction", solarRenewableEnergyProduction);
@@ -71,11 +77,20 @@ public class EnergyMonitorUtil {
         content.put("buildingEnergyProduction", buildingEnergyProduction);
         content.put("totalEnergyDemand", totalEnergyDemand);
         content.put("storedBatteryEnergy", storedBatteryEnergy);
+        content.put("batteryProduction", batteryProduction);
 
-        // Write simulation data on JSON file
         ObjectMapper mapper = new ObjectMapper();
+        String fileName = "energy_data-" + firstTurn + "-" + lastTurn + ".json";
+        File file = new File(BASE_PATH + fileName);
+        
+        // Create directories if they don't exist
+        File directoryPath = file.getParentFile();
+        if (directoryPath != null && !directoryPath.exists()) {
+            directoryPath.mkdirs();
+        }
+        // Write simulation data on JSON file
         try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(BASE_PATH + "energy_data-" + firstTurn + "-" + lastTurn + ".json"), content);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, content);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,6 +106,7 @@ public class EnergyMonitorUtil {
         totalEnergyDemand.clear();
         storedBatteryEnergy.clear();
         buildingEnergyProduction.clear();
+        batteryProduction.clear();
     }
 
 

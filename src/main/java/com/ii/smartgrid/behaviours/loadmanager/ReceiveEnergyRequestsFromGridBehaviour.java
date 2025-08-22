@@ -7,6 +7,7 @@ import com.ii.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.model.entities.LoadManager;
 import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
+import com.ii.smartgrid.model.routing.EnergyTransactionWithBattery;
 import com.ii.smartgrid.utils.MessageUtil;
 
 import jade.lang.acl.ACLMessage;
@@ -38,18 +39,29 @@ public class ReceiveEnergyRequestsFromGridBehaviour extends CustomBehaviour{
             requestCont++;
             Map<String, Object> jsonObject = customAgent.convertAndReturnContent(receivedMsg);
             EnergyTransaction energyTransaction = customAgent.readValueFromJson(jsonObject.get(MessageUtil.ENERGY_TRANSACTION), EnergyTransaction.class);
+            
+            if(energyTransaction.isBatteryAvailable() && energyTransaction.getTransactionType() == TransactionType.RECEIVE){
+                EnergyTransactionWithBattery energyTransactionWithBattery = (EnergyTransactionWithBattery) energyTransaction;
+
+                double energyReceived = energyTransactionWithBattery.sendBatteryEnergy(energyTransactionWithBattery.getEnergyTransactionValue());
+                energyTransactionWithBattery.receiveEnergy(energyReceived);
+            }
+
             double requestedEnergy = energyTransaction.getEnergyTransactionValue();
             double energyWithMargin = requestedEnergy;
+            LoadManager loadManager = loadManagerAgent.getLoadManager(); 
+
             if(energyTransaction.getTransactionType() == TransactionType.RECEIVE){
                 energyWithMargin = requestedEnergy + requestedEnergy * 0.05; // Add 5% bonus energy to the requested one
             }
             
             String sender = receivedMsg.getSender().getLocalName();
-            LoadManager loadManager = loadManagerAgent.getLoadManager(); 
             // Add the EnergyTransaction to the loadManager
             energyTransaction.setEnergyTransactionValue(energyWithMargin);
             loadManager.addGridRequestedEnergy(sender, energyTransaction);
 
+            loadManager.addNextTurnExpectedConsumption((double) jsonObject.get(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION));
+            loadManager.addCurTurnEnergyProduction((double) jsonObject.get(MessageUtil.CURRENT_TURN_ENERGY_PRODUCTION));
             if(requestCont < gridCount){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{

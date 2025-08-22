@@ -62,6 +62,21 @@
            "cableType": "copperHigh2.5"
         },
         {
+           "from": "Grid-Tekek",
+           "to": "DieselPowerPlant-2",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Tekek",
+           "to": "DieselPowerPlant-3",
+           "cableType": "copperHigh2.5"
+        },
+        {
+           "from": "Grid-Tekek",
+           "to": "DieselPowerPlant-4",
+           "cableType": "copperHigh2.5"
+        },
+        {
            "from": "Grid-Juara",
            "to": "HydroPowerPlant-1",
            "cableType": "copperHigh2.5"

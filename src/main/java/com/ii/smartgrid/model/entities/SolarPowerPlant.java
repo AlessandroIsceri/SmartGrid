@@ -48,9 +48,9 @@ public class SolarPowerPlant extends RenewablePowerPlant {
     }
 
     @Override
-    public double getHourlyProduction(Object... weatherConditions) {
-        WeatherStatus curWeather = (WeatherStatus) weatherConditions[0];
-        int curTurn = (int) weatherConditions[1];
+    public double getHourlyProduction(Object... parameters) {
+        WeatherStatus curWeather = (WeatherStatus) parameters[0];
+        int curTurn = (int) parameters[1];
 
         int dayOfTheYear = TimeUtils.getCurrentDayFromTurn(curTurn);
 

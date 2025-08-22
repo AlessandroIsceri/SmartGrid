@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,10 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WeatherUtil {
 
-    public static final double[] windSpeedAvg = {0.5, 3.5, 9.0, 15.5, 24.0, 34.0, 44.5, 56.0, 68.5, 82.0, 96.0, 110.5, 125.0};
+    private static final double[] windSpeedIntervals = {0, 1, 6, 12, 19, 29, 39, 50, 62, 75, 89, 103, 118, 132};
+    public static double[] windSpeedAvg = {0.5, 3.5, 9.0, 15.5, 24.0, 34.0, 44.5, 56.0, 68.5, 82.0, 96.0, 110.5, 125.0};
+
     public static final int[] cloudCoverageAvg = new int[WeatherStatus.values().length];
     public static List<String> sunriseHours = new ArrayList<>();
     public static List<String> sunsetHours = new ArrayList<>();
+    
+    private static Random rand = new Random(42);
 
     private static String getResultFromHTTPRequest(double latitude, double longitude, String startDate, String endDate, String frequency, String requestedParameter) {
         try {
@@ -321,5 +326,11 @@ public class WeatherUtil {
     public enum WeatherStatus {SUNNY, CLOUDY, RAINY, SNOWY}
 
     public enum WindSpeedStatus {CALM, LIGHT_AIR, LIGHT_BREEZE, GENTLE_BREEZE, MODERATE_BREEZE, FRESH_BREEZE, STRONG_BREEZE, NEAR_GALE, GALE, STRONG_GALE, STORM, VIOLENT_STORM, HURRICANE}
+
+    public static void updateCurWindSpeed(int ordinal){
+        double min = windSpeedIntervals[ordinal];
+        double max = windSpeedIntervals[ordinal + 1];
+        windSpeedAvg[ordinal] = min + (max - min) * rand.nextDouble();
+    }
 
 }

@@ -17,6 +17,7 @@ import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
 import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.MessageUtil;
 
+import com.ii.smartgrid.utils.TimeUtils;
 import jade.lang.acl.ACLMessage;
 
 public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
@@ -51,11 +52,11 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
             transactionType = TransactionType.SEND;
             Cable cable = smartBuilding.getCable(gridName);
             energy = cable.computeTransmittedPower(energy);
-            EnergyMonitorUtil.addBuildingEnergyProduction(availableEnergy - expectedConsumption, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addBuildingEnergyProduction((availableEnergy - expectedConsumption) / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
             EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
         } else {
             transactionType = TransactionType.RECEIVE; 
-            EnergyMonitorUtil.addTotalEnergyDemand(expectedConsumption - availableEnergy, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addTotalEnergyDemand((expectedConsumption - availableEnergy) / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
             EnergyMonitorUtil.addBuildingEnergyProduction(0, smartBuildingAgent.getCurTurn());
         }
         EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), energy, customAgent.getLocalName(), transactionType);
@@ -64,7 +65,7 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
         ObjectMapper objectMapper = customAgent.getObjectMapper();
         JsonNode node = objectMapper.valueToTree(energyTransaction);
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
-        
+        content.put(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION, smartBuilding.getNextTurnExpectedConsumption());
         content.put(MessageUtil.BLACKOUT, false);
 
         customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);

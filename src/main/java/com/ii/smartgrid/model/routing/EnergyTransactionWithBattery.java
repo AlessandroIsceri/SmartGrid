@@ -9,6 +9,7 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
     public static final double FULL_BATTERY = 1.0;
 
     private double curTurnReceivedEnergy;
+    private double curTurnReleasedEnergy;
 
     private Battery battery;
 
@@ -16,6 +17,7 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
         super();
         this.batteryAvailable = true;
         curTurnReceivedEnergy = 0;
+        curTurnReleasedEnergy = 0;
     }
 
     public EnergyTransactionWithBattery(Priority priority, double energyTransactionValue, String nodeName, Battery battery, TransactionType transactionType) {
@@ -23,6 +25,7 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
         this.batteryAvailable = true;
         this.battery = battery;
         curTurnReceivedEnergy = 0;
+        curTurnReleasedEnergy = 0;
     }
 
     public Battery getBattery() {
@@ -36,13 +39,23 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
     // Compute and returns the amount of energy needed to reach the given threshold of charge
     public double getMissingEnergyForThreshold(double thresholdPercentage) {
         double energyRequired = battery.getMaxCapacityInWattHour() * thresholdPercentage - battery.getStoredEnergy();
-        double maxEnergyInTurn = battery.getMaxEnergyInTurn() - curTurnReceivedEnergy;
-
-        return Math.min(energyRequired, maxEnergyInTurn);
+        double maxEnergyInTurn = battery.getMaxEnergyInTurn() - curTurnReceivedEnergy - curTurnReleasedEnergy;
+        return Math.max(0, Math.min(energyRequired, maxEnergyInTurn));
     }
 
     public boolean hasReachedLimit() {
-        return curTurnReceivedEnergy >= battery.getMaxEnergyInTurn() - 0.01;
+        return (curTurnReceivedEnergy + curTurnReleasedEnergy) >= battery.getMaxEnergyInTurn() - 0.01;
+    }
+
+    private double willReachLimit(double energy){
+        if(hasReachedLimit()){
+            return 0;
+        }
+        if ((curTurnReceivedEnergy + curTurnReleasedEnergy + energy) >= battery.getMaxEnergyInTurn() - 0.01){
+            return battery.getMaxEnergyInTurn() - curTurnReceivedEnergy - curTurnReleasedEnergy;
+        } else {
+            return energy;
+        }
     }
 
     @JsonIgnore
@@ -51,13 +64,24 @@ public class EnergyTransactionWithBattery extends EnergyTransaction {
     }
 
     public double receiveBatteryEnergy(double energyReceived) {
-        double excess = battery.fillBattery(energyReceived);
-        curTurnReceivedEnergy = curTurnReceivedEnergy + energyReceived - excess;
-        return excess;
+        double possibleReceivableEnergy = willReachLimit(energyReceived);
+        if(possibleReceivableEnergy == 0){
+            return energyReceived;
+        }
+        double notReceivableEnergy = energyReceived - possibleReceivableEnergy;
+        double excess = battery.fillBattery(possibleReceivableEnergy);
+        curTurnReceivedEnergy = curTurnReceivedEnergy + possibleReceivableEnergy - excess;
+        return excess + notReceivableEnergy;
     }
 
     public double sendBatteryEnergy(double energySent) {
-        return battery.requestEnergy(energySent);
+        double possibleSendableEnergy = willReachLimit(energySent);
+        if(possibleSendableEnergy == 0){
+            return 0;
+        }
+        double effectiveSentEnergy = battery.requestEnergy(possibleSendableEnergy);
+        curTurnReleasedEnergy += effectiveSentEnergy;
+        return effectiveSentEnergy;
     }
 
     @Override

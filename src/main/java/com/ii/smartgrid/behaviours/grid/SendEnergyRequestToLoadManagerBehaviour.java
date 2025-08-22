@@ -55,7 +55,8 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
         ObjectMapper objectMapper = customAgent.getObjectMapper();
         JsonNode node = objectMapper.valueToTree(energyTransaction);
         content.put(MessageUtil.ENERGY_TRANSACTION, node);
-        
+        content.put(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION, grid.getNextTurnExpectedConsumption() + grid.getBlackoutEnergyRequest());
+        content.put(MessageUtil.CURRENT_TURN_ENERGY_PRODUCTION, grid.getExpectedRenewableProduction());
         customAgent.createAndSend(ACLMessage.REQUEST, loadManagerName, content);
     }
 

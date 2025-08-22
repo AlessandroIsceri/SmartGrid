@@ -12,6 +12,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedPseudograph;
 
+import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.Cable;
 import com.ii.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.model.routing.DistributionInstruction;
@@ -34,6 +35,8 @@ public class LoadManager extends CustomObject {
     private List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos;
     private Map<String, List<Cable>> gridsCables;
     private Map<String, Double> gridWithChargingBattery;
+    private double nextTurnExpectedConsumption;
+    private double curTurnEnergyProduction;
 
     public LoadManager() {
         super();
@@ -46,6 +49,8 @@ public class LoadManager extends CustomObject {
         gridNames = new ArrayList<>();
         gridsCables = new HashMap<>();
         gridWithChargingBattery = new HashMap<>();
+        nextTurnExpectedConsumption = 0;
+        curTurnEnergyProduction = 0;    
     }
 
     // Add the nodes and edge (with its cost) to the graph
@@ -149,11 +154,9 @@ public class LoadManager extends CustomObject {
             } else if(gridWithChargingBattery.containsKey(gridName)){
                 batteryRequiredEnergy += gridWithChargingBattery.get(gridName);
             } else if(gridWithBattery.getBattery().getStateOfCharge() < 0.25){
-                double needed = gridWithBattery.getMissingEnergyForThreshold(0.75);
-                if (needed > 0) {
-                    batteryRequiredEnergy += needed;
-                    gridWithChargingBattery.put(gridName, needed);
-                }
+                double needed = gridWithBattery.getBattery().getMaxEnergyInTurn();
+                batteryRequiredEnergy += needed;
+                gridWithChargingBattery.put(gridName, needed);
             }
 
         }
@@ -371,7 +374,48 @@ public class LoadManager extends CustomObject {
     }
 
     public void sortNonRenewablePowerPlantInfo() {
-        nonRenewablePowerPlantInfos.sort(Comparator.comparingDouble(NonRenewablePowerPlantInfo::getMaxTurnProduction));
+        nonRenewablePowerPlantInfos.sort(Comparator.comparingDouble(NonRenewablePowerPlantInfo::getMaxTurnProduction).reversed());
+    }
+
+    public double getSurplusEnergy(){
+        double sum = 0;
+        for(EnergyTransaction energyTransaction : gridRequestedEnergy.values()){
+            if(energyTransaction.getTransactionType() == TransactionType.SEND){
+                sum += energyTransaction.getEnergyTransactionValue();
+            }
+        }
+        return sum;
+    }
+
+    public double getNextTurnExpectedConsumption() {
+        return nextTurnExpectedConsumption;
+    }
+
+
+    public void addNextTurnExpectedConsumption(double nextTurnExpectedConsumption) {
+        this.nextTurnExpectedConsumption += nextTurnExpectedConsumption;
+    }
+
+    public void resetNextTurnExpectedConsumption() {
+        this.nextTurnExpectedConsumption = 0;
+    }
+
+    public void resetCurTurnEnergyProduction() {
+        this.curTurnEnergyProduction = 0;
+    }
+
+    public void addCurTurnEnergyProduction(double curTurnEnergyProduction) {
+        this.curTurnEnergyProduction += curTurnEnergyProduction;
+    }
+
+    public double getCurTurnEnergyProduction() {
+        return curTurnEnergyProduction;
+    }
+
+    public void resetValues(){
+        removeAllDistributionInstructions();
+        resetNextTurnExpectedConsumption();
+        resetCurTurnEnergyProduction();
     }
 
 }

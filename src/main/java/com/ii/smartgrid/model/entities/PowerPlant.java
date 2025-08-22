@@ -13,7 +13,7 @@ public abstract class PowerPlant extends CustomObject {
         this.gridName = gridName;
     }
 
-    public abstract double getHourlyProduction(Object... weatherConditions);
+    public abstract double getHourlyProduction(Object... parameters);
 
     public boolean isOn() {
         return on;

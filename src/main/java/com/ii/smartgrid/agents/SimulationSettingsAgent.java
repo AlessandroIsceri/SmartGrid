@@ -190,6 +190,7 @@ public class SimulationSettingsAgent extends CustomAgent{
             sum -= windSpeedTransitionProbabilities[curStateRow][i];
 			if(sum < 0){
 				curWindSpeed = WindSpeedStatus.values()[i];
+                WeatherUtil.updateCurWindSpeed(i);
 				break;
 			}
 		}

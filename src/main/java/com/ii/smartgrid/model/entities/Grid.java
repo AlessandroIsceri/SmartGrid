@@ -23,10 +23,12 @@ public class Grid extends CustomObject {
     private List<String> gridNames;
     private double expectedConsumption;
     private double expectedProduction;
+    private double nextTurnExpectedConsumption;
     private String loadManagerName;
     private int numberOfMessagesToReceive;
     private Priority priority;
     private Battery battery;
+    private double expectedRenewableProduction;
 
     public Grid() {
         smartBuildingNames = new ArrayList<>();
@@ -37,6 +39,9 @@ public class Grid extends CustomObject {
         distributionInstructions = new ArrayList<>();
         gridNames = new ArrayList<>();
         expectedConsumption = 0;
+        expectedProduction = 0;
+        expectedRenewableProduction = 0;
+        nextTurnExpectedConsumption = 0;
         this.priority = Priority.LOW;
     }
 
@@ -252,6 +257,8 @@ public class Grid extends CustomObject {
     public void resetValues() {
         this.expectedConsumption = 0;
         this.expectedProduction = 0;
+        this.nextTurnExpectedConsumption = 0;
+        this.expectedRenewableProduction = 0;
         distributionInstructions.clear();
     }
 
@@ -288,4 +295,33 @@ public class Grid extends CustomObject {
         expectedConsumption -= energyTransactionValue;
     }
 
+    public void addExpectedRenewableProduction(double renewableProduction){
+        this.expectedRenewableProduction += renewableProduction;
+    }
+
+	public void turnOnAllNonRenewablePowerPlants() {
+		for (String nonRenewablePowerPlantName : nonRenewablePowerPlantActiveStatus.keySet()) {
+            nonRenewablePowerPlantActiveStatus.put(nonRenewablePowerPlantName, true);
+        }
+	}
+
+    public double getNextTurnExpectedConsumption() {
+        return nextTurnExpectedConsumption;
+    }
+
+    public void addNextTurnExpectedConsumption(double expectedConsumption) {
+        this.nextTurnExpectedConsumption += expectedConsumption;
+    }
+
+	public void updateSmartBuildingsWithoutPower(String sender, double nextTurnExpectedConsumption) {
+        EnergyTransaction energyTransaction = smartBuildingsWithoutPower.get(sender);
+        energyTransaction.setEnergyTransactionValue(nextTurnExpectedConsumption);
+	}
+
+    public double getExpectedRenewableProduction() {
+        return expectedRenewableProduction;
+    }
+
+
+    
 }

@@ -40,8 +40,8 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
                 if(gridsWithBattery.contains(producerNode)){
                     // The producer node has a battery -> Add the node's extra energy into its battery and remove it from Producers 
-                    ((EnergyTransactionWithBattery) producerNode).receiveBatteryEnergy(producerNode.getEnergyTransactionValue());
-                    (producerNode).sendEnergy(producerNode.getEnergyTransactionValue());
+                    double energyReceived = ((EnergyTransactionWithBattery) producerNode).receiveBatteryEnergy(producerNode.getEnergyTransactionValue());
+                    (producerNode).sendEnergy(energyReceived);
                     producerNodesIterator.remove();
                     loadManager.addDistributionInstructions(producerNode.getNodeName(), new DistributionInstruction(producerNode.getNodeName()));
                     continue;
@@ -95,7 +95,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
                     double lostEnergy = loadManager.computeEnergyLoss(availableEnergy, shortestPath.getGraphPath());
                     double receivedEnergy = availableEnergy - lostEnergy;
-                    nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
+                    double energyLost = nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
                     
                     // Remove producer 
                     producerNodesIterator.remove();
@@ -106,7 +106,7 @@ public class DistributeExcessEnergyBehaviour extends CustomOneShotBehaviour{
 
                     double lostEnergy = loadManager.computeEnergyLoss(maxSendableEnergy, shortestPath.getGraphPath());
                     double receivedEnergy = maxSendableEnergy - lostEnergy;
-                    nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
+                    double energyLost = nearestGridWithBattery.receiveBatteryEnergy(receivedEnergy);
                     
                     // Remove producer 
                     if(producerNode.getEnergyTransactionValue() < epsilon){

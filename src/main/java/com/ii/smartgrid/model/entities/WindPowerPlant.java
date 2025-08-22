@@ -14,8 +14,8 @@ public class WindPowerPlant extends RenewablePowerPlant {
     private int numberOfTurbines;
 
     @Override
-    public double getHourlyProduction(Object... weatherConditions) {
-        WindSpeedStatus curWindSpeed = (WindSpeedStatus) weatherConditions[0];
+    public double getHourlyProduction(Object... parameters) {
+        WindSpeedStatus curWindSpeed = (WindSpeedStatus) parameters[0];
 
         double energyProd;
         double windSpeed;
