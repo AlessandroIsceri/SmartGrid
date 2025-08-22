@@ -1,6 +1,6 @@
 {
-    "SolarPowerPlant-1": {
-        "gridName": "Grid-1",
+    "PhotovoltaicPowerPlant-1": {
+        "gridName": "Grid-Tekek",
         "efficiency": 0.1,
         "area": 5000.0,
         "azimuthAngleArray": 0.0,

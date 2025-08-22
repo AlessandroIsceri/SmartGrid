@@ -53,7 +53,7 @@
         
         {
            "from": "Grid-Tekek",
-           "to": "SolarPowerPlant-1",
+           "to": "PhotovoltaicPowerPlant-1",
            "cableType": "copperHigh2.5"
         },
         {

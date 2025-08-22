@@ -6,7 +6,7 @@ import com.ii.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.utils.WeatherUtil;
 import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
 
-public class SolarPowerPlant extends RenewablePowerPlant {
+public class PhotovoltaicPowerPlant extends RenewablePowerPlant {
 
     private static final double GLOBAL_SOLAR_CONSTANT = 1367.7; // W / m^2
     private double efficiency;
@@ -61,7 +61,7 @@ public class SolarPowerPlant extends RenewablePowerPlant {
 
         double standardMeridian = TimeUtils.getTimeZoneOffset(curTurn) * 15.0; //degrees
 
-        // At night solar energy production is 0
+        // At night photovoltaic energy production is 0
         if (curTime.isBefore(sunriseTime) || curTime.isAfter(sunsetTime)) {
             return 0;
         }
@@ -99,7 +99,7 @@ public class SolarPowerPlant extends RenewablePowerPlant {
         } else if (kt >= 0) {
             dhi = (1.0 - 0.09 * kt) * ghi;
         } else {
-            System.out.println("An error occurred while calculating Kt in SolarPowerPlant. " + kt);
+            System.out.println("An error occurred while calculating Kt in PhotovoltaicPowerPlant. " + kt);
             return 0;
         }
 

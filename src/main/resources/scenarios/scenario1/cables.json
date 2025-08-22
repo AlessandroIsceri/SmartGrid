@@ -18,7 +18,7 @@
             "cableType" : "copperLow2.5"
         },
         {
-            "from" : "SolarPowerPlant-1",
+            "from" : "PhotovoltaicPowerPlant-1",
             "to" : "Grid-1",
             "cableType" : "copperHigh2.5"
         },

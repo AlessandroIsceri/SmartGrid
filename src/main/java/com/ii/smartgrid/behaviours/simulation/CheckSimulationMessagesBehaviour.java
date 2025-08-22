@@ -1,19 +1,19 @@
-package com.ii.smartgrid.behaviours.simulationsettings;
+package com.ii.smartgrid.behaviours.simulation;
 
-import com.ii.smartgrid.agents.SimulationSettingsAgent;
-import com.ii.smartgrid.agents.SimulationSettingsAgent.SimulationStatus;
+import com.ii.smartgrid.agents.SimulationAgent;
+import com.ii.smartgrid.agents.SimulationAgent.SimulationStatus;
 import com.ii.smartgrid.behaviours.CustomCyclicBehaviour;
 
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class CheckSimulationSettingsMessagesBehaviour extends CustomCyclicBehaviour{
+public class CheckSimulationMessagesBehaviour extends CustomCyclicBehaviour{
 
-    private SimulationSettingsAgent simulationSettingsAgent;
+    private SimulationAgent simulationAgent;
 
-    public CheckSimulationSettingsMessagesBehaviour(SimulationSettingsAgent simulationSettingsAgent){
-        super(simulationSettingsAgent);
-        this.simulationSettingsAgent = simulationSettingsAgent;
+    public CheckSimulationMessagesBehaviour(SimulationAgent simulationAgent){
+        super(simulationAgent);
+        this.simulationAgent = simulationAgent;
     }
 
     @Override
@@ -26,21 +26,21 @@ public class CheckSimulationSettingsMessagesBehaviour extends CustomCyclicBehavi
         ACLMessage receivedMessage = customAgent.receive(mt);
 		if (receivedMessage != null) {
             if(receivedMessage.getConversationId().contains("resume")){
-                simulationSettingsAgent.setSimulationStatus(SimulationStatus.ON);
-                log("SimulationSettings resumed");
+                simulationAgent.setSimulationStatus(SimulationStatus.ON);
+                log("Simulation resumed");
                 
                 // Send new turn message
-                simulationSettingsAgent.updateTurn();
+                simulationAgent.updateTurn();
                 System.out.println("\n\n\n");
                 log("Started new turn");
-                simulationSettingsAgent.sendMessages();
+                simulationAgent.sendMessages();
                 
             } else if(receivedMessage.getConversationId().contains("stop")){
-                simulationSettingsAgent.setSimulationStatus(SimulationStatus.OFF);
-                log("SimulationSettings blocked");
+                simulationAgent.setSimulationStatus(SimulationStatus.OFF);
+                log("Simulation blocked");
             } else if(receivedMessage.getConversationId().contains("start")) {
-				simulationSettingsAgent.setSimulationStatus(SimulationStatus.ON);
-				simulationSettingsAgent.sendMessages();
+				simulationAgent.setSimulationStatus(SimulationStatus.ON);
+				simulationAgent.sendMessages();
 				log("Started first turn");
             }
             block();

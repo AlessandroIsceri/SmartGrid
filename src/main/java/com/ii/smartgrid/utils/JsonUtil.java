@@ -21,7 +21,7 @@ public class JsonUtil {
     public static String LOAD_MANAGERS_PATH;
     public static String SMART_BUILDINGS_PATH;
     public static String DIESEL_POWER_PLANTS_PATH;
-    public static String SOLAR_POWER_PLANTS_PATH;
+    public static String PHOTOVOLTAIC_POWER_PLANTS_PATH;
     public static String HYDRO_POWER_PLANTS_PATH;
     public static String WIND_POWER_PLANTS_PATH;
     public static String OWNERS_PATH;
@@ -40,7 +40,7 @@ public class JsonUtil {
         LOAD_MANAGERS_PATH = BASE_PATH + "loadManagers.json";
         SMART_BUILDINGS_PATH = BASE_PATH + "smartBuildings.json";
         DIESEL_POWER_PLANTS_PATH = BASE_PATH + "dieselPowerplants.json";
-        SOLAR_POWER_PLANTS_PATH = BASE_PATH + "solarPowerPlants.json";
+        PHOTOVOLTAIC_POWER_PLANTS_PATH = BASE_PATH + "photovoltaicPowerPlants.json";
         HYDRO_POWER_PLANTS_PATH = BASE_PATH + "hydroPowerplants.json";
         WIND_POWER_PLANTS_PATH = BASE_PATH + "windPowerPlants.json";
         OWNERS_PATH = BASE_PATH + "owners.json";

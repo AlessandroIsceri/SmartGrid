@@ -4,7 +4,7 @@
         "loadManagerName" : "LoadManager-1",
         "gridNames": ["Grid-2"],
         "nonRenewablePowerPlantNames": [],
-        "renewablePowerPlantNames": ["SolarPowerPlant-1", "HydroPowerPlant-1", "WindPowerPlant-1"],
+        "renewablePowerPlantNames": ["PhotovoltaicPowerPlant-1", "HydroPowerPlant-1", "WindPowerPlant-1"],
         "coordinates":{
             "latitude":2.823847438209252, 
             "longitude": 104.16354506562476

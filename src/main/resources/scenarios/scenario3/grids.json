@@ -6,7 +6,7 @@
     "loadManagerName": "LoadManager-1",
     "gridNames": ["Grid-AirBatang", "Grid-Juara", "Grid-Bunut", "Grid-Mukut"],
     "nonRenewablePowerPlantNames": ["DieselPowerPlant-1", "DieselPowerPlant-2", "DieselPowerPlant-3", "DieselPowerPlant-4"],
-    "renewablePowerPlantNames": ["SolarPowerPlant-1"],
+    "renewablePowerPlantNames": ["PhotovoltaicPowerPlant-1"],
     "coordinates": {
       "latitude": 2.823847438209252,
       "longitude": 104.16354506562476

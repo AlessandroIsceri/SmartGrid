@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import com.ii.smartgrid.behaviours.simulationsettings.CheckSimulationSettingsMessagesBehaviour;
-import com.ii.smartgrid.behaviours.simulationsettings.StartNewTurnBehaviour;
+import com.ii.smartgrid.behaviours.simulation.CheckSimulationMessagesBehaviour;
+import com.ii.smartgrid.behaviours.simulation.StartNewTurnBehaviour;
 import com.ii.smartgrid.utils.EnergyMonitorUtil;
 import com.ii.smartgrid.utils.EnergyUtil;
 import com.ii.smartgrid.utils.JsonUtil;
@@ -25,7 +25,7 @@ import jade.wrapper.StaleProxyException;
 import us.dustinj.timezonemap.TimeZone;
 import us.dustinj.timezonemap.TimeZoneMap;
 
-public class SimulationSettingsAgent extends CustomAgent{
+public class SimulationAgent extends CustomAgent{
 	
     public enum SimulationStatus {ON, OFF}
     
@@ -125,7 +125,7 @@ public class SimulationSettingsAgent extends CustomAgent{
         curElectricityPrice = EnergyUtil.getMeanElectricityPriceFromCoordinates(latitude, longitude);
 
         addBehaviour(new StartNewTurnBehaviour(this));  
-        addBehaviour(new CheckSimulationSettingsMessagesBehaviour(this));  
+        addBehaviour(new CheckSimulationMessagesBehaviour(this));
         this.log("Setup completed");
 	}
 

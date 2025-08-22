@@ -63,7 +63,7 @@ public class BuildingPhotovoltaicSystem {
 
         double standardMeridian = TimeUtils.getTimeZoneOffset(curTurn) * 15.0; //degrees
 
-        // At night solar energy production is 0
+        // At night photovoltaic energy production is 0
         if (curTime.isBefore(sunriseTime) || curTime.isAfter(sunsetTime)) {
             return 0;
         }

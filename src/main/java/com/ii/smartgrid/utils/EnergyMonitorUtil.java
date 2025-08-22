@@ -10,7 +10,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class EnergyMonitorUtil {
-    private static List<Double> solarRenewableEnergyProduction = new ArrayList<>();
+    private static List<Double> photovoltaicRenewableEnergyProduction = new ArrayList<>();
     private static List<Double> hydroRenewableEnergyProduction = new ArrayList<>();
     private static List<Double> windRenewableEnergyProduction = new ArrayList<>();
     private static List<Double> nonRenewableEnergyProduction = new ArrayList<>();
@@ -36,8 +36,8 @@ public class EnergyMonitorUtil {
         list.set(turn, list.get(turn) + value);
     }
 
-    public static void addSolarRenewableEnergyProduction(double value, int turn) {
-        addValue(solarRenewableEnergyProduction, value, turn);
+    public static void addPhotovoltaicRenewableEnergyProduction(double value, int turn) {
+        addValue(photovoltaicRenewableEnergyProduction, value, turn);
     }
 
     public static void addHydroRenewableEnergyProduction(double value, int turn) {
@@ -70,7 +70,7 @@ public class EnergyMonitorUtil {
 
     public static void saveData() {
         Map<String, List<Double>> content = new HashMap<>();
-        content.put("solarRenewableEnergyProduction", solarRenewableEnergyProduction);
+        content.put("photovoltaicRenewableEnergyProduction", photovoltaicRenewableEnergyProduction);
         content.put("hydroRenewableEnergyProduction", hydroRenewableEnergyProduction);
         content.put("windRenewableEnergyProduction", windRenewableEnergyProduction);
         content.put("nonRenewableEnergyProduction", nonRenewableEnergyProduction);
@@ -99,7 +99,7 @@ public class EnergyMonitorUtil {
         lastTurn += TimeUtils.getDailyTurnsNumber();
 
         // Empty the lists
-        solarRenewableEnergyProduction.clear();
+        photovoltaicRenewableEnergyProduction.clear();
         hydroRenewableEnergyProduction.clear();
         windRenewableEnergyProduction.clear();
         nonRenewableEnergyProduction.clear();
