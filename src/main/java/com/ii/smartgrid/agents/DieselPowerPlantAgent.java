@@ -14,7 +14,8 @@ public class DieselPowerPlantAgent extends NonRenewablePowerPlantAgent{
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.DIESEL_POWER_PLANTS_PATH, dieselPowerPlantName, DieselPowerPlant.class);
         
         NonRenewablePowerPlant dieselPowerPlant = getNonRenewablePowerPlant();
-        dieselPowerPlant.setOn(true);
+
+        this.nonRenewablePowerPlantState = NonRenewablePowerPlantState.ON;
 
         dieselPowerPlant.addConnectedAgentName(dieselPowerPlant.getGridName());
         dieselPowerPlant.setTurnRequest(dieselPowerPlant.getMaxHourlyProduction());

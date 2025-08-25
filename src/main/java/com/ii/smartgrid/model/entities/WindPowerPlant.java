@@ -1,7 +1,7 @@
 package com.ii.smartgrid.model.entities;
 
 import com.ii.smartgrid.utils.WeatherUtil;
-import com.ii.smartgrid.utils.WeatherUtil.WindSpeedStatus;
+import com.ii.smartgrid.utils.WeatherUtil.WindState;
 
 public class WindPowerPlant extends RenewablePowerPlant {
 
@@ -15,7 +15,7 @@ public class WindPowerPlant extends RenewablePowerPlant {
 
     @Override
     public double getHourlyProduction(Object... parameters) {
-        WindSpeedStatus curWindSpeed = (WindSpeedStatus) parameters[0];
+        WindState curWindSpeed = (WindState) parameters[0];
 
         double energyProd;
         double windSpeed;
@@ -25,6 +25,10 @@ public class WindPowerPlant extends RenewablePowerPlant {
 
         if(windSpeed < minWindSpeed || windSpeed > maxWindSpeed){
             return 0;
+        }
+
+        if(windSpeed > (maxWindSpeed + minWindSpeed) / 2){
+            windSpeed = (maxWindSpeed + minWindSpeed) / 2;
         }
 
         rotorSweptArea = (Math.PI * Math.pow((rotorDiameter / 2.0), 2));

@@ -29,7 +29,6 @@ public class EnergyUtil {
 
     // Initialize cables on first class call
     static {
-        rand = new Random(42);
         loadCables();
     }
 
@@ -45,12 +44,18 @@ public class EnergyUtil {
 
             TypeReference<HashMap<String, Cable>> typeRefCables = new TypeReference<HashMap<String, Cable>>() {};
             cableTypes = objectMapper.convertValue(fileContent.get("types"), typeRefCables);
-
+            for(String cableType : cableTypes.keySet()){
+                cableTypes.get(cableType).setCableType(cableType);
+            }
             TypeReference<ArrayList<Cable>> typeRefArrayList = new TypeReference<ArrayList<Cable>>() {};
             links = objectMapper.convertValue(fileContent.get("links"), typeRefArrayList);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setRandomSeed(int seed){
+        rand = new Random(seed);
     }
 
     private static String getCountryFromCoordinates(double lat, double lon) {

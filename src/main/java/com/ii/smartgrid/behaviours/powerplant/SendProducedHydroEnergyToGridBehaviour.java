@@ -13,7 +13,7 @@ public class SendProducedHydroEnergyToGridBehaviour extends SendProducedEnergyTo
     @Override
     protected double getHourlyProduction(RenewablePowerPlant hydroPowerPlant){
         double curTurnProduction = hydroPowerPlant.getHourlyProduction();
-        EnergyMonitorUtil.addHydroRenewableEnergyProduction(curTurnProduction, renewablePowerPlantAgent.getCurTurn());
+        EnergyMonitorUtil.addHydroProduction(curTurnProduction, renewablePowerPlantAgent.getCurTurn());
         return curTurnProduction;
     }
     

@@ -29,7 +29,7 @@ public class SendNonRenewableEnergyToGridBehaviour extends CustomOneShotBehaviou
         double turnRequest = nonRenewablePowerPlant.getTurnRequest();
         Object[] parameters = new Object[] {turnRequest};
         double curTurnProduction = nonRenewablePowerPlant.getHourlyProduction(parameters);
-        EnergyMonitorUtil.addNonRenewableEnergyProduction(curTurnProduction, nonRenewablePowerPlantAgent.getCurTurn());
+        EnergyMonitorUtil.addDieselProduction(curTurnProduction, nonRenewablePowerPlantAgent.getCurTurn());
 
         double givenEnergy = curTurnProduction * TimeUtils.getTurnDurationHours();
 

@@ -61,7 +61,7 @@ public class ReceiveEnergyRequestsFromGridBehaviour extends CustomBehaviour{
             loadManager.addGridRequestedEnergy(sender, energyTransaction);
 
             loadManager.addNextTurnExpectedConsumption((double) jsonObject.get(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION));
-            loadManager.addCurTurnEnergyProduction((double) jsonObject.get(MessageUtil.CURRENT_TURN_ENERGY_PRODUCTION));
+            loadManager.addCurTurnRenewableEnergyProduction((double) jsonObject.get(MessageUtil.CURRENT_TURN_ENERGY_PRODUCTION));
             if(requestCont < gridCount){
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{

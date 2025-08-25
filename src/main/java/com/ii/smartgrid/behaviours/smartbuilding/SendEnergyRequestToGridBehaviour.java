@@ -52,12 +52,12 @@ public class SendEnergyRequestToGridBehaviour extends CustomOneShotBehaviour{
             transactionType = TransactionType.SEND;
             Cable cable = smartBuilding.getCable(gridName);
             energy = cable.computeTransmittedPower(energy);
-            EnergyMonitorUtil.addBuildingEnergyProduction((availableEnergy - expectedConsumption) / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
-            EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addBuildingProduction((availableEnergy - expectedConsumption) / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addTotalDemand(0, smartBuildingAgent.getCurTurn());
         } else {
             transactionType = TransactionType.RECEIVE; 
-            EnergyMonitorUtil.addTotalEnergyDemand((expectedConsumption - availableEnergy) / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
-            EnergyMonitorUtil.addBuildingEnergyProduction(0, smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addTotalDemand((expectedConsumption - availableEnergy) / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addBuildingProduction(0, smartBuildingAgent.getCurTurn());
         }
         EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), energy, customAgent.getLocalName(), transactionType);
         Map<String, Object> content = new HashMap<>();

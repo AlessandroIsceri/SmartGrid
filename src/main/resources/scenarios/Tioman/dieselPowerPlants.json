@@ -1,6 +1,6 @@
 {
     "DieselPowerPlant-1": {
-        "gridName" : "Grid-2",
+        "gridName" : "Grid-Tekek",
         "loadManagerName" : "LoadManager-1",
         "enginePower": 2500000.0,
         "efficiency": 0.9,

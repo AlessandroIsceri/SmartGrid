@@ -3,14 +3,13 @@ package com.ii.smartgrid.model.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ii.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
 import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.building.Appliance;
 import com.ii.smartgrid.model.building.BuildingPhotovoltaicSystem;
 import com.ii.smartgrid.model.building.Routine;
 import com.ii.smartgrid.model.building.Task;
 import com.ii.smartgrid.utils.TimeUtils;
-import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
+import com.ii.smartgrid.utils.WeatherUtil.WeatherState;
 
 
 public class SmartBuilding extends CustomObject {
@@ -39,10 +38,9 @@ public class SmartBuilding extends CustomObject {
         }
     }
 
-    public void followRoutine(int curTurn, WeatherStatus curWeather, SmartBuildingStatus smartBuildingStatus) {
+    public void followRoutine(int curTurn, WeatherState curWeather) {
         expectedConsumption = 0;
         double turnDurationHours = TimeUtils.getTurnDurationHours();
-
         for(Appliance appliance : appliances){
             if(appliance.isAlwaysOn()){
                 expectedConsumption += appliance.getHourlyConsumption() * turnDurationHours;
@@ -78,7 +76,7 @@ public class SmartBuilding extends CustomObject {
         }
     }
 
-    public void predictNextTurnConsumptionRoutine(int nextTurn, SmartBuildingStatus smartBuildingStatus) {
+    public void predictNextTurnConsumptionRoutine(int nextTurn) {
         nextTurnExpectedConsumption = 0;
         
         double turnDurationHours = TimeUtils.getTurnDurationHours();
@@ -97,8 +95,7 @@ public class SmartBuilding extends CustomObject {
             nextTurn = nextTurn % TimeUtils.getDailyTurnsNumber();
             // Find the appliance with the given name using stream
             Appliance curAppliance = appliances.stream().filter(appliance -> appliance.getName().equals(applianceName)).findFirst().get();
-            
-            if(startTurn <= nextTurn && endTurn > nextTurn){
+            if(startTurn <= nextTurn && (endTurn > nextTurn || endTurn == 0)){
                 nextTurnExpectedConsumption += curAppliance.getHourlyConsumption() * turnDurationHours;
             }
         }

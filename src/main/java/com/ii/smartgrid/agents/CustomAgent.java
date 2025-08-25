@@ -11,8 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.model.entities.CustomObject;
 import com.ii.smartgrid.utils.TimeUtils;
-import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
-import com.ii.smartgrid.utils.WeatherUtil.WindSpeedStatus;
+import com.ii.smartgrid.utils.WeatherUtil.WeatherState;
+import com.ii.smartgrid.utils.WeatherUtil.WindState;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -24,8 +24,8 @@ import jade.lang.acl.ACLMessage;
 public abstract class CustomAgent extends Agent{
 
 	protected int curTurn;
-	protected WeatherStatus curWeather;
-	protected WindSpeedStatus curWindSpeed;
+	protected WeatherState curWeather;
+	protected WindState curWindSpeed;
     protected Logger logger = LoggerFactory.getLogger(CustomAgent.class);
     protected CustomObject referencedObject;
     protected double curElectricityPrice;
@@ -114,19 +114,19 @@ public abstract class CustomAgent extends Agent{
 		this.curTurn = curTurn;
 	}
 
-	public WeatherStatus getCurWeather() {
+	public WeatherState getCurWeather() {
 		return curWeather;
 	}
 
-	public void setCurWeather(WeatherStatus curWeatherStatus) {
-		this.curWeather = curWeatherStatus;
+	public void setCurWeather(WeatherState curWeatherState) {
+		this.curWeather = curWeatherState;
 	}
 
-    public WindSpeedStatus getCurWindSpeed() {
+    public WindState getCurWindSpeed() {
         return curWindSpeed;
     }
 
-    public void setCurWindSpeed(WindSpeedStatus curWindSpeed) {
+    public void setCurWindSpeed(WindState curWindSpeed) {
         this.curWindSpeed = curWindSpeed;
     }
 

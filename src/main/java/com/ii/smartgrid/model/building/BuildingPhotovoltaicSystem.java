@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import com.ii.smartgrid.model.Coordinates;
 import com.ii.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.utils.WeatherUtil;
-import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
+import com.ii.smartgrid.utils.WeatherUtil.WeatherState;
 
 public class BuildingPhotovoltaicSystem {
 
@@ -53,8 +53,8 @@ public class BuildingPhotovoltaicSystem {
         this.efficiency = efficiency;
     }
 
-    public double getHourlyProduction(WeatherStatus curWeather, int curTurn) {
-        int dayOfTheYear = TimeUtils.getCurrentDayFromTurn(curTurn);
+    public double getHourlyProduction(WeatherState curWeather, int curTurn) {
+        int dayOfTheYear = TimeUtils.getDayOfTheYear(curTurn);
 
         LocalTime curTime = TimeUtils.getLocalTimeFromTurn(curTurn);
         LocalTime sunriseTime = TimeUtils.getLocalTimeFromString(WeatherUtil.sunriseHours.get(dayOfTheYear));

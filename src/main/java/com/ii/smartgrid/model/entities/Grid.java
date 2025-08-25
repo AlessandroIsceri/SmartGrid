@@ -18,7 +18,7 @@ public class Grid extends CustomObject {
     private Map<String, EnergyTransaction> smartBuildingsWithoutPower;
     private Map<String, EnergyTransaction> smartBuildingsEnergyRequests;
     private List<String> renewablePowerPlantNames;
-    private Map<String, Boolean> nonRenewablePowerPlantActiveStatus;
+    private Map<String, Boolean> nonRenewablePowerPlantActiveState;
     private List<DistributionInstruction> distributionInstructions;
     private List<String> gridNames;
     private double expectedConsumption;
@@ -35,7 +35,7 @@ public class Grid extends CustomObject {
         smartBuildingsWithoutPower = new HashMap<>();
         smartBuildingsEnergyRequests = new HashMap<>();
         renewablePowerPlantNames = new ArrayList<>();
-        nonRenewablePowerPlantActiveStatus = new HashMap<>();
+        nonRenewablePowerPlantActiveState = new HashMap<>();
         distributionInstructions = new ArrayList<>();
         gridNames = new ArrayList<>();
         expectedConsumption = 0;
@@ -164,22 +164,22 @@ public class Grid extends CustomObject {
         this.loadManagerName = loadManagerName;
     }
 
-    public Map<String, Boolean> getNonRenewablePowerPlantActiveStatus() {
-        return nonRenewablePowerPlantActiveStatus;
+    public Map<String, Boolean> getNonRenewablePowerPlantActiveState() {
+        return nonRenewablePowerPlantActiveState;
     }
 
-    public void setNonRenewablePowerPlantActiveStatus(Map<String, Boolean> nonRenewablePowerPlantActiveStatus) {
-        this.nonRenewablePowerPlantActiveStatus = nonRenewablePowerPlantActiveStatus;
+    public void setNonRenewablePowerPlantActiveState(Map<String, Boolean> nonRenewablePowerPlantActiveState) {
+        this.nonRenewablePowerPlantActiveState = nonRenewablePowerPlantActiveState;
     }
 
     public List<String> getNonRenewablePowerPlantNames() {
-        return new ArrayList<>(nonRenewablePowerPlantActiveStatus.keySet());
+        return new ArrayList<>(nonRenewablePowerPlantActiveState.keySet());
     }
 
-    // Initialize all nonRenewablePowerPlants status
+    // Initialize all nonRenewablePowerPlants state
     public void setNonRenewablePowerPlantNames(List<String> nonRenewablePowerPlantNames) {
         for (String nonRenewablePowerPlantName : nonRenewablePowerPlantNames) {
-            nonRenewablePowerPlantActiveStatus.put(nonRenewablePowerPlantName, false);
+            nonRenewablePowerPlantActiveState.put(nonRenewablePowerPlantName, false);
         }
     }
 
@@ -267,7 +267,7 @@ public class Grid extends CustomObject {
         return "Grid [smartBuildingNames=" + smartBuildingNames + ", smartBuildingsWithoutPower=" + smartBuildingsWithoutPower
                 + ", smartBuildingsEnergyRequests=" + smartBuildingsEnergyRequests + ", renewablePowerPlantNames="
                 + renewablePowerPlantNames
-                + ", nonRenewablePowerPlantActiveStatus=" + nonRenewablePowerPlantActiveStatus
+                + ", nonRenewablePowerPlantActiveState=" + nonRenewablePowerPlantActiveState
                 + ", distributionInstructions=" + distributionInstructions + ", gridNames=" + gridNames
                 + ", expectedConsumption=" + expectedConsumption + ", expectedProduction=" + expectedProduction
                 + ", loadManagerName=" + loadManagerName + ", numberOfMessagesToReceive=" + numberOfMessagesToReceive
@@ -280,13 +280,13 @@ public class Grid extends CustomObject {
         }
     }
 
-    // Update the nonRenewablePowerPlant status
-    public void updateNonRenewablePowerPlantActiveStatus(List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos) {
+    // Update the nonRenewablePowerPlant state
+    public void updateNonRenewablePowerPlantActiveState(List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos) {
         for (NonRenewablePowerPlantInfo nonRenewablePowerPlantInfo : nonRenewablePowerPlantInfos) {
             String name = nonRenewablePowerPlantInfo.getName();
-            boolean status = nonRenewablePowerPlantInfo.isOn();
-            if (nonRenewablePowerPlantActiveStatus.containsKey(name)) {
-                nonRenewablePowerPlantActiveStatus.put(name, status);
+            boolean state = nonRenewablePowerPlantInfo.isOn();
+            if (nonRenewablePowerPlantActiveState.containsKey(name)) {
+                nonRenewablePowerPlantActiveState.put(name, state);
             }
         }
     }
@@ -300,8 +300,8 @@ public class Grid extends CustomObject {
     }
 
 	public void turnOnAllNonRenewablePowerPlants() {
-		for (String nonRenewablePowerPlantName : nonRenewablePowerPlantActiveStatus.keySet()) {
-            nonRenewablePowerPlantActiveStatus.put(nonRenewablePowerPlantName, true);
+		for (String nonRenewablePowerPlantName : nonRenewablePowerPlantActiveState.keySet()) {
+            nonRenewablePowerPlantActiveState.put(nonRenewablePowerPlantName, true);
         }
 	}
 

@@ -18,8 +18,8 @@ import jade.core.behaviours.SequentialBehaviour;
 
 public class GridAgent extends CustomAgent{
 
-    public enum GridStatus {RECEIVE, SEND}
-	private GridStatus gridStatus = null;
+    public enum GridState {RECEIVE, SEND}
+	private GridState gridState = null;
 
 	@Override
     public void setup() {
@@ -75,12 +75,12 @@ public class GridAgent extends CustomAgent{
 
     }
 
-    public GridStatus getGridStatus() {
-        return gridStatus;
+    public GridState getGridState() {
+        return gridState;
     }
 
-    public void setGridStatus(GridStatus gridStatus) {
-        this.gridStatus = gridStatus;
+    public void setGridState(GridState gridState) {
+        this.gridState = gridState;
     }
 
 }

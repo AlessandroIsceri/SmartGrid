@@ -26,11 +26,16 @@ public class MessageUtil {
     public static final String TASKS = "tasks";
     public static final String RESULT = "result";
     public static final String ENERGY_TRANSACTION = "energyTransaction";
-    public static final String CONVERSATION_ID_CABLE_DISCOVERY = "cableDiscovery";
+    public static final String CONVERSATION_ID_CABLE_DISCOVERY = "cable-discovery";
     public static final String CONVERSATION_ID_RESTORE_BUILDING = "restore";
     public static final String REQUIRED_ENERGY = "requiredEnergy";
     public static final String NEXT_TURN_EXPECTED_CONSUMPTION = "nextTurnExpectedConsumption";
     public static final String CURRENT_TURN_ENERGY_PRODUCTION = "currentTurnEnergyProduction";
+    public static final String CONVERSATION_ID_START_SIMULATION = "start-simulation";
+    public static final String CONVERSATION_ID_STOP_SIMULATION = "stop-simulation";
+    public static final String CONVERSATION_ID_RESUME_SIMULATION = "resume-simulation";
+    public static final String CONVERSATION_ID_TURN = "turn";
+
     private MessageUtil() {}
 
 

@@ -1,5 +1,7 @@
 package com.ii.smartgrid.model.entities;
 
+import java.util.Random;
+
 public class HydroPowerPlant extends RenewablePowerPlant {
 
     private static final double WATER_DENSITY = 1000.0; // kg/m^3
@@ -7,9 +9,14 @@ public class HydroPowerPlant extends RenewablePowerPlant {
     private double efficiency;
     private double flowRate; // m^3/s
     private double headHeight; // m
+    private Random random;
 
     public HydroPowerPlant() {
         super();
+    }
+
+    public void setRandomSeed(int seed){
+        random = new Random(seed);
     }
 
     public double getEfficiency() {
@@ -41,7 +48,8 @@ public class HydroPowerPlant extends RenewablePowerPlant {
 
     @Override
     public double getHourlyProduction(Object... parameters) {
-        return efficiency * WATER_DENSITY * GRAVITATIONAL_ACCELERATION * flowRate * headHeight;
+        double curFlowRate = flowRate * (random.nextDouble() * (0.3) + 0.85);
+        return efficiency * WATER_DENSITY * GRAVITATIONAL_ACCELERATION * curFlowRate * headHeight;
     }
 
 

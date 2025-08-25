@@ -1,6 +1,7 @@
 package com.ii.smartgrid.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ii.smartgrid.utils.EnergyMonitorUtil;
 
 public class DieselPowerPlant extends NonRenewablePowerPlant {
 
@@ -42,10 +43,12 @@ public class DieselPowerPlant extends NonRenewablePowerPlant {
 
     @Override
     public String toString() {
-        return "DieselPowerPlant [on=" + on + ", enginePower=" + enginePower + ", efficiency=" + efficiency
-                + ", turnRequest=" + turnRequest + "]";
+        return "DieselPowerPlant [enginePower=" + enginePower + ", efficiency=" + efficiency + "]";
     }
 
-
+    @Override
+    public void setUpNonRenewableEnergyProduction(int curTurn) {
+        EnergyMonitorUtil.addDieselProduction(0, curTurn);
+    }
 
 }

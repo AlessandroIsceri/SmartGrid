@@ -12,7 +12,6 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedPseudograph;
 
-import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.Cable;
 import com.ii.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.model.routing.DistributionInstruction;
@@ -20,6 +19,7 @@ import com.ii.smartgrid.model.routing.EnergyTransaction;
 import com.ii.smartgrid.model.routing.EnergyTransactionWithBattery;
 import com.ii.smartgrid.model.routing.WeightedGraphPath;
 import com.ii.smartgrid.utils.EnergyMonitorUtil;
+import com.ii.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.model.routing.EnergyTransaction.TransactionType;
 
 
@@ -36,7 +36,7 @@ public class LoadManager extends CustomObject {
     private Map<String, List<Cable>> gridsCables;
     private Map<String, Double> gridWithChargingBattery;
     private double nextTurnExpectedConsumption;
-    private double curTurnEnergyProduction;
+    private double curTurnRenewableEnergyProduction;
 
     public LoadManager() {
         super();
@@ -50,7 +50,7 @@ public class LoadManager extends CustomObject {
         gridsCables = new HashMap<>();
         gridWithChargingBattery = new HashMap<>();
         nextTurnExpectedConsumption = 0;
-        curTurnEnergyProduction = 0;    
+        curTurnRenewableEnergyProduction = 0;    
     }
 
     // Add the nodes and edge (with its cost) to the graph
@@ -147,7 +147,7 @@ public class LoadManager extends CustomObject {
 
         for (EnergyTransactionWithBattery gridWithBattery : gridsWithBattery) {
             String gridName = gridWithBattery.getNodeName();
-            EnergyMonitorUtil.addBatteryStoredEnergy(gridWithBattery.getBattery().getStoredEnergy(), turn);
+            EnergyMonitorUtil.addBatteryStored(gridWithBattery.getBattery().getStoredEnergy() / TimeUtils.getTurnDurationHours(), turn);
 
             if(gridWithBattery.getBattery().getStateOfCharge() > 0.75 && gridWithChargingBattery.containsKey(gridName)){
                 gridWithChargingBattery.remove(gridName);
@@ -400,22 +400,22 @@ public class LoadManager extends CustomObject {
         this.nextTurnExpectedConsumption = 0;
     }
 
-    public void resetCurTurnEnergyProduction() {
-        this.curTurnEnergyProduction = 0;
+    public void resetCurTurnRenewableEnergyProduction() {
+        this.curTurnRenewableEnergyProduction = 0;
     }
 
-    public void addCurTurnEnergyProduction(double curTurnEnergyProduction) {
-        this.curTurnEnergyProduction += curTurnEnergyProduction;
+    public void addCurTurnRenewableEnergyProduction(double curTurnRenewableEnergyProduction) {
+        this.curTurnRenewableEnergyProduction += curTurnRenewableEnergyProduction;
     }
 
-    public double getCurTurnEnergyProduction() {
-        return curTurnEnergyProduction;
+    public double getCurTurnRenewableEnergyProduction() {
+        return curTurnRenewableEnergyProduction;
     }
 
     public void resetValues(){
         removeAllDistributionInstructions();
         resetNextTurnExpectedConsumption();
-        resetCurTurnEnergyProduction();
+        resetCurTurnRenewableEnergyProduction();
     }
 
 }

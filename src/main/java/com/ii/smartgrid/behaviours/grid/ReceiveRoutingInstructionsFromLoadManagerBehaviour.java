@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ii.smartgrid.agents.GridAgent;
-import com.ii.smartgrid.agents.GridAgent.GridStatus;
 import com.ii.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.model.NonRenewablePowerPlantInfo;
 import com.ii.smartgrid.model.entities.Grid;
@@ -57,8 +56,8 @@ public class ReceiveRoutingInstructionsFromLoadManagerBehaviour extends CustomBe
 
             grid.setDistributionInstructions(distributionInstructions);
 
-            // Update non-renewable power plant status
-            grid.updateNonRenewablePowerPlantActiveStatus(nonRenewablePowerPlantInfos);
+            // Update non-renewable power plant state
+            grid.updateNonRenewablePowerPlantActiveState(nonRenewablePowerPlantInfos);
             grid.setNumberOfMessagesToReceive(numberOfMessagesToReceive);
             finished = true;
         } else {

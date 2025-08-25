@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.ii.smartgrid.agents.GridAgent;
-import com.ii.smartgrid.agents.GridAgent.GridStatus;
 import com.ii.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.model.Cable;
 import com.ii.smartgrid.model.entities.Grid;

@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.ii.smartgrid.agents.CustomAgent;
 import com.ii.smartgrid.utils.MessageUtil;
-import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
-import com.ii.smartgrid.utils.WeatherUtil.WindSpeedStatus;
+import com.ii.smartgrid.utils.WeatherUtil.WeatherState;
+import com.ii.smartgrid.utils.WeatherUtil.WindState;
 
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -20,7 +20,7 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
     @Override
 	public void action() {
         // Receive the message for the new turn
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("turn-" + customAgent.getLocalName()),
+		MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId(MessageUtil.CONVERSATION_ID_TURN + "-" + customAgent.getLocalName()),
 												 MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 		ACLMessage receivedMsg = customAgent.receive(mt);
 		if (receivedMsg != null) {
@@ -29,9 +29,9 @@ public abstract class GenericTurnBehaviour extends CustomCyclicBehaviour{
 			int curTurn = (int) jsonObject.get(MessageUtil.CURRENT_TURN);
 			customAgent.setCurTurn(curTurn);
 			int weather = (int) jsonObject.get(MessageUtil.CURRENT_WEATHER);
-			customAgent.setCurWeather(WeatherStatus.values()[weather]);
+			customAgent.setCurWeather(WeatherState.values()[weather]);
 			int windSpeed = (int) jsonObject.get(MessageUtil.CURRENT_WIND_SPEED);
-			customAgent.setCurWindSpeed(WindSpeedStatus.values()[windSpeed]);
+			customAgent.setCurWindSpeed(WindState.values()[windSpeed]);
             double electricityPrice = (double) jsonObject.get(MessageUtil.ELECTRICITY_PRICE);
 			customAgent.setCurElectricityPrice(electricityPrice);
 					

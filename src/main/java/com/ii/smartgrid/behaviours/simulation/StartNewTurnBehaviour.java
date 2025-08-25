@@ -1,7 +1,7 @@
 package com.ii.smartgrid.behaviours.simulation;
 
 import com.ii.smartgrid.agents.SimulationAgent;
-import com.ii.smartgrid.agents.SimulationAgent.SimulationStatus;
+import com.ii.smartgrid.agents.SimulationAgent.SimulationState;
 import com.ii.smartgrid.behaviours.CustomCyclicBehaviour;
 
 import jade.lang.acl.ACLMessage;
@@ -28,7 +28,7 @@ public class StartNewTurnBehaviour extends CustomCyclicBehaviour {
                 log("Received answers: " + receivedAnswers + "/" + numberOfMessagesToReceive + ", last sender: " + receivedMsg.getSender().getLocalName());
 				if(receivedAnswers == numberOfMessagesToReceive) {
 					receivedAnswers = 0;
-					if(simulationAgent.getSimulationStatus() == SimulationStatus.ON){
+					if(simulationAgent.getSimulationState() == SimulationState.ON){
             			// Send new turn message
 						simulationAgent.updateTurn();
 						System.out.println("\n\n\n");

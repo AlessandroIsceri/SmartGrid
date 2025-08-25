@@ -23,11 +23,11 @@ public class WeatherUtil {
     private static final double[] windSpeedIntervals = {0, 1, 6, 12, 19, 29, 39, 50, 62, 75, 89, 103, 118, 132};
     public static double[] windSpeedAvg = {0.5, 3.5, 9.0, 15.5, 24.0, 34.0, 44.5, 56.0, 68.5, 82.0, 96.0, 110.5, 125.0};
 
-    public static final int[] cloudCoverageAvg = new int[WeatherStatus.values().length];
+    public static final int[] cloudCoverageAvg = new int[WeatherState.values().length];
     public static List<String> sunriseHours = new ArrayList<>();
     public static List<String> sunsetHours = new ArrayList<>();
     
-    private static Random rand = new Random(42);
+    private static Random rand;
 
     private static String getResultFromHTTPRequest(double latitude, double longitude, String startDate, String endDate, String frequency, String requestedParameter) {
         try {
@@ -116,13 +116,13 @@ public class WeatherUtil {
             }
 
             // Compute transition matrix for weather status
-            int weatherStatesNumber = WeatherStatus.values().length;
+            int weatherStatesNumber = WeatherState.values().length;
             double[][] weatherTransitionProbabilities = new double[weatherStatesNumber][weatherStatesNumber];
             int[] rowCount = new int[weatherStatesNumber];
 
             for (int i = 0; i < weatherCodes.size() - 1; i++) {
-                WeatherStatus w0 = getWeatherStatusFromWeatherCode(weatherCodes.get(i));
-                WeatherStatus w1 = getWeatherStatusFromWeatherCode(weatherCodes.get(i + 1));
+                WeatherState w0 = getWeatherStateFromWeatherCode(weatherCodes.get(i));
+                WeatherState w1 = getWeatherStateFromWeatherCode(weatherCodes.get(i + 1));
                 weatherTransitionProbabilities[w0.ordinal()][w1.ordinal()]++;
                 rowCount[w0.ordinal()]++;
                 cloudCoverageAvg[w0.ordinal()] += cloudCoverageOkta.get(i);
@@ -172,12 +172,12 @@ public class WeatherUtil {
             List<Double> windSpeed = mapper.convertValue(jsonHourlyObject.get("wind_speed_10m"), new TypeReference<List<Double>>() {});
 
             // Compute transition probability matrix
-            int windStatesNumber = WindSpeedStatus.values().length;
+            int windStatesNumber = WindState.values().length;
             double[][] windTransitionProbabilities = new double[windStatesNumber][windStatesNumber];
             double[] rowCount = new double[windStatesNumber];
             for (int i = 0; i < windSpeed.size() - 1; i++) {
-                WindSpeedStatus w0 = getWindSpeedStatusFromWindSpeed(windSpeed.get(i));
-                WindSpeedStatus w1 = getWindSpeedStatusFromWindSpeed(windSpeed.get(i + 1));
+                WindState w0 = getWindStateFromWindSpeed(windSpeed.get(i));
+                WindState w1 = getWindStateFromWindSpeed(windSpeed.get(i + 1));
                 windTransitionProbabilities[w0.ordinal()][w1.ordinal()]++;
                 rowCount[w0.ordinal()]++;
             }
@@ -232,7 +232,7 @@ public class WeatherUtil {
 
     }
 
-    public static WeatherStatus getWeatherStatusFromWeatherCode(int weatherCode) {
+    public static WeatherState getWeatherStateFromWeatherCode(int weatherCode) {
         // 0, 1 SUNNY
         // 2, 3, 45, 48 CLOUDY
         // 51, 53, 55, 56, 57, 66, 67, 80, 81, 82, 61, 63, 65, 95, 96, 99 RAINY
@@ -240,12 +240,12 @@ public class WeatherUtil {
         switch (weatherCode) {
             case 0:
             case 1:
-                return WeatherStatus.SUNNY;
+                return WeatherState.SUNNY;
             case 2:
             case 3:
             case 45:
             case 48:
-                return WeatherStatus.CLOUDY;
+                return WeatherState.CLOUDY;
             case 51:
             case 53:
             case 55:
@@ -262,21 +262,21 @@ public class WeatherUtil {
             case 95:
             case 96:
             case 99:
-                return WeatherStatus.RAINY;
+                return WeatherState.RAINY;
             case 71:
             case 73:
             case 75:
             case 77:
             case 85:
             case 86:
-                return WeatherStatus.SNOWY;
+                return WeatherState.SNOWY;
             default:
                 System.out.println("Error: Weather code " + weatherCode + " not found");
-                return WeatherStatus.SUNNY;
+                return WeatherState.SUNNY;
         }
     }
 
-    public static WindSpeedStatus getWindSpeedStatusFromWindSpeed(double windSpeed) {
+    public static WindState getWindStateFromWindSpeed(double windSpeed) {
         // SCALA DI BEAUFORT
         // 0: CALM --> < 1 KM/H
         // 1: LIGHT AIR --> <6 KM/H
@@ -293,44 +293,48 @@ public class WeatherUtil {
         // 12: HURRICANE --> > 118 KM/H
         if (windSpeed < 0) {
             System.out.println("Error: WindSpeed contains a negative value");
-            return WindSpeedStatus.CALM;
+            return WindState.CALM;
         } else if (windSpeed < 1) {
-            return WindSpeedStatus.CALM;
+            return WindState.CALM;
         } else if (windSpeed < 6) {
-            return WindSpeedStatus.LIGHT_AIR;
+            return WindState.LIGHT_AIR;
         } else if (windSpeed < 12) {
-            return WindSpeedStatus.LIGHT_BREEZE;
+            return WindState.LIGHT_BREEZE;
         } else if (windSpeed < 19) {
-            return WindSpeedStatus.GENTLE_BREEZE;
+            return WindState.GENTLE_BREEZE;
         } else if (windSpeed < 29) {
-            return WindSpeedStatus.MODERATE_BREEZE;
+            return WindState.MODERATE_BREEZE;
         } else if (windSpeed < 39) {
-            return WindSpeedStatus.FRESH_BREEZE;
+            return WindState.FRESH_BREEZE;
         } else if (windSpeed < 50) {
-            return WindSpeedStatus.STRONG_BREEZE;
+            return WindState.STRONG_BREEZE;
         } else if (windSpeed < 62) {
-            return WindSpeedStatus.NEAR_GALE;
+            return WindState.NEAR_GALE;
         } else if (windSpeed < 75) {
-            return WindSpeedStatus.GALE;
+            return WindState.GALE;
         } else if (windSpeed < 89) {
-            return WindSpeedStatus.STRONG_GALE;
+            return WindState.STRONG_GALE;
         } else if (windSpeed < 103) {
-            return WindSpeedStatus.STORM;
+            return WindState.STORM;
         } else if (windSpeed < 118) {
-            return WindSpeedStatus.VIOLENT_STORM;
+            return WindState.VIOLENT_STORM;
         } else {
-            return WindSpeedStatus.HURRICANE;
+            return WindState.HURRICANE;
         }
     }
 
-    public enum WeatherStatus {SUNNY, CLOUDY, RAINY, SNOWY}
+    public enum WeatherState {SUNNY, CLOUDY, RAINY, SNOWY}
 
-    public enum WindSpeedStatus {CALM, LIGHT_AIR, LIGHT_BREEZE, GENTLE_BREEZE, MODERATE_BREEZE, FRESH_BREEZE, STRONG_BREEZE, NEAR_GALE, GALE, STRONG_GALE, STORM, VIOLENT_STORM, HURRICANE}
+    public enum WindState {CALM, LIGHT_AIR, LIGHT_BREEZE, GENTLE_BREEZE, MODERATE_BREEZE, FRESH_BREEZE, STRONG_BREEZE, NEAR_GALE, GALE, STRONG_GALE, STORM, VIOLENT_STORM, HURRICANE}
 
     public static void updateCurWindSpeed(int ordinal){
         double min = windSpeedIntervals[ordinal];
         double max = windSpeedIntervals[ordinal + 1];
         windSpeedAvg[ordinal] = min + (max - min) * rand.nextDouble();
+    }
+
+    public static void setRandomSeed(int seed){
+        rand = new Random(seed);
     }
 
 }

@@ -4,7 +4,7 @@ import java.time.LocalTime;
 
 import com.ii.smartgrid.utils.TimeUtils;
 import com.ii.smartgrid.utils.WeatherUtil;
-import com.ii.smartgrid.utils.WeatherUtil.WeatherStatus;
+import com.ii.smartgrid.utils.WeatherUtil.WeatherState;
 
 public class PhotovoltaicPowerPlant extends RenewablePowerPlant {
 
@@ -49,11 +49,10 @@ public class PhotovoltaicPowerPlant extends RenewablePowerPlant {
 
     @Override
     public double getHourlyProduction(Object... parameters) {
-        WeatherStatus curWeather = (WeatherStatus) parameters[0];
+        WeatherState curWeather = (WeatherState) parameters[0];
         int curTurn = (int) parameters[1];
 
-        int dayOfTheYear = TimeUtils.getCurrentDayFromTurn(curTurn);
-
+        int dayOfTheYear = TimeUtils.getDayOfTheYear(curTurn);
         LocalTime curTime = TimeUtils.getLocalTimeFromTurn(curTurn);
         LocalTime sunriseTime = TimeUtils.getLocalTimeFromString(WeatherUtil.sunriseHours.get(dayOfTheYear));
         LocalTime sunsetTime = TimeUtils.getLocalTimeFromString(WeatherUtil.sunsetHours.get(dayOfTheYear));

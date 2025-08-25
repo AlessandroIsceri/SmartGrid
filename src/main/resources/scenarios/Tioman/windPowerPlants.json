@@ -1,9 +1,9 @@
 {
     "WindPowerPlant-1": {
-        "gridName": "Grid-1",
+        "gridName": "Grid-Bunut",
         "minWindSpeed": 2.5,
         "maxWindSpeed": 11.0,
-        "rotorDiameter": 120.0,
+        "rotorDiameter": 70.0,
         "numberOfTurbines": 2,
         "coordinates": {
             "latitude": 2.8078769856987176,

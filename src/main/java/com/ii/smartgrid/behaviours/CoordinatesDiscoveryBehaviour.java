@@ -15,8 +15,8 @@ import jade.lang.acl.MessageTemplate;
 
 public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
 
-    private enum Status {SENDING_MESSAGES, RECEIVING_MESSAGES, FINISHED}
-    private Status state = Status.SENDING_MESSAGES;
+    private enum State {SENDING_MESSAGES, RECEIVING_MESSAGES, FINISHED}
+    private State state = State.SENDING_MESSAGES;
     private int requestCont = 0;
     private int neighborsCont;
 
@@ -29,7 +29,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
     public void action() {
 
         if(neighborsCont == 0){
-            this.state = Status.FINISHED;
+            this.state = State.FINISHED;
             return;
         }
 
@@ -57,7 +57,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
             content.put(MessageUtil.LONGITUDE, referencedObject.getCoordinates().getLongitude());
             customAgent.createAndSend(ACLMessage.INFORM, agentName, content);
         }
-        state = Status.RECEIVING_MESSAGES;
+        state = State.RECEIVING_MESSAGES;
     }
 
     private void receiveCoordinates(){
@@ -95,7 +95,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
                 customAgent.blockBehaviourIfQueueIsEmpty(this);
             }else{
                 sendInformationToLoadManager();
-                state = Status.FINISHED;
+                state = State.FINISHED;
             }
 		} else {
 			customAgent.blockBehaviourIfQueueIsEmpty(this);
@@ -104,7 +104,7 @@ public class CoordinatesDiscoveryBehaviour extends CustomBehaviour{
     
     @Override
     public boolean done() {
-        return state == Status.FINISHED;
+        return state == State.FINISHED;
     }
 
     protected void sendInformationToLoadManager(){

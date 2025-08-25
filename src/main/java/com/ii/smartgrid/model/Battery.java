@@ -87,6 +87,7 @@ public class Battery {
 
     public void setStateOfCharge(double stateOfCharge) {
         this.stateOfCharge = stateOfCharge;
+        this.storedEnergy = stateOfCharge * maxCapacityInWattHour;
     }
 
     public double getStoredEnergy() {
@@ -95,6 +96,7 @@ public class Battery {
 
     public void setStoredEnergy(double storedEnergy) {
         this.storedEnergy = storedEnergy;
+        this.stateOfCharge = storedEnergy / maxCapacityInWattHour;
     }
 
     public double getVoltage() {

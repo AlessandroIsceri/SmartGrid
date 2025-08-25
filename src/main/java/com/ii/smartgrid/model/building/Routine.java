@@ -53,31 +53,31 @@ public class Routine {
         return true;
     }
 
-    private TaskStatus checkTask(Task task) {
+    private TaskState checkTask(Task task) {
         LocalTime start = TimeUtils.getLocalTimeFromString(task.getStartTime());
         LocalTime end = TimeUtils.getLocalTimeFromString(task.getEndTime());
         if (start.isAfter(end)) {
             // Task is running during midnight -> has to be split into two sub-tasks
-            return TaskStatus.TO_SPLIT;
+            return TaskState.TO_SPLIT;
         } else if (start.equals(end)) {
             // Useless task
-            return TaskStatus.TO_DELETE;
+            return TaskState.TO_DELETE;
         }
-        return TaskStatus.OK;
+        return TaskState.OK;
     }
 
     private boolean divideTasks(List<Task> tasks) {
         ListIterator<Task> tasksIterator = tasks.listIterator();
         while (tasksIterator.hasNext()) {
             Task curTask = tasksIterator.next();
-            TaskStatus curTaskStatus = checkTask(curTask);
-            if (curTaskStatus == TaskStatus.TO_SPLIT) {
+            TaskState curTaskState = checkTask(curTask);
+            if (curTaskState == TaskState.TO_SPLIT) {
                 // The task has to be split into two sub-tasks
                 Task task1 = new Task(curTask.getApplianceName(), curTask.getStartTime(), "00:00");
                 Task task2 = new Task(curTask.getApplianceName(), "00:00", curTask.getEndTime());
                 tasksIterator.add(task1);
                 tasksIterator.add(task2);
-            } else if (curTaskStatus == TaskStatus.TO_DELETE) {
+            } else if (curTaskState == TaskState.TO_DELETE) {
                 // If a task is invalid, the operation fails
                 return false;
             }
@@ -119,6 +119,6 @@ public class Routine {
         return "Routine [tasks=" + tasks + "]";
     }
 
-    private enum TaskStatus {OK, TO_SPLIT, TO_DELETE}
+    private enum TaskState {OK, TO_SPLIT, TO_DELETE}
 
 }

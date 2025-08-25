@@ -3,7 +3,7 @@ package com.ii.smartgrid.behaviours.smartbuilding;
 import java.util.Map;
 
 import com.ii.smartgrid.agents.SmartBuildingAgent;
-import com.ii.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
+import com.ii.smartgrid.agents.SmartBuildingAgent.SmartBuildingState;
 import com.ii.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.model.entities.SmartBuilding;
 import com.ii.smartgrid.utils.MessageUtil;
@@ -48,7 +48,7 @@ public class ReceiveEnergyFromGridBehaviour extends CustomBehaviour{
                 if(operation.equals(MessageUtil.CONSUME)){
                     log("The grid couldn't satisfy the request (possible blackout incoming)");
                     smartBuildingAgent.getSmartBuilding().shutDown();
-                    smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.BLACKOUT);
+                    smartBuildingAgent.setBuildingState(SmartBuildingState.BLACKOUT);
                 }else{
                     log("Error: invalid operation");
                 }

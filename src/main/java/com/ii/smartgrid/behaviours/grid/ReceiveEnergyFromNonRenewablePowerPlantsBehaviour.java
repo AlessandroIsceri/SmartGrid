@@ -21,11 +21,11 @@ public class ReceiveEnergyFromNonRenewablePowerPlantsBehaviour extends CustomBeh
 
     public ReceiveEnergyFromNonRenewablePowerPlantsBehaviour(GridAgent gridAgent) {
         super(gridAgent);
-        Map<String, Boolean> nonRenewablePowerPlantActiveStatus = gridAgent.getGrid().getNonRenewablePowerPlantActiveStatus();
+        Map<String, Boolean> nonRenewablePowerPlantActiveState = gridAgent.getGrid().getNonRenewablePowerPlantActiveState();
         nonRenewableActivePowerPlantCount = 0;
         this.gridAgent = gridAgent;
 
-        for (boolean isActive : nonRenewablePowerPlantActiveStatus.values()) {
+        for (boolean isActive : nonRenewablePowerPlantActiveState.values()) {
             if (isActive) {
                 nonRenewableActivePowerPlantCount++;
             }

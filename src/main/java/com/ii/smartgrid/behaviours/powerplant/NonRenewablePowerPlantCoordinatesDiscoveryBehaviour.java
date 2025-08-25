@@ -24,7 +24,8 @@ public class NonRenewablePowerPlantCoordinatesDiscoveryBehaviour extends Coordin
     protected void sendInformationToLoadManager(){
         NonRenewablePowerPlant nonRenewablePowerPlant = nonRenewablePowerPlantAgent.getNonRenewablePowerPlant();
         Map<String, Object> content = new HashMap<>();
-        content.put(MessageUtil.ON, nonRenewablePowerPlant.isOn());
+        boolean isOn = nonRenewablePowerPlantAgent.getNonRenewablePowerPlantState() == NonRenewablePowerPlantAgent.NonRenewablePowerPlantState.ON;
+        content.put(MessageUtil.ON, isOn);
         content.put(MessageUtil.MAX_TURN_PRODUCTION, nonRenewablePowerPlant.getMaxHourlyProduction() * TimeUtils.getTurnDurationHours());
         String loadManagerName = nonRenewablePowerPlant.getLoadManagerName();
         customAgent.createAndSend(ACLMessage.INFORM, loadManagerName, content);

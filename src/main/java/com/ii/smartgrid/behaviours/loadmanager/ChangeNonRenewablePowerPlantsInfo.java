@@ -35,12 +35,10 @@ public class ChangeNonRenewablePowerPlantsInfo extends CustomOneShotBehaviour{
         double batteryRequiredEnergy = loadManager.getBatteryRequiredEnergy(loadManagerAgent.getCurTurn());
         double surplusEnergy = loadManager.getSurplusEnergy();
         
-        if(batteryRequiredEnergy == 0){
-            surplusEnergy += (loadManager.getCurTurnEnergyProduction());
-        }
+        surplusEnergy += (loadManager.getCurTurnRenewableEnergyProduction());
 
-        double nextTurnExpectedConsumption = Math.max(loadManager.getNextTurnExpectedConsumption() - surplusEnergy * 0.9, 0);
-        
+        double nextTurnExpectedConsumption = Math.max(loadManager.getNextTurnExpectedConsumption() - surplusEnergy * 0.7, 0);
+
         double totalRequiredEnergy = batteryRequiredEnergy + nextTurnExpectedConsumption;
         List<NonRenewablePowerPlantInfo> nonRenewablePowerPlantInfos = loadManager.getNonRenewablePowerPlantInfos();
         double producedEnergy = 0;

@@ -36,4 +36,6 @@ public abstract class NonRenewablePowerPlant extends PowerPlant {
     @JsonIgnore
     public abstract double getMaxHourlyProduction();
 
+	public abstract void setUpNonRenewableEnergyProduction(int curTurn);
+
 }

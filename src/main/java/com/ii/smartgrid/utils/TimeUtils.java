@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.TimeZone;
 
 public class TimeUtils {
@@ -42,6 +43,32 @@ public class TimeUtils {
     public static int getDailyTurnsNumber() {
         return MINUTES_IN_A_DAY / turnDuration;
     }
+
+    public static int getDayOfTheYear(int curTurn){
+
+        long startOfYearInMillis = getStartOfYearInMillis(simulationStartDateInMillis);
+
+        long currentMillis = (curTurn * turnDuration * 60000) + simulationStartDateInMillis;
+        long dayOfYearInMillis = currentMillis - startOfYearInMillis;
+        long dayOfTheYearInMinutes = (dayOfYearInMillis / 60000);
+        long dayOfYear = (dayOfTheYearInMinutes / MINUTES_IN_A_DAY);
+
+        return (int) dayOfYear + 1;
+    }
+
+    private static long getStartOfYearInMillis(long timestampInMillis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone(timeZone));
+        calendar.setTimeInMillis(timestampInMillis); 
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
+    
 
     public static int getCurrentDayFromTurn(int curTurn) {
         return ((curTurn * turnDuration) / MINUTES_IN_A_DAY) + 1;

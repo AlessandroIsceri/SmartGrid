@@ -6,7 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.agents.GridAgent;
-import com.ii.smartgrid.agents.GridAgent.GridStatus;
+import com.ii.smartgrid.agents.GridAgent.GridState;
 import com.ii.smartgrid.behaviours.CustomOneShotBehaviour;
 import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.entities.Grid;
@@ -39,11 +39,11 @@ public class SendEnergyRequestToLoadManagerBehaviour extends CustomOneShotBehavi
         if(energyTransactionValue >= 0){
             // Sender (producer) node
             energyTransactionType = TransactionType.SEND;
-            gridAgent.setGridStatus(GridStatus.SEND);
+            gridAgent.setGridState(GridState.SEND);
         }else{
             // Receiver (consumer) node
             energyTransactionType = TransactionType.RECEIVE;
-            gridAgent.setGridStatus(GridStatus.RECEIVE);
+            gridAgent.setGridState(GridState.RECEIVE);
         }
 
         Battery battery = grid.getBattery();

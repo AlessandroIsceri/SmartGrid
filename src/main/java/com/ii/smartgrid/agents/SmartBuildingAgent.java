@@ -13,14 +13,14 @@ import jade.core.behaviours.SequentialBehaviour;
 
 public class SmartBuildingAgent extends CustomAgent{
 	
-    public enum SmartBuildingStatus {GAINING_ENERGY, LOSING_ENERGY, BLACKOUT}
-	private SmartBuildingStatus buildingStatus = SmartBuildingStatus.LOSING_ENERGY;
+    public enum SmartBuildingState {GAINING_ENERGY, LOSING_ENERGY, BLACKOUT}
+	private SmartBuildingState buildingState = SmartBuildingState.LOSING_ENERGY;
     
     
 
 	@Override
-    public void setup() {    
-        
+    public void setup() {
+
         String smartBuildingName = this.getLocalName();
         this.referencedObject = JsonUtil.readJsonFile(JsonUtil.SMART_BUILDINGS_PATH, smartBuildingName, SmartBuilding.class);
             
@@ -50,11 +50,11 @@ public class SmartBuildingAgent extends CustomAgent{
         protected void executeTurn(SequentialBehaviour sequentialTurnBehaviour) {
             SmartBuilding smartBuilding = smartBuildingAgent.getSmartBuilding();
             // Compute the expected production and consumption based on the current routine
-            smartBuilding.followRoutine(curTurn, curWeather, buildingStatus);
-            smartBuilding.predictNextTurnConsumptionRoutine((curTurn + 1), buildingStatus);
-            if(buildingStatus == SmartBuildingStatus.BLACKOUT){
+            smartBuilding.followRoutine(curTurn, curWeather);
+            smartBuilding.predictNextTurnConsumptionRoutine((curTurn + 1));
+            if(buildingState == SmartBuildingState.BLACKOUT){
                 log("Blackout");
-                // If a SmartBuilding is in blackout status, it waits for a restore message from the grid
+                // If a SmartBuilding is in blackout state, it waits for a restore message from the grid
                 sequentialTurnBehaviour.addSubBehaviour(new WaitForRestoreBehaviour(smartBuildingAgent));
             } else {
                 double availableEnergy = smartBuilding.getExpectedProduction();
@@ -63,9 +63,9 @@ public class SmartBuildingAgent extends CustomAgent{
                 // Send a request to the grid containing the amount of energy that the building needs/releases
                 sequentialTurnBehaviour.addSubBehaviour(new SendEnergyRequestToGridBehaviour(smartBuildingAgent));
                 if(availableEnergy >= expectedConsumption){ 
-                    buildingStatus = SmartBuildingStatus.GAINING_ENERGY;
+                    buildingState = SmartBuildingState.GAINING_ENERGY;
                 }else{
-                    buildingStatus = SmartBuildingStatus.LOSING_ENERGY;
+                    buildingState = SmartBuildingState.LOSING_ENERGY;
                     // If the Building has requested energy, wait for the grid's response
                     sequentialTurnBehaviour.addSubBehaviour(new ReceiveEnergyFromGridBehaviour(smartBuildingAgent));
                 }
@@ -73,12 +73,12 @@ public class SmartBuildingAgent extends CustomAgent{
         }
     }
 
-    public SmartBuildingStatus getBuildingStatus() {
-        return buildingStatus;
+    public SmartBuildingState getBuildingState() {
+        return buildingState;
     }
 
-    public void setBuildingStatus(SmartBuildingStatus buildingStatus) {
-        this.buildingStatus = buildingStatus;
+    public void setBuildingState(SmartBuildingState buildingState) {
+        this.buildingState = buildingState;
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ii.smartgrid.agents.SmartBuildingAgent;
-import com.ii.smartgrid.agents.SmartBuildingAgent.SmartBuildingStatus;
+import com.ii.smartgrid.agents.SmartBuildingAgent.SmartBuildingState;
 import com.ii.smartgrid.behaviours.CustomBehaviour;
 import com.ii.smartgrid.model.Battery;
 import com.ii.smartgrid.model.Cable;
@@ -24,8 +24,8 @@ import jade.lang.acl.MessageTemplate;
 
 public class WaitForRestoreBehaviour extends CustomBehaviour{
 
-    private enum Status {UPDATING_INTERNAL_ENERGY, RECEIVING_MESSAGES, FINISHED}
-    private Status state = Status.UPDATING_INTERNAL_ENERGY;
+    private enum BehaviourState {UPDATING_INTERNAL_ENERGY, RECEIVING_MESSAGES, FINISHED}
+    private BehaviourState state = BehaviourState.UPDATING_INTERNAL_ENERGY;
     private SmartBuildingAgent smartBuildingAgent;
     
     public WaitForRestoreBehaviour(SmartBuildingAgent smartBuildingAgent){
@@ -57,18 +57,18 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
             if(smartBuilding.canBeRestored()){
                 log("The building's battery reached 50% -> try to self restore");
                 smartBuilding.restorePower(expectedProduction);
-                smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
+                smartBuildingAgent.setBuildingState(SmartBuildingState.LOSING_ENERGY);
                 content.put(MessageUtil.BLACKOUT, false);
                 content.put(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION, smartBuilding.getNextTurnExpectedConsumption());
-                state = Status.FINISHED;
+                state = BehaviourState.FINISHED;
             }else{
                 battery.fillBattery(expectedProduction);
                 content.put(MessageUtil.BLACKOUT, true);
                 content.put(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION, smartBuilding.getNextTurnExpectedConsumption());
-                state = Status.RECEIVING_MESSAGES;
+                state = BehaviourState.RECEIVING_MESSAGES;
             }
-            EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
-            EnergyMonitorUtil.addBuildingEnergyProduction(expectedProduction / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addTotalDemand(smartBuilding.getExpectedConsumption() / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
+            EnergyMonitorUtil.addBuildingProduction(expectedProduction / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
             customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
 		}else{
             
@@ -79,8 +79,8 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 content.put(MessageUtil.BLACKOUT, true);
                 content.put(MessageUtil.NEXT_TURN_EXPECTED_CONSUMPTION, smartBuilding.getNextTurnExpectedConsumption());
 
-                EnergyMonitorUtil.addBuildingEnergyProduction(0, smartBuildingAgent.getCurTurn());
-                EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
+                EnergyMonitorUtil.addBuildingProduction(0, smartBuildingAgent.getCurTurn());
+                EnergyMonitorUtil.addTotalDemand(smartBuilding.getExpectedConsumption() / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
                 customAgent.createAndSend(ACLMessage.INFORM, gridName, content);
             }else{
                 log("The building's doesn't have a battery -> Release PV energy to " + smartBuilding.getGridName());
@@ -88,8 +88,8 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 Cable cable = smartBuilding.getCable(gridName);
                 double sentEnergy = cable.computeTransmittedPower(expectedProduction);
 
-                EnergyMonitorUtil.addBuildingEnergyProduction(expectedProduction / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
-                EnergyMonitorUtil.addTotalEnergyDemand(0, smartBuildingAgent.getCurTurn());
+                EnergyMonitorUtil.addBuildingProduction(expectedProduction / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
+                EnergyMonitorUtil.addTotalDemand(smartBuilding.getExpectedConsumption() / TimeUtils.getTurnDurationHours(), smartBuildingAgent.getCurTurn());
 
                 EnergyTransaction energyTransaction = new EnergyTransactionWithoutBattery(smartBuilding.getPriority(), sentEnergy, customAgent.getLocalName(), TransactionType.SEND);
                 
@@ -102,7 +102,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
 
                 customAgent.createAndSend(ACLMessage.REQUEST, gridName, content);
             }
-            state = Status.RECEIVING_MESSAGES;
+            state = BehaviourState.RECEIVING_MESSAGES;
         }
     }
 
@@ -122,14 +122,14 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
                 double receivedEnergy = (double) jsonObject.get(MessageUtil.GIVEN_ENERGY);
                 if(receivedEnergy >= 0){
                     smartBuilding.restorePower(receivedEnergy);
-                    smartBuildingAgent.setBuildingStatus(SmartBuildingStatus.LOSING_ENERGY);
+                    smartBuildingAgent.setBuildingState(SmartBuildingState.LOSING_ENERGY);
                 }
             } else if (receivedMsg.getPerformative() == ACLMessage.AGREE) {
                 log("Energy consumed");
             } else if (receivedMsg.getPerformative() == ACLMessage.REFUSE) {
                 log("Energy not consumed");
             }
-            state = Status.FINISHED;
+            state = BehaviourState.FINISHED;
 		} else {
             block();
         }
@@ -138,7 +138,7 @@ public class WaitForRestoreBehaviour extends CustomBehaviour{
 
     @Override
     public boolean done() {
-        return state == Status.FINISHED;
+        return state == BehaviourState.FINISHED;
     }
     
 }
